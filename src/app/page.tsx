@@ -62,6 +62,7 @@ import { Logo } from "@/components/ui/logo";
 import { YamahaVoicePlayer } from "@/components/YamahaVoicePlayer";
 import { CommandPalette } from "@/components/CommandPalette";
 import { TelegramSimulatorModal } from "@/components/TelegramSimulatorModal";
+import { SendToTelegramModal } from "@/components/SendToTelegramModal";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
@@ -134,6 +135,17 @@ export default function YamahaConverterApp() {
   const [isSessionLoading, setIsSessionLoading] = useState<boolean>(true);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState<boolean>(false);
   const [telegramSimulatorOpen, setTelegramSimulatorOpen] = useState<boolean>(false);
+  const [telegramSendModalOpen, setTelegramSendModalOpen] = useState<boolean>(false);
+  const [telegramSendTarget, setTelegramSendTarget] = useState<{
+    blob: Blob | null;
+    filename: string;
+  } | null>(null);
+
+  const handleOpenTelegramSend = (blob: Blob | null, filename: string) => {
+    setTelegramSendTarget({ blob, filename });
+    setTelegramSendModalOpen(true);
+    triggerHaptic("medium");
+  };
 
   // Search & Filter
   const [historySearch, setHistorySearch] = useState<string>("");
@@ -1456,6 +1468,21 @@ export default function YamahaConverterApp() {
                                 <Button
                                   size="sm"
                                   variant="outline"
+                                  onClick={() =>
+                                    handleOpenTelegramSend(
+                                      item.output?.blob || null,
+                                      item.output?.filename || `${item.name}.ppf`
+                                    )
+                                  }
+                                  className="gap-1.5 text-xs text-sky-600 dark:text-sky-400 border-sky-500/30 hover:bg-sky-500/10 shadow-sm"
+                                  title={language === "kh" ? "ផ្ញើទៅ Telegram" : "Send to Telegram"}
+                                >
+                                  <Send className="w-3.5 h-3.5 text-sky-500" />
+                                  <span className="hidden sm:inline">Telegram</span>
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
                                   onClick={() => handleConvertItem(item.id)}
                                   title="Re-convert package"
                                   className="gap-1.5 text-xs"
@@ -1856,12 +1883,23 @@ export default function YamahaConverterApp() {
                           </td>
                           <td className="py-3 px-4 text-right">
                             {h.output ? (
-                              <a href={h.output.downloadUrl} download={h.output.filename}>
-                                <Button size="sm" variant="ghost" className="h-7 px-2 text-brand-600">
-                                  <Download className="w-3.5 h-3.5 mr-1" />
-                                  <span>{t("btn_download")}</span>
+                              <div className="flex items-center justify-end gap-1">
+                                <a href={h.output.downloadUrl} download={h.output.filename}>
+                                  <Button size="sm" variant="ghost" className="h-7 px-2 text-brand-600">
+                                    <Download className="w-3.5 h-3.5 mr-1" />
+                                    <span>{t("btn_download")}</span>
+                                  </Button>
+                                </a>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => handleOpenTelegramSend(null, h.output?.filename || h.name)}
+                                  className="h-7 px-2 text-sky-600 hover:text-sky-500 hover:bg-sky-500/10"
+                                  title={language === "kh" ? "ផ្ញើទៅ Telegram" : "Send to Telegram"}
+                                >
+                                  <Send className="w-3.5 h-3.5" />
                                 </Button>
-                              </a>
+                              </div>
                             ) : (
                               <span className="text-slate-400">—</span>
                             )}
@@ -2070,6 +2108,17 @@ CREATE TABLE public.conversion_jobs (
       <TelegramSimulatorModal
         isOpen={telegramSimulatorOpen}
         onClose={() => setTelegramSimulatorOpen(false)}
+      />
+
+      {/* ===================================================================== */}
+      {/* MODAL: SEND CONVERTED FILE TO TELEGRAM                                */}
+      {/* ===================================================================== */}
+      <SendToTelegramModal
+        isOpen={telegramSendModalOpen}
+        onClose={() => setTelegramSendModalOpen(false)}
+        fileBlob={telegramSendTarget?.blob}
+        filename={telegramSendTarget?.filename}
+        defaultChatId={tgUser?.id || (currentUser?.provider === "TELEGRAM" ? currentUser.username || currentUser.id : undefined)}
       />
 
       {/* ===================================================================== */}
