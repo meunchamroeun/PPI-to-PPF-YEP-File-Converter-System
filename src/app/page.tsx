@@ -64,6 +64,7 @@ import { CommandPalette } from "@/components/CommandPalette";
 import { TelegramSimulatorModal } from "@/components/TelegramSimulatorModal";
 import { SendToTelegramModal } from "@/components/SendToTelegramModal";
 import { SoundWaveHero } from "@/components/SoundWaveHero";
+import { FloatingAIAssistant } from "@/components/FloatingAIAssistant";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
@@ -2121,6 +2122,18 @@ CREATE TABLE public.conversion_jobs (
         fileBlob={telegramSendTarget?.blob}
         filename={telegramSendTarget?.filename}
         defaultChatId={tgUser?.id || (currentUser?.provider === "TELEGRAM" ? currentUser.username || currentUser.id : undefined)}
+      />
+
+      {/* ===================================================================== */}
+      {/* FLOATING DRAGGABLE AI ASSISTANT WIDGET (BOTTOM RIGHT)                 */}
+      {/* ===================================================================== */}
+      <FloatingAIAssistant
+        activePack={activeInspectorItem}
+        onNavigateFullTab={() => {
+          setActiveTab("ai");
+          triggerHaptic("light");
+        }}
+        currentTab={activeTab}
       />
 
       {/* ===================================================================== */}
