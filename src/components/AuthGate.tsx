@@ -1,25 +1,25 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
 import { Logo } from "@/components/ui/logo";
 import { UserSession } from "@/components/AuthModal";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { Button } from "@/components/ui/button";
 import {
   Lock,
   Mail,
-  KeyRound,
   User,
   ShieldCheck,
-  Repeat,
-  Binary,
-  Brain,
   Moon,
   Sun,
   Monitor,
   AlertCircle,
   Database,
+  Send,
+  Eye,
+  EyeOff,
+  ArrowRight,
 } from "lucide-react";
 
 interface AuthGateProps {
@@ -40,6 +40,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -166,60 +167,168 @@ export const AuthGate: React.FC<AuthGateProps> = ({
     }
   }, [darkMode, authMode, language]);
 
+  // Telegram Authentication Handler
+  const handleTelegramSignInClick = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // 1. If running inside Telegram Mini App, use initData
+      if (typeof window !== "undefined" && (window as any).Telegram?.WebApp?.initData) {
+        const initData = (window as any).Telegram.WebApp.initData;
+        const res = await fetch("/api/auth/telegram", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ initData }),
+        });
+        const data = await res.json();
+        if (res.ok && data.user) {
+          onLogin(data.user);
+          return;
+        }
+      }
+
+      // 2. Check if window.Telegram?.WebApp?.initDataUnsafe?.user is present
+      const tgUser = (window as any).Telegram?.WebApp?.initDataUnsafe?.user;
+      if (tgUser) {
+        const res = await fetch("/api/auth/telegram", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            widgetData: {
+              id: tgUser.id,
+              first_name: tgUser.first_name,
+              last_name: tgUser.last_name,
+              username: tgUser.username,
+              photo_url: tgUser.photo_url,
+            },
+          }),
+        });
+        const data = await res.json();
+        if (res.ok && data.user) {
+          onLogin(data.user);
+          return;
+        }
+      }
+
+      // 3. Fallback for external web browser: Open Telegram Bot to link/auth
+      const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || "YamahaConverterBot";
+      window.open(`https://t.me/${botUsername}`, "_blank");
+    } catch (err: any) {
+      setError(err.message || (language === "kh" ? "ការតភ្ជាប់ Telegram បរាជ័យ" : "Telegram connection failed"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 transition-colors duration-200">
-      {/* Top Header */}
-      <header className="w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 sm:px-8 py-3 flex items-center justify-between">
-        <Logo variant="full" size="sm" />
+    <div className="relative isolate flex min-h-dvh items-center justify-center overflow-hidden bg-[#f4ede1] p-0 sm:p-6 dark:bg-[#070b14] transition-colors duration-200">
+      {/* Subtle Background Pattern */}
+      <div className="absolute inset-0 -z-10 pointer-events-none bg-[radial-gradient(#d1d5db_1px,transparent_1px)] dark:bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:20px_20px] opacity-60" />
+      <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full bg-brand-500/10 dark:bg-brand-500/5 blur-3xl pointer-events-none -z-10" />
+      <div className="absolute bottom-1/4 -right-32 w-96 h-96 rounded-full bg-purple-500/10 dark:bg-purple-500/5 blur-3xl pointer-events-none -z-10" />
 
-        <div className="flex items-center gap-2">
-          <LanguageSwitcher />
-          <button
-            type="button"
-            onClick={onToggleTheme}
-            className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition active:scale-[0.97]"
-            aria-label="Toggle Theme"
-            title={
-              themeMode === "system"
-                ? (language === "kh" ? "ទម្រង់តាមប្រព័ន្ធ (ចុចដើម្បីប្តូរ)" : "Following System (Click to toggle)")
-                : themeMode === "light"
-                ? (language === "kh" ? "ទម្រង់ពន្លឺថ្ងៃ (ចុចដើម្បីប្តូរ)" : "Light Mode (Click to toggle)")
-                : (language === "kh" ? "ទម្រង់ពន្លឺយប់ (ចុចដើម្បីប្តូរ)" : "Night Mode (Click to toggle)")
-            }
-          >
-            {themeMode === "system" ? (
-              <Monitor className="w-4 h-4 text-brand-600 dark:text-brand-400" />
-            ) : darkMode ? (
-              <Sun className="w-4 h-4 text-amber-400" />
-            ) : (
-              <Moon className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-      </header>
+      {/* Top-Right Floating Controls (Language & Theme) */}
+      <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 rounded-xl border border-slate-300/80 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 p-1 backdrop-blur-md shadow-sm">
+        <LanguageSwitcher />
+        <span className="h-4 w-px bg-slate-200 dark:bg-slate-800" />
+        <button
+          type="button"
+          onClick={onToggleTheme}
+          className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition active:scale-[0.97]"
+          aria-label="Toggle Theme"
+          title={
+            themeMode === "system"
+              ? (language === "kh" ? "ទម្រង់តាមប្រព័ន្ធ (ចុចដើម្បីប្តូរ)" : "Following System (Click to toggle)")
+              : themeMode === "light"
+              ? (language === "kh" ? "ទម្រង់ពន្លឺថ្ងៃ (ចុចដើម្បីប្តូរ)" : "Light Mode (Click to toggle)")
+              : (language === "kh" ? "ទម្រង់ពន្លឺយប់ (ចុចដើម្បីប្តូរ)" : "Night Mode (Click to toggle)")
+          }
+        >
+          {themeMode === "system" ? (
+            <Monitor className="w-4 h-4 text-brand-600 dark:text-brand-400" />
+          ) : darkMode ? (
+            <Sun className="w-4 h-4 text-amber-400" />
+          ) : (
+            <Moon className="w-4 h-4" />
+          )}
+        </button>
+      </div>
 
-      {/* Main Container */}
-      <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
-        <div className="w-full max-w-md space-y-6">
-          {/* Header Card */}
-          <div className="text-center space-y-2">
-            <div className="inline-flex p-3 rounded-2xl bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-400 border border-brand-200 dark:border-brand-800 shadow-sm mb-1">
-              <Lock className="w-7 h-7" />
+      {/* Main Split-Screen Login Card */}
+      <div className="login-card grid w-full max-w-[760px] overflow-hidden bg-white shadow-2xl shadow-slate-900/10 ring-1 ring-slate-900/5 sm:rounded-2xl lg:min-h-[580px] lg:grid-cols-[330px_1fr] dark:bg-[#020817] dark:shadow-black/70 dark:ring-white/10">
+        {/* Left Hero Sidebar (Desktop) */}
+        <aside className="relative hidden shrink-0 flex-col justify-between overflow-hidden bg-[#070b14] text-white lg:flex">
+          {/* Hero Photo / Studio Cover */}
+          <Image
+            src="/telegram-mini-app-640x360.jpg"
+            alt="Yamaha ExpVoice Studio"
+            fill
+            priority
+            sizes="330px"
+            className="hero-photo scale-105 object-cover opacity-55"
+          />
+
+          {/* Overlay Vignette Gradients */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-[48%] bg-gradient-to-b from-[#070b14]/95 via-[#070b14]/55 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[48%] bg-gradient-to-t from-[#070b14] via-[#070b14]/85 to-transparent" />
+
+          {/* Top Branding Section */}
+          <div className="relative px-7 pt-[34px]">
+            <div className="size-[52px] overflow-hidden rounded-[14px] bg-white/95 p-2 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.7),0_10px_28px_-12px_rgba(0,0,0,0.5)] flex items-center justify-center">
+              <Image
+                src="/logomark.svg"
+                alt="Yamaha ExpVoice Studio Logomark"
+                width={36}
+                height={36}
+                className="rounded-lg"
+              />
             </div>
-            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-              {language === "kh" ? "ចូលគណនីដើម្បីប្រើប្រាស់ប្រព័ន្ធ" : "Sign In Required to Access System"}
-            </h1>
-            <p className="text-xs text-slate-600 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
-              {language === "kh"
-                ? "សូមចូលគណនីរបស់អ្នកដើម្បីដំណើរការប្រព័ន្ធបំប្លែងឯកសារ Yamaha PPI/PPF, AWM2 Inspector និង Sound AI Agent។"
-                : "Please sign in to access the Yamaha PPI/PPF Converter, AWM2 Inspector, and Sound AI Agent."}
+            <h2 className="mt-3 font-heading text-[22px] leading-tight font-bold tracking-[-0.77px] text-white/[0.97] [text-shadow:0_2px_12px_rgba(0,0,0,0.45)]">
+              ExpVoice Studio
+            </h2>
+            <p className="mt-1 text-[11px] font-medium text-slate-300/85 tracking-wide">
+              Yamaha PPI / PPF / YEP Suite
             </p>
           </div>
 
-          {/* Authentication Card */}
-          <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-7 shadow-xl shadow-slate-200/50 dark:shadow-none space-y-5">
-            {/* Mode Switcher */}
-            <div className="flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 text-xs font-semibold">
+          {/* Bottom Information Section */}
+          <div className="relative px-7 pb-6">
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[11px] font-medium">
+              <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Neon Cloud DB &bull; AWM2 v2.5</span>
+            </div>
+            <div className="my-3 h-px w-10 bg-white/35" />
+            <p className="text-[10px] tracking-[1.4px] text-white/[0.65] uppercase leading-relaxed [text-shadow:0_1px_8px_rgba(0,0,0,0.3)]">
+              Professional Yamaha Expansion Voice File Converter System
+            </p>
+          </div>
+        </aside>
+
+        {/* Right Form Main Section */}
+        <main className="flex flex-col justify-center px-5 py-8 sm:px-8 lg:justify-start lg:pt-[28px] lg:pb-6">
+          <div className="mx-auto w-full max-w-[350px]">
+            {/* Mobile Brand (lg:hidden) */}
+            <div className="mb-4 flex items-center justify-center gap-2.5 lg:hidden">
+              <Logo variant="compact" size="sm" />
+            </div>
+
+            {/* Header Title & Subtitle */}
+            <div className="text-center">
+              <h1 className="mb-1 font-heading text-[24px] sm:text-[26px] font-bold tracking-[-0.65px] text-slate-900 dark:text-white">
+                {authMode === "register"
+                  ? (language === "kh" ? "ចុះឈ្មោះគណនីថ្មី" : "Create Account")
+                  : (language === "kh" ? "ចូលគណនីប្រព័ន្ធ" : "Sign In to Studio")}
+              </h1>
+              <p className="text-[13px] text-slate-500 dark:text-slate-400">
+                {authMode === "register"
+                  ? (language === "kh" ? "បង្កើតគណនីដើម្បីបំប្លែងឯកសារ និងគ្រប់គ្រង Voices" : "Register to convert files and manage expansion voices")
+                  : (language === "kh" ? "សូមបញ្ចូលគណនីរបស់អ្នកដើម្បីដំណើរការប្រព័ន្ធ" : "Enter your credentials to access ExpVoice Studio")}
+              </p>
+            </div>
+
+            {/* Mode Switcher Tabs */}
+            <div className="mt-4 flex rounded-xl bg-slate-100 dark:bg-slate-800/80 p-1 text-xs font-semibold">
               <button
                 type="button"
                 onClick={() => {
@@ -252,99 +361,129 @@ export const AuthGate: React.FC<AuthGateProps> = ({
 
             {/* Error Message */}
             {error && (
-              <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 text-xs text-rose-600 dark:text-rose-400 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
+              <div className="mt-3 flex items-start gap-2 rounded-[10px] border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-[12.5px] text-rose-600 dark:text-rose-400">
+                <AlertCircle className="size-4 mt-0.5 shrink-0" />
                 <span>{error}</span>
               </div>
             )}
 
-            {/* EMAIL / PASSWORD FORM */}
-            <form onSubmit={handleCredentialsAuth} className="space-y-3.5">
-                <div>
-                  <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
-                    {language === "kh" ? "អ៊ីមែល ឬ ឈ្មោះគណនី" : "Email or Username"}
+            {/* Authentication Form */}
+            <form onSubmit={handleCredentialsAuth} className="mt-4 space-y-3.5">
+              {/* Full Display Name (Only when Registering) */}
+              {authMode === "register" && (
+                <div className="space-y-1.5">
+                  <label className="flex items-center gap-1.5 text-[12.5px] font-semibold text-slate-700 dark:text-slate-300">
+                    <User className="size-3.5" />
+                    <span>{language === "kh" ? "ឈ្មោះពេញរបស់អ្នក" : "Full Display Name"}</span>
+                    <span className="text-brand-600 dark:text-brand-400">*</span>
                   </label>
-                  <div className="relative mt-1">
-                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <div className="flex h-11 items-center gap-2.5 rounded-[10px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#020817] px-3.5 transition-[border-color,box-shadow] focus-within:border-brand-500 focus-within:ring-[3px] focus-within:ring-brand-500/20">
+                    <User className="size-4 shrink-0 text-slate-400" />
                     <input
                       type="text"
                       required
-                      placeholder={language === "kh" ? "ឧទាហរណ៍៖ musician@yamaha-studio.com" : "e.g. musician@yamaha-studio.com"}
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition"
+                      placeholder={language === "kh" ? "ឧ. សុខ ពិសិដ្ឋ" : "e.g. Alex Thorne"}
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-slate-400 text-slate-900 dark:text-white"
                     />
                   </div>
                 </div>
+              )}
 
-                {authMode === "register" && (
-                  <div>
-                    <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
-                      {language === "kh" ? "ឈ្មោះពេញរបស់អ្នក" : "Full Display Name"}
-                    </label>
-                    <div className="relative mt-1">
-                      <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
-                      <input
-                        type="text"
-                        required
-                        placeholder={language === "kh" ? "ឈ្មោះរបស់អ្នក" : "e.g. Alex Thorne"}
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition"
-                      />
-                    </div>
-                  </div>
-                )}
+              {/* Identifier / Email */}
+              <div className="space-y-1.5">
+                <label className="flex items-center gap-1.5 text-[12.5px] font-semibold text-slate-700 dark:text-slate-300">
+                  <Mail className="size-3.5" />
+                  <span>{language === "kh" ? "អ៊ីមែល ឬ ឈ្មោះគណនី" : "Email or Username"}</span>
+                  <span className="text-brand-600 dark:text-brand-400">*</span>
+                </label>
+                <div className="flex h-11 items-center gap-2.5 rounded-[10px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#020817] px-3.5 transition-[border-color,box-shadow] focus-within:border-brand-500 focus-within:ring-[3px] focus-within:ring-brand-500/20">
+                  <Mail className="size-4 shrink-0 text-slate-400" />
+                  <input
+                    type="text"
+                    required
+                    autoComplete="username"
+                    placeholder={language === "kh" ? "musician@yamaha-studio.com" : "musician@yamaha-studio.com"}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-slate-400 text-slate-900 dark:text-white"
+                  />
+                </div>
+              </div>
 
-                <div>
-                  <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
-                    {language === "kh" ? "ពាក្យសម្ងាត់" : "Password"}
+              {/* Password */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="flex items-center gap-1.5 text-[12.5px] font-semibold text-slate-700 dark:text-slate-300">
+                    <Lock className="size-3.5" />
+                    <span>{language === "kh" ? "ពាក្យសម្ងាត់" : "Password"}</span>
+                    <span className="text-brand-600 dark:text-brand-400">*</span>
                   </label>
-                  <div className="relative mt-1">
-                    <KeyRound className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
-                    <input
-                      type="password"
-                      required
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 text-base sm:text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition"
-                    />
-                  </div>
+                </div>
+                <div className="flex h-11 items-center gap-2.5 rounded-[10px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#020817] px-3.5 transition-[border-color,box-shadow] focus-within:border-brand-500 focus-within:ring-[3px] focus-within:ring-brand-500/20">
+                  <Lock className="size-4 shrink-0 text-slate-400" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    autoComplete={authMode === "register" ? "new-password" : "current-password"}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-slate-400 text-slate-900 dark:text-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Primary Submit Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="group/btn relative flex h-11 w-full items-center justify-center overflow-hidden rounded-[10px] text-[15px] font-semibold transition-[background-color,box-shadow,color] duration-300 shadow-sm bg-slate-900 text-white hover:bg-slate-800 dark:bg-[#f2f2f2] dark:text-black dark:hover:bg-white active:scale-[0.98] disabled:opacity-70 mt-1 cursor-pointer"
+              >
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <span className="size-4 rounded-full border-2 border-white/30 border-t-white animate-spin dark:border-black/30 dark:border-t-black" />
+                    <span>{language === "kh" ? "កំពុងផ្ទៀងផ្ទាត់..." : "Verifying..."}</span>
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <span>
+                      {authMode === "register"
+                        ? (language === "kh" ? "ចុះឈ្មោះ និងចូលប្រព័ន្ធ" : "Register & Sign In")
+                        : (language === "kh" ? "ចូលគណនី" : "Sign In")}
+                    </span>
+                    <ArrowRight className="size-4 transition-transform duration-200 group-hover/btn:translate-x-1" />
+                  </span>
+                )}
+              </button>
+
+              {/* Divider */}
+              <div className="pt-2">
+                <div className="relative flex py-1.5 items-center">
+                  <div className="flex-grow border-t border-slate-200 dark:border-slate-800" />
+                  <span className="flex-shrink mx-3 text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
+                    {language === "kh" ? "ឬចូលតាម" : "OR CONTINUE WITH"}
+                  </span>
+                  <div className="flex-grow border-t border-slate-200 dark:border-slate-800" />
                 </div>
 
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full h-11 text-xs font-semibold gap-2 shadow-md shadow-brand-500/20 mt-1"
-                >
-                  <Lock className="w-3.5 h-3.5" />
-                  <span>
-                    {loading
-                      ? (language === "kh" ? "កំពុងផ្ទៀងផ្ទាត់..." : "Verifying Session...")
-                      : authMode === "register"
-                      ? (language === "kh" ? "ចុះឈ្មោះ និងចូលប្រព័ន្ធ" : "Register & Enter Studio")
-                      : (language === "kh" ? "ចូលគណនីប្រព័ន្ធ" : "Sign In to Studio")}
-                  </span>
-                </Button>
-
-                {/* Direct Google Alternative Button */}
-                <div className="pt-2">
-                  <div className="relative flex py-1 items-center">
-                    <div className="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
-                    <span className="flex-shrink mx-3 text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
-                      {language === "kh" ? "ឬ" : "OR"}
-                    </span>
-                    <div className="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
-                  </div>
-
-                  {/* Google Identity Services Container */}
-                  <div id="google_gis_btn_container" className="w-full flex justify-center empty:hidden mt-2"></div>
-
+                {/* Google & Telegram Social Login Buttons */}
+                <div className="grid grid-cols-2 gap-2.5 mt-2">
+                  {/* Google Login Button */}
                   <button
                     type="button"
                     onClick={handleGoogleSignInClick}
-                    className="w-full mt-2 flex items-center justify-center gap-2.5 h-10 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700/80 text-xs font-semibold text-slate-700 dark:text-slate-200 transition"
+                    disabled={loading}
+                    className="flex h-10.5 items-center justify-center gap-2 rounded-[10px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900/60 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-sm transition active:scale-[0.98] cursor-pointer"
                   >
                     <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                       <path
@@ -364,13 +503,28 @@ export const AuthGate: React.FC<AuthGateProps> = ({
                         d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                       />
                     </svg>
-                    <span>{language === "kh" ? "ចូលតាមគណនី Google" : "Continue with Google"}</span>
+                    <span>Google</span>
+                  </button>
+
+                  {/* Telegram Login Button */}
+                  <button
+                    type="button"
+                    onClick={handleTelegramSignInClick}
+                    disabled={loading}
+                    className="flex h-10.5 items-center justify-center gap-2 rounded-[10px] border border-sky-300 dark:border-sky-800/80 bg-sky-50/50 dark:bg-sky-950/30 hover:bg-sky-100/60 dark:hover:bg-sky-900/40 text-xs font-semibold text-sky-700 dark:text-sky-300 shadow-sm transition active:scale-[0.98] cursor-pointer"
+                  >
+                    <Send className="w-4 h-4 text-[#229ED9] shrink-0" />
+                    <span>Telegram</span>
                   </button>
                 </div>
-              </form>
 
-            {/* Cloud Persistence Notice */}
-            <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
+                {/* Google Identity Services Container */}
+                <div id="google_gis_btn_container" className="w-full flex justify-center empty:hidden mt-2" />
+              </div>
+            </form>
+
+            {/* Footer Notice */}
+            <div className="mt-5 pt-3 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between text-[11px] text-slate-500">
               <span className="inline-flex items-center gap-1.5">
                 <Database className="w-3.5 h-3.5 text-brand-500" />
                 <span>Neon PostgreSQL Cloud</span>
@@ -381,53 +535,8 @@ export const AuthGate: React.FC<AuthGateProps> = ({
               </span>
             </div>
           </div>
-
-          {/* System Capabilities Info Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-            <div className="p-3.5 rounded-2xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 space-y-1">
-              <div className="w-7 h-7 rounded-lg bg-brand-50 dark:bg-brand-950/60 text-brand-600 flex items-center justify-center mb-1">
-                <Repeat className="w-4 h-4" />
-              </div>
-              <p className="text-xs font-bold text-slate-900 dark:text-white">
-                {language === "kh" ? "បំប្លែង PPI ទៅ PPF/YEP" : "Genuine Conversion"}
-              </p>
-              <p className="text-[11px] text-slate-500 leading-tight">
-                {language === "kh"
-                  ? "វិភាគ binary blocks និង wave samples 100% មិនបាត់បង់គុណភាពសំឡេង"
-                  : "100% loss-free binary container parsing for SX900/SX700 & Genos"}
-              </p>
-            </div>
-
-            <div className="p-3.5 rounded-2xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 space-y-1">
-              <div className="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center mb-1">
-                <Binary className="w-4 h-4" />
-              </div>
-              <p className="text-xs font-bold text-slate-900 dark:text-white">
-                {language === "kh" ? "AWM2 Hex Inspector" : "AWM2 Deep Inspector"}
-              </p>
-              <p className="text-[11px] text-slate-500 leading-tight">
-                {language === "kh"
-                  ? "ពិនិត្យមើល Header, Keymaps, PCM Wave Tables និង Voice Presets"
-                  : "Inspect raw PCM wave headers, sample maps, and voice presets"}
-              </p>
-            </div>
-
-            <div className="p-3.5 rounded-2xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 space-y-1">
-              <div className="w-7 h-7 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-600 flex items-center justify-center mb-1">
-                <Brain className="w-4 h-4" />
-              </div>
-              <p className="text-xs font-bold text-slate-900 dark:text-white">
-                {language === "kh" ? "Sound AI Assistant" : "Sound AI Assistant"}
-              </p>
-              <p className="text-[11px] text-slate-500 leading-tight">
-                {language === "kh"
-                  ? "ផ្តល់ដំបូន្មានតន្ត្រី ពិនិត្យភាពត្រូវគ្នា និងណែនាំការបង្កើតសំឡេង"
-                  : "AI-assisted expansion voice curation & hardware compatibility"}
-              </p>
-            </div>
-          </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };
