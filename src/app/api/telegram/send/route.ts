@@ -16,12 +16,15 @@ const TELEGRAM_MAX_DOCUMENT_BYTES = 50 * 1024 * 1024; // 50 MB limit for Telegra
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
+    const isNotificationOnly = formData.get("isNotificationOnly") === "true";
     const file = formData.get("file") as File | null;
     const rawChatId = (formData.get("chatId") as string)?.trim();
     const customBotToken = (formData.get("botToken") as string)?.trim();
+    const filename = (formData.get("filename") as string) || file?.name || "Yamaha_Package.ppf";
+    const fileSizeBytes = Number(formData.get("fileSizeBytes")) || file?.size || 0;
     const caption = (formData.get("caption") as string) || "Yamaha Converted Package from ExpVoice Studio";
 
-    if (!file) {
+    if (!file && !isNotificationOnly) {
       return NextResponse.json(
         { error: "No file provided for Telegram transfer." },
         { status: 400 }
@@ -64,18 +67,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if file exceeds Telegram's 50 MB limit for sendDocument
-    if (file.size > TELEGRAM_MAX_DOCUMENT_BYTES) {
-      const fileSizeMB = (file.size / 1024 / 1024).toFixed(1);
+    // If notification-only requested OR file exceeds Telegram's 50 MB document limit
+    if (isNotificationOnly || (file && file.size > TELEGRAM_MAX_DOCUMENT_BYTES)) {
+      const sizeMB = (fileSizeBytes / 1024 / 1024).toFixed(1);
       const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://yamaha-ppi-to-ppf-converter.vercel.app";
 
       const notifyText =
         `*Yamaha Pack Converted Successfully!*\n\n` +
-        `• File: \`${file.name}\`\n` +
-        `• Size: \`${fileSizeMB} MB\` (exceeds Telegram Bot API 50 MB upload limit)\n` +
-        `• Status: Ready for direct download\n\n` +
-        `Due to Telegram Bot API limits (max 50 MB per document), files larger than 50 MB cannot be attached directly in chat.\n\n` +
-        `Please download your pack directly from the ExpVoice Studio WebApp:\n${appUrl}`;
+        `• File: \`${filename}\`\n` +
+        `• Size: \`${sizeMB} MB\` (exceeds Telegram Bot API 50 MB upload limit)\n` +
+        `• Status: Converted and ready on your device\n\n` +
+        `Notice: Telegram Bot API restricts direct document delivery to files under 50 MB.\n` +
+        `Your converted package is available directly on your device and via the ExpVoice Studio WebApp:\n${appUrl}`;
 
       const notifyRes = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
         method: "POST",
@@ -114,16 +117,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: true,
         notice: "LARGE_FILE_NOTIFICATION",
-        message: `File is ${fileSizeMB} MB (over 50 MB limit). A conversion receipt and details have been sent to your Telegram chat. Please download the file directly from the studio dashboard.`,
+        message: `File is ${sizeMB} MB (over 50 MB limit). A conversion receipt and details have been sent to your Telegram chat. Please download the file directly from the studio dashboard.`,
         chat: notifyData.result?.chat,
-        filename: file.name,
+        filename,
       });
     }
 
     // File is <= 50 MB: Send as document attachment
     const tgFormData = new FormData();
     tgFormData.append("chat_id", chatId);
-    tgFormData.append("document", file, file.name);
+    tgFormData.append("document", file!, file!.name);
     tgFormData.append("caption", caption);
 
     const tgRes = await fetch(`https://api.telegram.org/bot${token}/sendDocument`, {
@@ -181,7 +184,7 @@ export async function POST(req: NextRequest) {
       success: true,
       messageId: tgData.result?.message_id,
       chat: tgData.result?.chat,
-      filename: file.name,
+      filename: filename,
     });
   } catch (error: any) {
     console.error("Telegram send error:", error);

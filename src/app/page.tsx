@@ -200,6 +200,7 @@ export default function YamahaConverterApp() {
         ? `/api/history?userId=${currentUser.id}`
         : "/api/history?all=true";
       const res = await fetch(url);
+      if (!res.ok) return;
       const data = await res.json();
       if (data.history && Array.isArray(data.history)) {
         const mapped: HistoryEntry[] = data.history.map((h: any) => ({
