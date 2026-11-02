@@ -405,7 +405,7 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack }
                   placeholder="AIzaSy..."
                   value={apiKey}
                   onChange={(e) => handleSaveApiKey(e.target.value)}
-                  className="flex-1 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="flex-1 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-base sm:text-xs font-mono focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
                 <Button size="sm" onClick={() => setShowKeyInput(false)}>
                   Done
@@ -752,7 +752,7 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack }
               }
             }}
             disabled={isStreaming}
-            className="flex-1 px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50"
+            className="flex-1 px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-base sm:text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50"
           />
 
           {isStreaming ? (

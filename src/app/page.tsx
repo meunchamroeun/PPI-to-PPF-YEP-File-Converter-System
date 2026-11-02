@@ -781,7 +781,7 @@ export default function YamahaConverterApp() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
                 <span>AWM2 Spectrum</span>
-                <span className="font-mono text-emerald-500">44.1 kHz</span>
+                <span className="font-mono text-emerald-500 tabular-nums">44.1 kHz</span>
               </div>
               <GSAPAudioVisualizer
                 isActive={queue.some((q) => q.status === "CONVERTING")}
@@ -1458,7 +1458,7 @@ export default function YamahaConverterApp() {
                               )}
                               {item.stage}
                             </span>
-                            <span className="font-mono font-semibold">{item.progress}%</span>
+                            <span className="font-mono font-semibold tabular-nums">{item.progress}%</span>
                           </div>
                           <Progress
                             value={item.progress}

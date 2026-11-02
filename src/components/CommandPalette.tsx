@@ -229,7 +229,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t("cmd_search_placeholder")}
-            className="w-full text-xs bg-transparent text-slate-900 dark:text-white placeholder:text-slate-400 outline-none"
+            className="w-full text-base sm:text-xs bg-transparent text-slate-900 dark:text-white placeholder:text-slate-400 outline-none"
           />
           <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500">
             ESC
