@@ -291,14 +291,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateT
         </Card>
       </div>
 
-      {/* Main Admin Tabs */}
-      <div className="flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 text-xs font-semibold max-w-md">
+      {/* Main Admin Tabs (Somleng Pill Design) */}
+      <div className="flex rounded-full bg-slate-100 dark:bg-white/10 p-1 text-xs font-medium ring-1 ring-border/50 max-w-md">
         <button
           onClick={() => setAdminTab("users")}
-          className={`flex-1 py-2 rounded-lg transition flex items-center justify-center gap-2 ${
+          className={`flex-1 py-1.5 px-3 rounded-full transition flex items-center justify-center gap-2 ${
             adminTab === "users"
-              ? "bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-300 shadow-sm"
-              : "text-slate-600 dark:text-slate-400"
+              ? "bg-white dark:bg-[#1c1c1f] text-purple-600 dark:text-purple-300 shadow-xs font-semibold"
+              : "text-slate-600 dark:text-slate-400 hover:text-foreground"
           }`}
         >
           <Users className="w-3.5 h-3.5" />
@@ -307,10 +307,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateT
 
         <button
           onClick={() => setAdminTab("jobs")}
-          className={`flex-1 py-2 rounded-lg transition flex items-center justify-center gap-2 ${
+          className={`flex-1 py-1.5 px-3 rounded-full transition flex items-center justify-center gap-2 ${
             adminTab === "jobs"
-              ? "bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-300 shadow-sm"
-              : "text-slate-600 dark:text-slate-400"
+              ? "bg-white dark:bg-[#1c1c1f] text-purple-600 dark:text-purple-300 shadow-xs font-semibold"
+              : "text-slate-600 dark:text-slate-400 hover:text-foreground"
           }`}
         >
           <Layers className="w-3.5 h-3.5" />
@@ -319,10 +319,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateT
 
         <button
           onClick={() => setAdminTab("system")}
-          className={`flex-1 py-2 rounded-lg transition flex items-center justify-center gap-2 ${
+          className={`flex-1 py-1.5 px-3 rounded-full transition flex items-center justify-center gap-2 ${
             adminTab === "system"
-              ? "bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-300 shadow-sm"
-              : "text-slate-600 dark:text-slate-400"
+              ? "bg-white dark:bg-[#1c1c1f] text-purple-600 dark:text-purple-300 shadow-xs font-semibold"
+              : "text-slate-600 dark:text-slate-400 hover:text-foreground"
           }`}
         >
           <Cpu className="w-3.5 h-3.5" />
@@ -337,13 +337,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateT
         <Card className="p-5 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="relative flex-1 max-w-sm">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5" />
               <input
                 type="text"
                 placeholder="Search by name, email, or username..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full pl-9 pr-4 py-2 rounded-full bg-card/60 border border-border/80 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition"
               />
             </div>
 
@@ -352,7 +352,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateT
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="text-xs px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300"
+                className="text-xs px-4 py-1.5 rounded-full bg-card/60 border border-border/80 text-foreground font-medium focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition"
               >
                 <option value="ALL">All Roles</option>
                 <option value="ADMIN">Admins Only</option>

@@ -279,14 +279,14 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 p-1 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800">
+            <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100 dark:bg-white/10 rounded-full border border-border/80">
               <button
                 type="button"
                 onClick={() => onSelectThemeMode ? onSelectThemeMode("system") : onToggleDarkMode()}
-                className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-medium transition-all duration-150 active:scale-[0.97] ${
+                className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-1.5 px-2 rounded-full text-xs font-medium transition-all duration-150 active:scale-[0.97] ${
                   themeMode === "system"
-                    ? "bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm border border-slate-200/60 dark:border-slate-700 font-semibold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                    ? "bg-white dark:bg-[#1c1c1f] text-brand-600 dark:text-brand-300 shadow-xs border border-border/60 font-semibold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-foreground"
                 }`}
                 title={t("theme_system_desc")}
               >
@@ -297,10 +297,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               <button
                 type="button"
                 onClick={() => onSelectThemeMode ? onSelectThemeMode("light") : onToggleDarkMode()}
-                className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-medium transition-all duration-150 active:scale-[0.97] ${
+                className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-1.5 px-2 rounded-full text-xs font-medium transition-all duration-150 active:scale-[0.97] ${
                   themeMode === "light"
-                    ? "bg-white dark:bg-slate-800 text-amber-600 dark:text-amber-400 shadow-sm border border-slate-200/60 dark:border-slate-700 font-semibold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                    ? "bg-white dark:bg-[#1c1c1f] text-amber-600 dark:text-amber-400 shadow-xs border border-border/60 font-semibold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-foreground"
                 }`}
                 title={t("theme_light_desc")}
               >
@@ -311,10 +311,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               <button
                 type="button"
                 onClick={() => onSelectThemeMode ? onSelectThemeMode("dark") : onToggleDarkMode()}
-                className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-medium transition-all duration-150 active:scale-[0.97] ${
+                className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-1.5 px-2 rounded-full text-xs font-medium transition-all duration-150 active:scale-[0.97] ${
                   themeMode === "dark"
-                    ? "bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm border border-slate-200/60 dark:border-slate-700 font-semibold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                    ? "bg-white dark:bg-[#1c1c1f] text-indigo-600 dark:text-indigo-400 shadow-xs border border-border/60 font-semibold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-foreground"
                 }`}
                 title={t("theme_dark_desc")}
               >
@@ -438,7 +438,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                         setKeyStatus("idle");
                         setKeyMessage("");
                       }}
-                      className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                      className="w-full px-4 py-2.5 pr-10 rounded-full bg-background/80 border border-border/80 text-xs font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition"
                     />
                     <button
                       type="button"
@@ -530,23 +530,23 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     {language === "kh" ? "ទម្រង់ដែលត្រូវជ្រើសរើសដោយស្វ័យប្រវត្តិកាលណាមានឯកសារ .PPI ថ្មី" : "Format automatically selected when new .PPI packages are queued"}
                   </span>
                 </div>
-                <div className="flex rounded-lg bg-slate-200 dark:bg-slate-700 p-0.5 text-xs font-semibold shrink-0">
+                <div className="flex rounded-full bg-slate-100 dark:bg-white/10 p-1 text-xs font-medium ring-1 ring-border/50 shrink-0">
                   <button
                     onClick={() => handleFormatChange("PPF")}
-                    className={`px-3 py-1.5 rounded-md transition ${
+                    className={`px-3 py-1.5 rounded-full transition ${
                       defaultFormat === "PPF"
-                        ? "bg-white dark:bg-slate-900 text-brand-600 dark:text-brand-300 shadow-sm"
-                        : "text-slate-600 dark:text-slate-400"
+                        ? "bg-white dark:bg-[#1c1c1f] text-brand-600 dark:text-brand-300 shadow-xs font-semibold"
+                        : "text-slate-600 dark:text-slate-400 hover:text-foreground"
                     }`}
                   >
                     PPF (Yamaha YEM)
                   </button>
                   <button
                     onClick={() => handleFormatChange("YEP")}
-                    className={`px-3 py-1.5 rounded-md transition ${
+                    className={`px-3 py-1.5 rounded-full transition ${
                       defaultFormat === "YEP"
-                        ? "bg-white dark:bg-slate-900 text-brand-600 dark:text-brand-300 shadow-sm"
-                        : "text-slate-600 dark:text-slate-400"
+                        ? "bg-white dark:bg-[#1c1c1f] text-brand-600 dark:text-brand-300 shadow-xs font-semibold"
+                        : "text-slate-600 dark:text-slate-400 hover:text-foreground"
                     }`}
                   >
                     YEP (Legacy)

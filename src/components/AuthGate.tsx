@@ -195,8 +195,8 @@ export const AuthGate: React.FC<AuthGateProps> = ({
         </button>
       </div>
 
-      {/* Main Split-Screen Login Card */}
-      <div className="login-card grid w-full max-w-[760px] overflow-hidden bg-white shadow-2xl shadow-slate-900/10 ring-1 ring-slate-900/5 sm:rounded-2xl lg:min-h-[580px] lg:grid-cols-[330px_1fr] dark:bg-[#020817] dark:shadow-black/70 dark:ring-white/10">
+      {/* Main Split-Screen Login Card (Somleng Studio Aesthetic) */}
+      <div className="specular-card grid w-full max-w-[780px] overflow-hidden bg-card text-card-foreground shadow-2xl rounded-3xl ring-1 ring-border/80 lg:min-h-[580px] lg:grid-cols-[330px_1fr]">
         {/* Left Hero Sidebar (Desktop - Clean Studio Aesthetics) */}
         <aside className="relative hidden shrink-0 flex-col justify-between overflow-hidden bg-gradient-to-b from-[#0b1020] via-[#080d1a] to-[#04060d] text-white lg:flex border-r border-white/5">
           {/* Subtle Studio Glow Highlights */}
@@ -292,17 +292,17 @@ export const AuthGate: React.FC<AuthGateProps> = ({
               </p>
             </div>
 
-            {/* Mode Switcher Tabs */}
-            <div className="mt-4 flex rounded-xl bg-slate-100 dark:bg-slate-800/80 p-1 text-xs font-semibold">
+            {/* Mode Switcher Tabs (Somleng Pill Design) */}
+            <div className="mt-4 flex rounded-full bg-slate-100 dark:bg-white/10 p-1 text-xs font-semibold">
               <button
                 type="button"
                 onClick={() => {
                   setAuthMode("signin");
                   setError(null);
                 }}
-                className={`flex-1 py-1.5 rounded-lg transition ${
+                className={`flex-1 py-1.5 rounded-full transition ${
                   authMode === "signin"
-                    ? "bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-sm"
+                    ? "bg-white dark:bg-[#1c1c1f] text-brand-600 dark:text-brand-300 shadow-xs"
                     : "text-slate-600 dark:text-slate-400"
                 }`}
               >
@@ -314,9 +314,9 @@ export const AuthGate: React.FC<AuthGateProps> = ({
                   setAuthMode("register");
                   setError(null);
                 }}
-                className={`flex-1 py-1.5 rounded-lg transition ${
+                className={`flex-1 py-1.5 rounded-full transition ${
                   authMode === "register"
-                    ? "bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-sm"
+                    ? "bg-white dark:bg-[#1c1c1f] text-brand-600 dark:text-brand-300 shadow-xs"
                     : "text-slate-600 dark:text-slate-400"
                 }`}
               >
@@ -342,15 +342,15 @@ export const AuthGate: React.FC<AuthGateProps> = ({
                     <span>{language === "kh" ? "ឈ្មោះពេញរបស់អ្នក" : "Full Display Name"}</span>
                     <span className="text-brand-600 dark:text-brand-400">*</span>
                   </label>
-                  <div className="flex h-11 items-center gap-2.5 rounded-[10px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#020817] px-3.5 transition-[border-color,box-shadow] focus-within:border-brand-500 focus-within:ring-[3px] focus-within:ring-brand-500/20">
-                    <User className="size-4 shrink-0 text-slate-400" />
+                  <div className="flex h-11 items-center gap-2.5 rounded-full border border-border/80 bg-background/80 px-4 transition-[border-color,box-shadow] focus-within:border-brand-500 focus-within:ring-[3px] focus-within:ring-brand-500/20">
+                    <User className="size-4 shrink-0 text-muted-foreground" />
                     <input
                       type="text"
                       required
                       placeholder={language === "kh" ? "ឧ. សុខ ពិសិដ្ឋ" : "e.g. Alex Thorne"}
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-slate-400 text-slate-900 dark:text-white"
+                      className="min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-muted-foreground text-foreground"
                     />
                   </div>
                 </div>
@@ -363,8 +363,8 @@ export const AuthGate: React.FC<AuthGateProps> = ({
                   <span>{language === "kh" ? "អ៊ីមែល ឬ ឈ្មោះគណនី" : "Email or Username"}</span>
                   <span className="text-brand-600 dark:text-brand-400">*</span>
                 </label>
-                <div className="flex h-11 items-center gap-2.5 rounded-[10px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#020817] px-3.5 transition-[border-color,box-shadow] focus-within:border-brand-500 focus-within:ring-[3px] focus-within:ring-brand-500/20">
-                  <Mail className="size-4 shrink-0 text-slate-400" />
+                <div className="flex h-11 items-center gap-2.5 rounded-full border border-border/80 bg-background/80 px-4 transition-[border-color,box-shadow] focus-within:border-brand-500 focus-within:ring-[3px] focus-within:ring-brand-500/20">
+                  <Mail className="size-4 shrink-0 text-muted-foreground" />
                   <input
                     type="text"
                     required
@@ -372,7 +372,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({
                     placeholder={language === "kh" ? "musician@yamaha-studio.com" : "musician@yamaha-studio.com"}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-slate-400 text-slate-900 dark:text-white"
+                    className="min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-muted-foreground text-foreground"
                   />
                 </div>
               </div>
@@ -386,8 +386,8 @@ export const AuthGate: React.FC<AuthGateProps> = ({
                     <span className="text-brand-600 dark:text-brand-400">*</span>
                   </label>
                 </div>
-                <div className="flex h-11 items-center gap-2.5 rounded-[10px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#020817] px-3.5 transition-[border-color,box-shadow] focus-within:border-brand-500 focus-within:ring-[3px] focus-within:ring-brand-500/20">
-                  <Lock className="size-4 shrink-0 text-slate-400" />
+                <div className="flex h-11 items-center gap-2.5 rounded-full border border-border/80 bg-background/80 px-4 transition-[border-color,box-shadow] focus-within:border-brand-500 focus-within:ring-[3px] focus-within:ring-brand-500/20">
+                  <Lock className="size-4 shrink-0 text-muted-foreground" />
                   <input
                     type={showPassword ? "text" : "password"}
                     required
@@ -395,12 +395,12 @@ export const AuthGate: React.FC<AuthGateProps> = ({
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-slate-400 text-slate-900 dark:text-white"
+                    className="min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-muted-foreground text-foreground"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
+                    className="text-muted-foreground hover:text-foreground transition"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -412,7 +412,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({
               <button
                 type="submit"
                 disabled={loading}
-                className="group/btn relative flex h-11 w-full items-center justify-center overflow-hidden rounded-[10px] text-[15px] font-semibold transition-[background-color,box-shadow,color] duration-300 shadow-sm bg-slate-900 text-white hover:bg-slate-800 dark:bg-[#f2f2f2] dark:text-black dark:hover:bg-white active:scale-[0.98] disabled:opacity-70 mt-1 cursor-pointer"
+                className="group/btn relative flex h-11 w-full items-center justify-center overflow-hidden rounded-full text-[14px] font-medium transition-[background-color,box-shadow,color] duration-300 shadow-sm bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-black dark:hover:bg-slate-100 active:scale-[0.98] disabled:opacity-70 mt-1 cursor-pointer"
               >
                 {loading ? (
                   <span className="flex items-center gap-2">
@@ -434,11 +434,11 @@ export const AuthGate: React.FC<AuthGateProps> = ({
               {/* Divider */}
               <div className="pt-2">
                 <div className="relative flex py-1.5 items-center">
-                  <div className="flex-grow border-t border-slate-200 dark:border-slate-800" />
-                  <span className="flex-shrink mx-3 text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
+                  <div className="flex-grow border-t border-border/80" />
+                  <span className="flex-shrink mx-3 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
                     {language === "kh" ? "ឬចូលតាម" : "OR CONTINUE WITH"}
                   </span>
-                  <div className="flex-grow border-t border-slate-200 dark:border-slate-800" />
+                  <div className="flex-grow border-t border-border/80" />
                 </div>
 
                 {/* Google & Telegram Social Login Buttons */}
@@ -448,7 +448,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({
                     type="button"
                     onClick={handleGoogleSignInClick}
                     disabled={loading}
-                    className="flex h-10.5 items-center justify-center gap-2 rounded-[10px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900/60 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-sm transition active:scale-[0.98] cursor-pointer"
+                    className="flex h-10.5 items-center justify-center gap-2 rounded-full border border-border/80 bg-card/60 hover:bg-accent text-xs font-medium text-foreground shadow-xs transition active:scale-[0.98] cursor-pointer"
                   >
                     <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                       <path
@@ -476,7 +476,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({
                     type="button"
                     onClick={handleTelegramSignInClick}
                     disabled={loading}
-                    className="flex h-10.5 items-center justify-center gap-2 rounded-[10px] border border-sky-300 dark:border-sky-800/80 bg-sky-50/50 dark:bg-sky-950/30 hover:bg-sky-100/60 dark:hover:bg-sky-900/40 text-xs font-semibold text-sky-700 dark:text-sky-300 shadow-sm transition active:scale-[0.98] cursor-pointer"
+                    className="flex h-10.5 items-center justify-center gap-2 rounded-full border border-sky-300/60 dark:border-sky-500/20 bg-sky-50/50 dark:bg-sky-950/20 hover:bg-sky-100/60 dark:hover:bg-sky-900/40 text-xs font-medium text-sky-700 dark:text-sky-300 shadow-xs transition active:scale-[0.98] cursor-pointer"
                   >
                     <Send className="w-4 h-4 text-[#229ED9] shrink-0" />
                     <span>Telegram</span>

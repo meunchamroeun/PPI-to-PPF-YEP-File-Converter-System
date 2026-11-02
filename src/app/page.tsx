@@ -63,6 +63,7 @@ import { YamahaVoicePlayer } from "@/components/YamahaVoicePlayer";
 import { CommandPalette } from "@/components/CommandPalette";
 import { TelegramSimulatorModal } from "@/components/TelegramSimulatorModal";
 import { SendToTelegramModal } from "@/components/SendToTelegramModal";
+import { SoundWaveHero } from "@/components/SoundWaveHero";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
@@ -655,16 +656,16 @@ export default function YamahaConverterApp() {
   }
 
   return (
-    <div className="h-screen w-full flex flex-col lg:flex-row bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 transition-colors duration-200 overflow-x-hidden lg:overflow-hidden">
+    <div className="h-screen w-full flex flex-col lg:flex-row bg-background text-foreground transition-colors duration-200 overflow-x-hidden lg:overflow-hidden">
       {/* PWA Install Prompt & Offline Awareness Banner */}
       <PWAInstallBanner />
       {/* ===================================================================== */}
       {/* SIDEBAR NAVIGATION (FIXED & NEVER SCROLLS)                           */}
       {/* ===================================================================== */}
-      <aside className="w-full lg:w-64 lg:h-screen lg:sticky lg:top-0 bg-white dark:bg-[#111827] border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between shrink-0 z-30 overflow-hidden no-scrollbar select-none">
+      <aside className="w-full lg:w-64 lg:h-screen lg:sticky lg:top-0 bg-sidebar border-r border-border/80 flex flex-col justify-between shrink-0 z-30 overflow-hidden no-scrollbar select-none">
         <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
           {/* Brand Header */}
-          <div className="h-16 flex items-center justify-between px-5 border-b border-slate-200 dark:border-slate-800 shrink-0">
+          <div className="h-16 flex items-center justify-between px-5 border-b border-border/80 shrink-0">
             <Logo variant="compact" size="sm" />
 
             <button
@@ -893,9 +894,10 @@ export default function YamahaConverterApp() {
       {/* ===================================================================== */}
       {/* MAIN CONTENT AREA                                                     */}
       {/* ===================================================================== */}
-      <main className="flex-1 lg:h-screen overflow-y-auto p-4 md:p-8 space-y-6 pb-24 lg:pb-8">
-        {/* Top Studio Command Bar (Clean, Unified, Glassmorphism) */}
-        <header className="sticky -top-4 md:-top-8 -mx-4 md:-mx-8 px-4 md:px-8 py-3 z-20 bg-white/80 dark:bg-[#0b0f19]/80 backdrop-blur-xl border-b border-slate-200/70 dark:border-slate-800/80 flex items-center justify-between gap-3 sm:gap-4 transition-colors duration-200">
+      <main className="relative flex-1 lg:h-screen overflow-y-auto p-4 md:p-8 space-y-6 pb-24 lg:pb-8">
+        <SoundWaveHero />
+        {/* Top Studio Command Bar (Somleng Clean Glassmorphism) */}
+        <header className="sticky -top-4 md:-top-8 -mx-4 md:-mx-8 px-4 md:px-8 py-3.5 z-20 bg-background/80 backdrop-blur-md border-b border-border/60 flex items-center justify-between gap-3 sm:gap-4 transition-colors duration-200">
           {/* Left: Mobile Toggle & View Title */}
           <div className="flex items-center gap-3 min-w-0">
             <button
@@ -934,14 +936,14 @@ export default function YamahaConverterApp() {
           <button
             type="button"
             onClick={() => setCommandPaletteOpen(true)}
-            className="hidden md:flex items-center justify-between w-56 lg:w-72 h-9 px-3 rounded-xl bg-slate-100/70 dark:bg-slate-900/70 hover:bg-slate-100 dark:hover:bg-slate-800/80 border border-slate-200/70 dark:border-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition duration-150 active:scale-[0.98] shrink-0"
+            className="hidden md:flex items-center justify-between w-56 lg:w-72 h-9 px-3.5 rounded-full bg-slate-100/70 dark:bg-card/70 hover:bg-slate-100 dark:hover:bg-card/90 border border-slate-200/70 dark:border-white/10 hover:border-brand-500/40 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition duration-150 active:scale-[0.98] shrink-0"
             title="Open Command Palette (Cmd+K)"
           >
             <div className="flex items-center gap-2 truncate">
               <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <span className="text-xs truncate">{t("hdr_commands")}</span>
             </div>
-            <kbd className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-slate-500 shadow-2xs shrink-0">
+            <kbd className="px-1.5 py-0.5 rounded-full text-[10px] font-mono bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-slate-500 shadow-2xs shrink-0">
               ⌘K
             </kbd>
           </button>
@@ -952,7 +954,7 @@ export default function YamahaConverterApp() {
             <button
               type="button"
               onClick={() => setCommandPaletteOpen(true)}
-              className="md:hidden h-9 w-9 rounded-xl border border-slate-200/80 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition active:scale-[0.97]"
+              className="md:hidden h-9 w-9 rounded-full border border-slate-200/80 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-card flex items-center justify-center transition active:scale-[0.97]"
               title="Search (⌘K)"
             >
               <Search className="w-4 h-4" />
@@ -962,7 +964,7 @@ export default function YamahaConverterApp() {
             <button
               type="button"
               onClick={() => setActiveTab("ai")}
-              className={`h-9 px-2.5 sm:px-3 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition active:scale-[0.97] ${
+              className={`h-9 px-3 sm:px-3.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition active:scale-[0.97] ${
                 activeTab === "ai"
                   ? "bg-brand-600 text-white shadow-xs"
                   : "bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border border-brand-200/70 dark:border-brand-800/80"
@@ -977,7 +979,7 @@ export default function YamahaConverterApp() {
             <button
               type="button"
               onClick={() => setTelegramSimulatorOpen(true)}
-              className={`h-9 px-2.5 sm:px-3 rounded-xl text-xs font-medium border flex items-center gap-1.5 transition active:scale-[0.97] ${
+              className={`h-9 px-3 sm:px-3.5 rounded-full text-xs font-medium border flex items-center gap-1.5 transition active:scale-[0.97] ${
                 isInTelegram
                   ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300 border-sky-300"
                   : "bg-sky-50/80 hover:bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:hover:bg-sky-900/50 dark:text-sky-300 border-sky-200/80 dark:border-sky-800/60"
@@ -995,7 +997,7 @@ export default function YamahaConverterApp() {
             <button
               type="button"
               onClick={cycleThemeMode}
-              className="h-9 w-9 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center transition active:scale-[0.97]"
+              className="h-9 w-9 rounded-full border border-slate-200/80 dark:border-white/10 bg-white/50 dark:bg-card/50 hover:bg-slate-100 dark:hover:bg-card text-slate-600 dark:text-slate-300 flex items-center justify-center transition active:scale-[0.97]"
               title={
                 themeMode === "system"
                   ? (language === "kh" ? "ទម្រង់តាមប្រព័ន្ធ (ចុចដើម្បីប្តូរ)" : "Following System (Click to toggle)")
@@ -1015,11 +1017,11 @@ export default function YamahaConverterApp() {
 
             {/* User Account Avatar & Discrete Sign Out */}
             {currentUser && (
-              <div className="flex items-center gap-1 pl-1 border-l border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-1 pl-1 border-l border-slate-200 dark:border-white/10">
                 <button
                   type="button"
                   onClick={() => setAuthModalOpen(true)}
-                  className="h-9 px-2 sm:px-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2 transition active:scale-[0.97]"
+                  className="h-9 px-2 sm:px-3 rounded-full border border-slate-200/80 dark:border-white/10 bg-white/50 dark:bg-card/50 hover:bg-slate-100 dark:hover:bg-card flex items-center gap-2 transition active:scale-[0.97]"
                   title={`${currentUser.name} (${currentUser.role})`}
                 >
                   <div className="w-5 h-5 rounded-full bg-brand-600 text-white flex items-center justify-center text-[10px] font-bold overflow-hidden shrink-0">
@@ -1074,7 +1076,7 @@ export default function YamahaConverterApp() {
                 <div className="flex flex-wrap items-center gap-3 pt-2">
                   <Button
                     onClick={() => setActiveTab("converter")}
-                    className="gap-2 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-xl shadow-lg shadow-brand-600/30"
+                    className="gap-2 bg-brand-600 hover:bg-brand-500 text-white font-medium rounded-full shadow-lg shadow-brand-600/30"
                   >
                     <UploadCloud className="w-4 h-4" />
                     <span>{t("dash_btn_upload")}</span>
@@ -1085,7 +1087,7 @@ export default function YamahaConverterApp() {
                       setActiveTab("converter");
                       document.getElementById("file-upload-input")?.click();
                     }}
-                    className="gap-2 bg-white/10 hover:bg-white/15 border-white/20 text-white"
+                    className="gap-2 bg-white/10 hover:bg-white/15 border-white/20 text-white rounded-full"
                   >
                     <FolderSearch className="w-4 h-4" />
                     <span>{t("dash_btn_browse")}</span>
@@ -1273,12 +1275,12 @@ export default function YamahaConverterApp() {
               </div>
             </div>
 
-            {/* Drag & Drop Upload Zone */}
+            {/* Drag & Drop Upload Zone (Somleng Clean Glassmorphic Style) */}
             <div
               onDragOver={(e) => e.preventDefault()}
               onDrop={handleDrop}
               onClick={() => document.getElementById("file-upload-input")?.click()}
-              className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-brand-500 dark:hover:border-brand-400 rounded-3xl p-8 md:p-12 text-center bg-white/50 dark:bg-slate-900/40 hover:bg-brand-50/20 dark:hover:bg-brand-950/20 transition-all cursor-pointer group"
+              className="border-2 border-dashed border-border/80 hover:border-brand-500/50 rounded-3xl p-8 md:p-12 text-center bg-card/60 hover:bg-card/90 backdrop-blur-md transition-all cursor-pointer group shadow-xs hover:shadow-lg"
             >
               <input
                 id="file-upload-input"
@@ -1289,7 +1291,7 @@ export default function YamahaConverterApp() {
                 className="hidden"
               />
 
-              <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-brand-50 dark:bg-brand-950/80 text-brand-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <UploadCloud className="w-7 h-7" />
               </div>
               <h4 className="font-bold text-base text-slate-900 dark:text-white mb-1">
@@ -1298,7 +1300,7 @@ export default function YamahaConverterApp() {
               <p className="text-xs text-slate-500 max-w-sm mx-auto mb-4">
                 {t("queue_dropzone_desc")}
               </p>
-              <Button size="sm" variant="secondary" className="gap-2 pointer-events-none">
+              <Button size="sm" variant="secondary" className="gap-2 pointer-events-none rounded-full">
                 <FolderSearch className="w-4 h-4" />
                 <span>{t("queue_dropzone_btn")}</span>
               </Button>
@@ -1317,7 +1319,7 @@ export default function YamahaConverterApp() {
               </div>
 
               {queue.length === 0 ? (
-                <div className="p-12 text-center rounded-3xl border border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/40 space-y-4">
+                <div className="p-12 text-center rounded-3xl border border-border/80 bg-card/40 backdrop-blur-sm space-y-4">
                   <FileMusic className="w-12 h-12 mx-auto text-slate-400" />
                   <div>
                     <h4 className="text-base font-bold text-slate-900 dark:text-white">{t("queue_empty_title")}</h4>
@@ -1329,7 +1331,7 @@ export default function YamahaConverterApp() {
                     <Button
                       size="sm"
                       onClick={() => document.getElementById("file-upload-input")?.click()}
-                      className="gap-2 shadow-sm"
+                      className="gap-2 shadow-sm rounded-full"
                     >
                       <UploadCloud className="w-4 h-4" />
                       <span>{t("queue_dropzone_btn")}</span>
@@ -1384,8 +1386,8 @@ export default function YamahaConverterApp() {
 
                           {/* Controls */}
                           <div className="flex items-center gap-2 flex-wrap">
-                            {/* Format selector */}
-                            <div className="flex rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5 text-xs font-semibold">
+                            {/* Format selector (Somleng Pill Design) */}
+                            <div className="flex rounded-full bg-slate-100 dark:bg-white/10 p-1 text-xs font-semibold ring-1 ring-border/50">
                               <button
                                 onClick={() =>
                                   setQueue((prev) =>
@@ -1404,10 +1406,10 @@ export default function YamahaConverterApp() {
                                   )
                                 }
                                 disabled={item.status === "CONVERTING"}
-                                className={`px-2.5 py-1 rounded-md transition ${
+                                className={`px-3 py-1 rounded-full transition text-xs font-medium ${
                                   item.targetFormat === "PPF"
-                                    ? "bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-sm"
-                                    : "text-slate-500"
+                                    ? "bg-white dark:bg-[#1c1c1f] text-brand-600 dark:text-brand-300 shadow-xs"
+                                    : "text-slate-500 dark:text-slate-400 hover:text-foreground"
                                 }`}
                               >
                                 PPF (Zip)
@@ -1430,10 +1432,10 @@ export default function YamahaConverterApp() {
                                   )
                                 }
                                 disabled={item.status === "CONVERTING"}
-                                className={`px-2.5 py-1 rounded-md transition ${
+                                className={`px-3 py-1 rounded-full transition text-xs font-medium ${
                                   item.targetFormat === "YEP"
-                                    ? "bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-sm"
-                                    : "text-slate-500"
+                                    ? "bg-white dark:bg-[#1c1c1f] text-brand-600 dark:text-brand-300 shadow-xs"
+                                    : "text-slate-500 dark:text-slate-400 hover:text-foreground"
                                 }`}
                               >
                                 YEP (Binary)
@@ -1590,7 +1592,7 @@ export default function YamahaConverterApp() {
                 <select
                   value={activeInspectorItem?.id || ""}
                   onChange={(e) => setInspectorFileId(e.target.value)}
-                  className="text-xs px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 font-medium"
+                  className="text-xs px-4 py-1.5 rounded-full bg-card/60 border border-border/80 text-foreground font-medium focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition"
                 >
                   {queue.map((q) => (
                     <option key={q.id} value={q.id}>
@@ -1786,23 +1788,23 @@ export default function YamahaConverterApp() {
                 </div>
 
                 {currentUser.role === "ADMIN" && (
-                  <div className="flex rounded-lg bg-slate-200 dark:bg-slate-800 p-0.5 text-xs font-semibold">
+                  <div className="flex rounded-full bg-slate-100 dark:bg-white/10 p-1 text-xs font-medium ring-1 ring-border/50">
                     <button
                       onClick={() => setHistoryScope("personal")}
-                      className={`px-2.5 py-1 rounded-md transition ${
+                      className={`px-3 py-1 rounded-full transition text-xs font-medium ${
                         historyScope === "personal"
-                          ? "bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-sm"
-                          : "text-slate-500"
+                          ? "bg-white dark:bg-[#1c1c1f] text-brand-600 dark:text-brand-300 shadow-xs"
+                          : "text-slate-500 dark:text-slate-400 hover:text-foreground"
                       }`}
                     >
                       {t("hist_scope_my")}
                     </button>
                     <button
                       onClick={() => setHistoryScope("all")}
-                      className={`px-2.5 py-1 rounded-md transition ${
+                      className={`px-3 py-1 rounded-full transition text-xs font-medium ${
                         historyScope === "all"
-                          ? "bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-300 shadow-sm"
-                          : "text-slate-500"
+                          ? "bg-white dark:bg-[#1c1c1f] text-purple-600 dark:text-purple-300 shadow-xs"
+                          : "text-slate-500 dark:text-slate-400 hover:text-foreground"
                       }`}
                     >
                       {t("hist_scope_all")}
@@ -1812,19 +1814,19 @@ export default function YamahaConverterApp() {
               </div>
             )}
 
-            {/* Filter Controls */}
+            {/* Filter Controls (Somleng Pill Design) */}
             <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="text"
                 placeholder={t("hist_search_placeholder")}
                 value={historySearch}
                 onChange={(e) => setHistorySearch(e.target.value)}
-                className="flex-1 px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="flex-1 px-4 py-2 rounded-full bg-card/60 border border-border/80 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition"
               />
               <select
                 value={historyStatusFilter}
                 onChange={(e) => setHistoryStatusFilter(e.target.value)}
-                className="px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs"
+                className="px-4 py-2 rounded-full bg-card/60 border border-border/80 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition"
               >
                 <option value="ALL">{t("hist_filter_all")}</option>
                 <option value="SUCCESS">{t("hist_filter_success")}</option>

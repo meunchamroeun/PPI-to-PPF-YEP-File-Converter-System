@@ -751,7 +751,7 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack }
         )}
 
         {/* Input Bar Footer */}
-        <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex gap-2">
+        <div className="p-3.5 border-t border-border/80 bg-card/60 backdrop-blur-sm flex gap-2">
           <input
             type="text"
             placeholder={t("ai_input_placeholder")}
@@ -764,14 +764,14 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack }
               }
             }}
             disabled={isStreaming}
-            className="flex-1 px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-base sm:text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50"
+            className="flex-1 px-4 py-2.5 rounded-full bg-background/80 border border-border/80 text-base sm:text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition disabled:opacity-50"
           />
 
           {isStreaming ? (
             <Button
               onClick={() => stop()}
               variant="destructive"
-              className="gap-1.5 px-4 rounded-2xl text-xs font-semibold h-10 shadow-md"
+              className="gap-1.5 px-4 rounded-full text-xs font-medium h-10 shadow-xs"
             >
               <Square className="w-3.5 h-3.5 fill-current" />
               <span>{t("ai_btn_stop")}</span>
@@ -780,7 +780,7 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack }
             <Button
               onClick={() => handleSendPrompt()}
               disabled={!inputPrompt.trim()}
-              className="gap-1.5 px-5 rounded-2xl text-xs font-semibold h-10 shadow-md disabled:opacity-50"
+              className="gap-1.5 px-5 rounded-full text-xs font-medium h-10 shadow-xs disabled:opacity-50"
             >
               <Send className="w-3.5 h-3.5" />
               <span>{t("ai_btn_send")}</span>

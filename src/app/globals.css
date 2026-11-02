@@ -9,27 +9,47 @@
   --color-brand-300: #c4b5fd;
   --color-brand-400: #a78bfa;
   --color-brand-500: #8b5cf6;
-  --color-brand-600: #7c3aed;
-  --color-brand-700: #6d28d9;
-  --color-brand-800: #5b21b6;
-  --color-brand-900: #4c1d95;
-  --color-brand-950: #2e1065;
+  --color-brand-600: #6366f1;
+  --color-brand-700: #4f46e5;
+  --color-brand-800: #4338ca;
+  --color-brand-900: #3730a3;
+  --color-brand-950: #1e1b4b;
   --font-roboto: var(--font-roboto), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-kantumruy: var(--font-kantumruy), "Kantumruy Pro", system-ui, sans-serif;
+  --radius-sm: calc(var(--radius) - 12px);
+  --radius-md: calc(var(--radius) - 8px);
+  --radius-lg: calc(var(--radius) - 4px);
+  --radius-xl: var(--radius);
 }
 
+/* Somleng Studio Warm Stone Design Tokens */
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  /* Emil Kowalski Custom Easing Curves */
+  --radius: 1.625rem;
+  --background: #ffffff;
+  --foreground: #1c1917;
+  --card: #fbfbfa;
+  --card-foreground: #1c1917;
+  --muted: #f5f5f4;
+  --muted-foreground: #78716c;
+  --border: #e7e5e4;
+  --brand: #4f46e5;
+  --sidebar: #fafaf9;
+  /* Custom Easing Curves */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .dark {
-  --background: #0b0f19;
-  --foreground: #f8fafc;
+  --background: #141416;
+  --foreground: #fafaf9;
+  --card: #1c1c1f;
+  --card-foreground: #fafaf9;
+  --muted: #232326;
+  --muted-foreground: #a1a1aa;
+  --border: rgba(255, 255, 255, 0.08);
+  --brand: #6366f1;
+  --sidebar: #18181b;
 }
 
 html {
@@ -49,6 +69,13 @@ body {
   font-family: var(--font-kantumruy), var(--font-roboto), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
+/* Optimize Khmer script diacritics and subscripts clearance (matching Somleng) */
+:lang(km),
+[data-lang="kh"],
+[data-lang="km"] {
+  line-height: 1.55;
+}
+
 /* Khmer language font priority (Kantumruy Pro) */
 html[lang="kh"] body,
 html[lang="km"] body,
@@ -62,6 +89,53 @@ html[lang="en"] body,
 [data-lang="en"],
 .font-en {
   font-family: var(--font-roboto), var(--font-kantumruy), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Somleng Specular Card Top Highlight */
+.specular-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.specular-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.12), 0 0 20px -4px rgba(99, 102, 241, 0.08);
+}
+
+.specular-card::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.4), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.specular-card:hover::before {
+  opacity: 1;
+}
+
+/* Somleng Glass Navbar */
+.somleng-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background-color: rgba(var(--background), 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Interactive Clickable Hand */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+a[href] {
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
 /* Emil Kowalski Mobile Native Baseline: Prevent double-tap zoom & text select on buttons */
