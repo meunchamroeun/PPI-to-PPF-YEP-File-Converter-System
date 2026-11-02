@@ -121,6 +121,21 @@ html[lang="en"] body,
   opacity: 1;
 }
 
+/* Somleng Glass Card Baseline - Opaque/Themed Surface Protection */
+.glass-card {
+  background-color: var(--card);
+  border-color: var(--border);
+  color: var(--card-foreground);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+}
+
+.dark .glass-card {
+  background-color: var(--card);
+  border-color: var(--border);
+  color: var(--card-foreground);
+  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.35);
+}
+
 /* Somleng Glass Navbar */
 .somleng-header {
   position: sticky;

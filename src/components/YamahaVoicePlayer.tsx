@@ -327,9 +327,9 @@ export const YamahaVoicePlayer: React.FC<YamahaVoicePlayerProps> = ({
   };
 
   return (
-    <div className="glass-card rounded-2xl border border-slate-200 dark:border-slate-800 p-5 space-y-5 shadow-sm">
+    <div className="bg-card text-card-foreground rounded-2xl border border-border p-5 space-y-5 shadow-sm">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border">
         <div>
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl bg-brand-500/10 text-brand-600 flex items-center justify-center">

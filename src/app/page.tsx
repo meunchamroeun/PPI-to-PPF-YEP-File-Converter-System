@@ -2061,7 +2061,7 @@ export default function YamahaConverterApp() {
       {/* ===================================================================== */}
       <nav
         aria-label="Mobile Navigation"
-        className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 shadow-lg pb-[calc(env(safe-area-inset-bottom,0px)+0.35rem)] pt-1 px-1"
+        className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-card/95 backdrop-blur-md border-t border-border shadow-lg pb-[calc(env(safe-area-inset-bottom,0px)+0.35rem)] pt-1 px-1 text-foreground"
       >
         <div className="grid grid-cols-5 items-center">
           <button

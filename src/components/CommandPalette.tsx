@@ -263,34 +263,34 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-start justify-center pt-20 p-4">
-      <div className="glass-card w-full max-w-xl rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden animate-scale-in">
+    <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-md flex items-start justify-center pt-20 p-4">
+      <div className="relative w-full max-w-xl rounded-2xl bg-card text-card-foreground border border-border shadow-2xl overflow-hidden animate-scale-in ring-1 ring-border/50 specular-card">
         {/* Search Header */}
-        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50">
-          <Search className="w-4 h-4 text-slate-400 shrink-0" />
+        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border bg-muted/30">
+          <Search className="w-4 h-4 text-muted-foreground shrink-0" />
           <input
             type="text"
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t("cmd_search_placeholder")}
-            className="w-full text-base sm:text-xs bg-transparent text-slate-900 dark:text-white placeholder:text-slate-400 outline-none"
+            className="w-full text-base sm:text-xs bg-transparent text-foreground placeholder:text-muted-foreground outline-none"
           />
-          <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500">
+          <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-muted text-muted-foreground border border-border">
             ESC
           </kbd>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+            className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Results List */}
-        <div className="max-h-[320px] overflow-y-auto p-2 divide-y divide-slate-100 dark:divide-slate-800/40">
+        <div className="max-h-[320px] overflow-y-auto p-2 divide-y divide-border/40">
           {filtered.length === 0 ? (
-            <div className="py-8 text-center text-xs text-slate-400 font-medium">
+            <div className="py-8 text-center text-xs text-muted-foreground font-medium">
               No commands found matching "{query}"
             </div>
           ) : (
@@ -303,8 +303,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer text-xs transition-colors ${
                     isSelected
-                      ? "bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-brand-300 font-semibold"
-                      : "text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/40"
+                      ? "bg-brand-500/10 text-brand-600 dark:text-brand-300 font-semibold"
+                      : "text-foreground hover:bg-muted"
                   }`}
                 >
                   <div className="flex items-center gap-3">

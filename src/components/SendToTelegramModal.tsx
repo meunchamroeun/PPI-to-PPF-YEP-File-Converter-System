@@ -132,22 +132,24 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="glass-card max-w-lg w-full rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden animate-scale-in">
+    <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-4">
+      <div className="relative w-full max-w-lg rounded-3xl bg-card border border-border shadow-2xl overflow-hidden animate-scale-in ring-1 ring-border/50 specular-card text-foreground">
         {/* Modal Top Bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center">
-              <Send className="w-4 h-4" />
+        <div className="flex items-center justify-between px-6 py-4.5 border-b border-border bg-muted/30">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-[#229ED9]/10 text-[#229ED9] flex items-center justify-center shrink-0 shadow-xs ring-1 ring-[#229ED9]/20">
+              <Send className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                <span>{language === "kh" ? "ផ្ញើឯកសារទៅកាន់ Telegram" : "Send File to Telegram"}</span>
-                <Badge variant="secondary" className="text-[10px] font-mono text-sky-600 bg-sky-50 dark:bg-sky-950/50">
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-sm text-foreground">
+                  {language === "kh" ? "ផ្ញើឯកសារទៅកាន់ Telegram" : "Send File to Telegram"}
+                </h3>
+                <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full text-[#229ED9] bg-[#229ED9]/10 border border-[#229ED9]/20">
                   BOT API
-                </Badge>
-              </h3>
-              <p className="text-[11px] text-slate-500">
+                </span>
+              </div>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
                 {language === "kh"
                   ? "ផ្ញើឯកសារដែលបាន Convert ទៅកាន់ Chat ឬ Bot របស់អ្នកផ្ទាល់"
                   : "Deliver converted file directly into your Telegram chat"}
@@ -155,8 +157,10 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition"
+            title={language === "kh" ? "បិទ" : "Close"}
           >
             <X className="w-5 h-5" />
           </button>
@@ -165,29 +169,29 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
         {/* Modal Body */}
         <div className="p-6 space-y-4">
           {/* File Card Info */}
-          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <div className="p-3.5 rounded-2xl bg-muted/60 border border-border flex items-center justify-between">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                 <FileCheck className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <div className="font-bold text-xs text-slate-900 dark:text-white truncate">
+                <div className="font-bold text-xs text-foreground truncate">
                   {filename}
                 </div>
-                <div className="text-[10px] text-slate-500 font-mono">
+                <div className="text-[10px] text-muted-foreground font-mono">
                   {fileBlob ? `${(fileBlob.size / 1024).toFixed(1)} KB` : "Ready"}
                 </div>
               </div>
             </div>
-            <Badge variant="outline" className="font-mono text-[10px] uppercase border-emerald-500/30 text-emerald-600">
+            <Badge variant="outline" className="font-mono text-[10px] uppercase border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5">
               {filename.split(".").pop() || "PPF"}
             </Badge>
           </div>
 
           {/* Form: Chat ID / Username */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <MessageSquare className="w-3.5 h-3.5 text-sky-500" />
+            <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+              <MessageSquare className="w-3.5 h-3.5 text-[#229ED9]" />
               <span>{language === "kh" ? "Telegram Chat ID ឬ Username:" : "Telegram Chat ID or Username:"}</span>
             </label>
             <input
@@ -195,9 +199,9 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
               placeholder={language === "kh" ? "ឧ. @username ឬ 123456789" : "e.g. @your_username or 123456789"}
               value={chatId}
               onChange={(e) => setChatId(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-background border border-border text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#229ED9]/20 focus:border-[#229ED9] transition"
             />
-            <p className="text-[10px] text-slate-500">
+            <p className="text-[10px] text-muted-foreground leading-relaxed">
               {language === "kh"
                 ? "ចំណាំ៖ សូមចុច /start ជាមួយ Bot ជាមុនសិន ដើម្បីឱ្យ Bot មានសិទ្ធិផ្ញើសារជូនលោកអ្នក។"
                 : "Note: You must click /start on the bot first so it has permission to message you."}
@@ -205,11 +209,11 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
           </div>
 
           {/* Custom Bot Token Toggle */}
-          <div className="pt-1">
+          <div className="pt-0.5">
             <button
               type="button"
               onClick={() => setShowTokenInput(!showTokenInput)}
-              className="text-[11px] font-semibold text-sky-600 hover:text-sky-500 flex items-center gap-1"
+              className="text-[11px] font-semibold text-[#229ED9] hover:text-[#1E8BC0] flex items-center gap-1.5 transition"
             >
               <Key className="w-3 h-3" />
               <span>
@@ -224,9 +228,9 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
             </button>
 
             {showTokenInput && (
-              <div className="mt-2 space-y-1.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                  <Bot className="w-3.5 h-3.5 text-sky-500" />
+              <div className="mt-2 space-y-1.5 p-3 rounded-xl bg-muted/50 border border-border">
+                <label className="text-[11px] font-semibold text-foreground flex items-center gap-1.5">
+                  <Bot className="w-3.5 h-3.5 text-[#229ED9]" />
                   <span>Bot Token:</span>
                 </label>
                 <input
@@ -234,9 +238,9 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
                   placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
                   value={botToken}
                   onChange={(e) => setBotToken(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-full px-3 py-2 rounded-lg bg-background border border-border text-xs font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#229ED9]/20 focus:border-[#229ED9]"
                 />
-                <p className="text-[10px] text-slate-400">
+                <p className="text-[10px] text-muted-foreground">
                   {language === "kh"
                     ? "ទុកចោលដើម្បីប្រើប្រាស់ Bot លំនាំដើមរបស់ប្រព័ន្ធ (@PPI_PPF_ConvertBot)"
                     : "Leave blank to use default system bot (@PPI_PPF_ConvertBot)"}
@@ -250,25 +254,25 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
             <div
               className={`p-3 rounded-xl text-xs flex items-center gap-2 ${
                 statusMessage.type === "success"
-                  ? "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300"
-                  : "bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300"
+                  ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+                  : "bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400"
               }`}
             >
               {statusMessage.type === "success" ? (
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
               ) : (
-                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                <AlertCircle className="w-4 h-4 text-rose-500 shrink-0" />
               )}
               <span className="flex-1 text-[11px] leading-relaxed">{statusMessage.text}</span>
             </div>
           )}
 
           {/* Action Buttons */}
-          <div className="space-y-2 pt-2">
+          <div className="space-y-2.5 pt-2">
             <Button
               onClick={handleSend}
               disabled={isSending}
-              className="w-full h-10 rounded-xl bg-[#229ED9] hover:bg-[#1E8BC0] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition active:scale-[0.98]"
+              className="w-full h-11 rounded-2xl bg-[#229ED9] hover:bg-[#1E8BC0] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-[#229ED9]/25 transition active:scale-[0.98] cursor-pointer"
             >
               {isSending ? (
                 <>
@@ -283,7 +287,7 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
               )}
             </Button>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 pt-1">
               <a
                 href="https://t.me/PPI_PPF_ConvertBot"
                 target="_blank"
@@ -293,19 +297,19 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full h-9 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5"
+                  className="w-full h-9.5 rounded-xl border-border bg-muted/40 hover:bg-muted text-xs font-semibold flex items-center justify-center gap-1.5 transition text-foreground"
                 >
-                  <Bot className="w-3.5 h-3.5 text-sky-500" />
+                  <Bot className="w-3.5 h-3.5 text-[#229ED9]" />
                   <span>@PPI_PPF_ConvertBot</span>
-                  <ExternalLink className="w-3 h-3 text-slate-400" />
+                  <ExternalLink className="w-3 h-3 text-muted-foreground" />
                 </Button>
               </a>
 
               <Button
                 type="button"
-                variant="ghost"
+                variant="secondary"
                 onClick={onClose}
-                className="h-9 px-4 rounded-xl text-xs"
+                className="h-9.5 px-5 rounded-xl bg-muted/70 hover:bg-muted text-xs font-semibold text-foreground border border-border/60 transition"
               >
                 {language === "kh" ? "បិទ" : "Close"}
               </Button>

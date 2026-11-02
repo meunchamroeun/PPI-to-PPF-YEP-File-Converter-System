@@ -39,52 +39,53 @@ export const TelegramSimulatorModal: React.FC<TelegramSimulatorModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="glass-card max-w-2xl w-full rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden animate-scale-in">
+    <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-4">
+      <div className="relative max-w-2xl w-full rounded-3xl bg-card text-card-foreground border border-border shadow-2xl overflow-hidden animate-scale-in ring-1 ring-border/50 specular-card">
         {/* Modal Top Bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center">
-              <Send className="w-4 h-4" />
+        <div className="flex items-center justify-between px-6 py-4.5 border-b border-border bg-muted/30">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-sky-500/10 text-sky-500 flex items-center justify-center shrink-0 shadow-xs ring-1 ring-sky-500/20">
+              <Send className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+              <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
                 <span>Telegram Bot & Mini App</span>
-                <Badge variant="secondary" className="text-[10px] font-mono text-sky-600 bg-sky-50">
+                <Badge variant="secondary" className="text-[10px] font-mono text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/50 border border-sky-500/20">
                   ONLINE
                 </Badge>
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Official Telegram Bot connection for Yamaha ExpVoice Studio
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition"
+            title="Close"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50/50 dark:bg-slate-900/30">
+        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 bg-muted/20">
           {/* Left Column: Official Bot Profile Card */}
           <div className="space-y-4">
-            <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="p-5 rounded-2xl bg-card border border-border space-y-4 shadow-xs">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
                   <Bot className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm text-slate-900 dark:text-white">
+                  <h4 className="font-bold text-sm text-foreground">
                     PPI To PPF Converter
                   </h4>
                   <a
                     href="https://t.me/PPI_PPF_ConvertBot"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs font-semibold text-sky-600 hover:text-sky-500 flex items-center gap-1"
+                    className="text-xs font-semibold text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-1"
                   >
                     <span>@PPI_PPF_ConvertBot</span>
                     <ExternalLink className="w-3 h-3" />
@@ -94,19 +95,19 @@ export const TelegramSimulatorModal: React.FC<TelegramSimulatorModalProps> = ({
 
               {/* Bot Info List */}
               <div className="space-y-2 text-xs">
-                <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60">
-                  <span className="text-slate-500">Webhook Status</span>
+                <div className="flex items-center justify-between p-2 rounded-xl bg-muted/60">
+                  <span className="text-muted-foreground">Webhook Status</span>
                   <Badge variant="default" className="text-[9px] bg-emerald-600 text-white">
                     CONNECTED
                   </Badge>
                 </div>
-                <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60">
-                  <span className="text-slate-500">Menu Button</span>
-                  <span className="font-semibold text-slate-800 dark:text-slate-200">Launch Studio</span>
+                <div className="flex items-center justify-between p-2 rounded-xl bg-muted/60">
+                  <span className="text-muted-foreground">Menu Button</span>
+                  <span className="font-semibold text-foreground">Launch Studio</span>
                 </div>
-                <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60">
-                  <span className="text-slate-500">Database</span>
-                  <span className="font-semibold text-slate-800 dark:text-slate-200">Neon PostgreSQL</span>
+                <div className="flex items-center justify-between p-2 rounded-xl bg-muted/60">
+                  <span className="text-muted-foreground">Database</span>
+                  <span className="font-semibold text-foreground">Neon PostgreSQL</span>
                 </div>
               </div>
 
@@ -123,36 +124,36 @@ export const TelegramSimulatorModal: React.FC<TelegramSimulatorModalProps> = ({
             </div>
 
             {/* Bot Commands Quick Reference */}
-            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2">
-              <span className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+            <div className="p-4 rounded-2xl bg-card border border-border space-y-2 shadow-xs">
+              <span className="font-bold text-foreground flex items-center gap-1.5 text-xs">
                 <Terminal className="w-3.5 h-3.5 text-brand-600" />
                 <span>Supported Bot Commands</span>
               </span>
-              <div className="space-y-1 font-mono text-[11px] text-slate-600 dark:text-slate-400">
-                <p><span className="text-sky-600 font-semibold">/start</span> - Launch Mini App & Welcome</p>
-                <p><span className="text-sky-600 font-semibold">/app</span> - Open Web Studio inside Telegram</p>
-                <p><span className="text-sky-600 font-semibold">/convert</span> - File conversion instructions</p>
-                <p><span className="text-sky-600 font-semibold">/status</span> - Conversion engine status</p>
+              <div className="space-y-1 font-mono text-[11px] text-muted-foreground">
+                <p><span className="text-sky-600 dark:text-sky-400 font-semibold">/start</span> - Launch Mini App & Welcome</p>
+                <p><span className="text-sky-600 dark:text-sky-400 font-semibold">/app</span> - Open Web Studio inside Telegram</p>
+                <p><span className="text-sky-600 dark:text-sky-400 font-semibold">/convert</span> - File conversion instructions</p>
+                <p><span className="text-sky-600 dark:text-sky-400 font-semibold">/status</span> - Conversion engine status</p>
               </div>
             </div>
           </div>
 
           {/* Right Column: WebApp Features & Haptics */}
           <div className="space-y-4 text-xs">
-            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2">
-              <span className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+            <div className="p-4 rounded-2xl bg-card border border-border space-y-2 shadow-xs">
+              <span className="font-bold text-foreground flex items-center gap-1.5">
                 <Smartphone className="w-4 h-4 text-brand-600" />
                 <span>Telegram Mini App Features</span>
               </span>
-              <p className="text-slate-500 leading-relaxed text-[11px]">
+              <p className="text-muted-foreground leading-relaxed text-[11px]">
                 When musicians open ExpVoice inside Telegram, the system automatically binds to their Telegram user ID, syncs theme colors with Telegram's palette, and enables native device haptics.
               </p>
             </div>
 
             {/* Haptic Feedback Tester */}
-            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2">
+            <div className="p-4 rounded-2xl bg-card border border-border space-y-2 shadow-xs">
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                <span className="font-semibold text-foreground">
                   Telegram Haptic Feedback
                 </span>
                 <span className="font-mono text-[10px] text-brand-600 font-bold">

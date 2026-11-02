@@ -100,17 +100,17 @@ export const PWAInstallBanner: React.FC = () => {
 
       {/* PWA Install Banner (When installable and not running as standalone app) */}
       {showInstallBanner && !isStandalone && (
-        <div className="fixed bottom-16 lg:bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md z-50 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-brand-300 dark:border-brand-800 shadow-2xl shadow-brand-500/10 transition-all">
+        <div className="fixed bottom-16 lg:bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md z-50 p-4 rounded-2xl bg-card text-card-foreground border border-border shadow-2xl shadow-brand-500/10 ring-1 ring-border/50 transition-all">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-600 to-indigo-600 flex items-center justify-center text-white shrink-0 shadow-md">
               <Smartphone className="w-5 h-5" />
             </div>
 
             <div className="flex-1 min-w-0">
-              <h5 className="font-bold text-xs text-slate-900 dark:text-white leading-tight">
+              <h5 className="font-bold text-xs text-foreground leading-tight">
                 {t("pwa_install_title")}
               </h5>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+              <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
                 {t("pwa_install_desc")}
               </p>
 
@@ -127,7 +127,7 @@ export const PWAInstallBanner: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   onClick={handleDismiss}
-                  className="text-xs h-7 px-2.5 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 rounded-lg"
+                  className="text-xs h-7 px-2.5 text-muted-foreground hover:text-foreground rounded-lg"
                 >
                   <span>{t("pwa_btn_dismiss")}</span>
                 </Button>
@@ -136,7 +136,7 @@ export const PWAInstallBanner: React.FC = () => {
 
             <button
               onClick={handleDismiss}
-              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg"
+              className="text-muted-foreground hover:text-foreground p-1 rounded-lg"
               aria-label="Close"
             >
               <X className="w-4 h-4" />
