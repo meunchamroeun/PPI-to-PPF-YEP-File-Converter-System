@@ -602,23 +602,23 @@ export default function YamahaConverterApp() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 transition-colors duration-200">
+    <div className="h-screen w-full flex flex-col lg:flex-row bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 transition-colors duration-200 overflow-x-hidden lg:overflow-hidden">
       {/* PWA Install Prompt & Offline Awareness Banner */}
       <PWAInstallBanner />
       {/* ===================================================================== */}
-      {/* SIDEBAR NAVIGATION                                                    */}
+      {/* SIDEBAR NAVIGATION (FIXED & NEVER SCROLLS)                           */}
       {/* ===================================================================== */}
-      <aside className="w-full lg:w-64 bg-white dark:bg-[#111827] border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between shrink-0 z-30">
-        <div>
+      <aside className="w-full lg:w-64 lg:h-screen lg:sticky lg:top-0 bg-white dark:bg-[#111827] border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between shrink-0 z-30 overflow-hidden no-scrollbar select-none">
+        <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
           {/* Brand Header */}
-          <div className="h-16 flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-800">
+          <div className="h-16 flex items-center justify-between px-5 border-b border-slate-200 dark:border-slate-800 shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-600 via-indigo-600 to-purple-800 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
-                <Music2 className="w-5 h-5" />
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-600 via-indigo-600 to-purple-800 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
+                <Music2 className="w-4 h-4" />
               </div>
               <div>
-                <h1 className="font-bold text-base leading-none text-slate-900 dark:text-white">ExpVoice Studio</h1>
-                <span className="text-[11px] font-medium text-brand-600 dark:text-brand-400">PPI Converter v2.5</span>
+                <h1 className="font-bold text-sm sm:text-base leading-none text-slate-900 dark:text-white">ExpVoice Studio</h1>
+                <span className="text-[10px] sm:text-[11px] font-medium text-brand-600 dark:text-brand-400">PPI Converter v2.5</span>
               </div>
             </div>
 
@@ -630,8 +630,8 @@ export default function YamahaConverterApp() {
             </button>
           </div>
 
-          {/* Navigation Items */}
-          <div className={`p-4 space-y-1 ${mobileMenuOpen ? "block" : "hidden lg:block"}`}>
+          {/* Navigation Items (Perfect fit, zero scrollbar) */}
+          <div className={`p-3 space-y-0.5 flex-1 min-h-0 overflow-hidden no-scrollbar ${mobileMenuOpen ? "block" : "hidden lg:block"}`}>
             <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
               Workspace
             </span>
@@ -641,7 +641,7 @@ export default function YamahaConverterApp() {
                 setActiveTab("dashboard");
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
                 activeTab === "dashboard"
                   ? "bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-300 font-semibold"
                   : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
@@ -656,7 +656,7 @@ export default function YamahaConverterApp() {
                 setActiveTab("converter");
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
                 activeTab === "converter"
                   ? "bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-300 font-semibold"
                   : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
@@ -676,7 +676,7 @@ export default function YamahaConverterApp() {
                 setActiveTab("inspector");
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
                 activeTab === "inspector"
                   ? "bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-300 font-semibold"
                   : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
@@ -691,7 +691,7 @@ export default function YamahaConverterApp() {
                 setActiveTab("history");
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
                 activeTab === "history"
                   ? "bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-300 font-semibold"
                   : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
@@ -706,7 +706,7 @@ export default function YamahaConverterApp() {
                 setActiveTab("ai");
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
                 activeTab === "ai"
                   ? "bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-300 font-semibold"
                   : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
@@ -719,7 +719,7 @@ export default function YamahaConverterApp() {
               </Badge>
             </button>
 
-            <div className="pt-4">
+            <div className="pt-2">
               <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 {t("nav_system_category")}
               </span>
@@ -730,7 +730,7 @@ export default function YamahaConverterApp() {
                 setActiveTab("architecture");
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
                 activeTab === "architecture"
                   ? "bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-300 font-semibold"
                   : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
@@ -745,7 +745,7 @@ export default function YamahaConverterApp() {
                 setActiveTab("settings");
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
                 activeTab === "settings"
                   ? "bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-300 font-semibold"
                   : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
@@ -760,7 +760,7 @@ export default function YamahaConverterApp() {
                 setActiveTab("admin");
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
                 activeTab === "admin"
                   ? "bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-300 font-semibold"
                   : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
@@ -776,7 +776,7 @@ export default function YamahaConverterApp() {
         </div>
 
         {/* Sidebar Footer: Audio Visualizer & User */}
-        <div className={`p-4 border-t border-slate-200 dark:border-slate-800 space-y-3 ${mobileMenuOpen ? "block" : "hidden lg:block"}`}>
+        <div className={`p-3.5 border-t border-slate-200 dark:border-slate-800 space-y-2.5 shrink-0 ${mobileMenuOpen ? "block" : "hidden lg:block"}`}>
           {enableToneVisualizer && (
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
@@ -836,7 +836,7 @@ export default function YamahaConverterApp() {
       {/* ===================================================================== */}
       {/* MAIN CONTENT AREA                                                     */}
       {/* ===================================================================== */}
-      <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-24 lg:pb-8">
+      <main className="flex-1 lg:h-screen overflow-y-auto p-4 md:p-8 space-y-6 pb-24 lg:pb-8">
         {/* Top Header Bar */}
         <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-3">

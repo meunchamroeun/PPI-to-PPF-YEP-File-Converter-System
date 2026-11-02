@@ -33,3 +33,14 @@ body {
   color: var(--foreground);
   transition: background-color 0.2s ease, color 0.2s ease;
 }
+
+/* Hide scrollbar for Chrome, Safari, and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
