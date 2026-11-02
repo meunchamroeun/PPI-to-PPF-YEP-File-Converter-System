@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
 import { UserSession } from "@/components/AuthModal";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -129,6 +129,83 @@ export const AuthGate: React.FC<AuthGateProps> = ({
     e.preventDefault();
     await executeGoogleLogin(googleEmail, googleName);
   };
+
+  // Google OAuth 2.0 Flow or Direct Fallback
+  const handleGoogleSignInClick = () => {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (clientId && clientId.trim()) {
+      const origin = typeof window !== "undefined" ? window.location.origin : "";
+      const redirectUri = `${origin}/api/auth/google/callback`;
+      const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(
+        clientId.trim()
+      )}&redirect_uri=${encodeURIComponent(
+        redirectUri
+      )}&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=select_account`;
+      window.location.href = googleAuthUrl;
+    } else {
+      setAuthMode("social");
+    }
+  };
+
+  // Google Identity Services (GIS) One-Tap / Button render if Client ID is configured
+  useEffect(() => {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!clientId || typeof window === "undefined") return;
+
+    const initGIS = () => {
+      const google = (window as any).google;
+      if (!google?.accounts?.id) return;
+
+      try {
+        google.accounts.id.initialize({
+          client_id: clientId.trim(),
+          callback: async (response: any) => {
+            if (response?.credential) {
+              setLoading(true);
+              try {
+                const res = await fetch("/api/auth/google", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ credential: response.credential }),
+                });
+                const data = await res.json();
+                if (res.ok && data.user) {
+                  onLogin(data.user);
+                } else {
+                  setError(data.error || (language === "kh" ? "ការផ្ទៀងផ្ទាត់ Google បរាជ័យ" : "Google verification failed"));
+                }
+              } catch (e: any) {
+                setError(e.message || (language === "kh" ? "មានបញ្ហាក្នុងការផ្ទៀងផ្ទាត់ Google" : "Google authentication error"));
+              } finally {
+                setLoading(false);
+              }
+            }
+          },
+        });
+
+        const btnContainer = document.getElementById("google_gis_btn_container");
+        if (btnContainer) {
+          btnContainer.innerHTML = "";
+          google.accounts.id.renderButton(btnContainer, {
+            theme: darkMode ? "filled_black" : "outline",
+            size: "large",
+            shape: "rectangular",
+            text: "continue_with",
+            width: btnContainer.offsetWidth || 340,
+          });
+        }
+      } catch (e) {
+        console.warn("Google Identity Services initialization:", e);
+      }
+    };
+
+    if ((window as any).google?.accounts?.id) {
+      initGIS();
+    } else {
+      const timer = setTimeout(initGIS, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [darkMode, authMode, language]);
 
   // Telegram Authentication
   const handleTelegramAuth = async (e: React.FormEvent) => {
@@ -358,10 +435,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({
 
                   <button
                     type="button"
-                    onClick={() => {
-                      setAuthMode("social");
-                      setError(null);
-                    }}
+                    onClick={handleGoogleSignInClick}
                     className="w-full mt-2 flex items-center justify-center gap-2.5 h-10 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700/80 text-xs font-semibold text-slate-700 dark:text-slate-200 transition"
                   >
                     <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
@@ -439,6 +513,37 @@ export const AuthGate: React.FC<AuthGateProps> = ({
                     </span>
                   </Button>
                 </div>
+
+                {/* Google Identity Services Container (Auto-rendered if Client ID present) */}
+                <div id="google_gis_btn_container" className="w-full flex justify-center empty:hidden"></div>
+
+                {/* Direct Google OAuth 2.0 Redirect Button */}
+                <Button
+                  type="button"
+                  onClick={handleGoogleSignInClick}
+                  variant="outline"
+                  className="w-full h-10 text-xs font-semibold gap-2.5 border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
+                >
+                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                    <path
+                      fill="#4285F4"
+                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    />
+                    <path
+                      fill="#34A853"
+                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                    />
+                    <path
+                      fill="#FBBC05"
+                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                    />
+                    <path
+                      fill="#EA4335"
+                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                    />
+                  </svg>
+                  <span>{language === "kh" ? "ចូលតាម Google OAuth 2.0 Web" : "Continue with Google OAuth"}</span>
+                </Button>
 
                 {/* Custom Google Sign In Form */}
                 <form onSubmit={handleGoogleAuth} className="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2.5 bg-slate-50/50 dark:bg-slate-800/40">

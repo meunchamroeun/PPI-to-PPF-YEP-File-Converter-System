@@ -147,9 +147,24 @@ export default function YamahaConverterApp() {
     failed: history.filter((h) => h.status === "FAILED").length,
   };
 
-  // Restore user session from localStorage
+  // Restore user session from localStorage or Google OAuth redirect callback
   useEffect(() => {
     try {
+      if (typeof window !== "undefined") {
+        const urlParams = new URLSearchParams(window.location.search);
+        const userParam = urlParams.get("user");
+        if (userParam) {
+          try {
+            const user = JSON.parse(decodeURIComponent(userParam));
+            setCurrentUser(user);
+            localStorage.setItem("user_session", JSON.stringify(user));
+            window.history.replaceState({}, document.title, window.location.pathname);
+            setIsSessionLoading(false);
+            return;
+          } catch (e) {}
+        }
+      }
+
       const savedUser = localStorage.getItem("user_session");
       if (savedUser) {
         setCurrentUser(JSON.parse(savedUser));
