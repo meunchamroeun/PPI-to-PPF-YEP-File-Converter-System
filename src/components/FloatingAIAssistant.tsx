@@ -249,90 +249,98 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
       </motion.div>
 
       {/* =================================================================== */}
-      {/* FLOATING AI CHATBOT WINDOW                                          */}
+      {/* RIGHT-SIDE POPUP AI CHATBOT DRAWER                                  */}
       {/* =================================================================== */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            ref={popupRef}
-            initial={{ opacity: 0, scale: 0.94, y: 12 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.94, y: 12 }}
-            transition={{ type: "spring", stiffness: 350, damping: 28 }}
-            className="fixed bottom-[5.25rem] right-4 sm:right-6 inset-x-3 sm:inset-x-auto sm:w-[400px] md:w-[420px] z-50 flex flex-col rounded-3xl bg-card/95 backdrop-blur-xl border border-border/80 shadow-2xl overflow-hidden ring-1 ring-border/50 specular-card"
-            style={{
-              height: "min(520px, calc(100dvh - 6.5rem))",
-              maxHeight: "calc(100dvh - 6.5rem)",
-            }}
-          >
-            {/* Chatbot Header */}
-            <div className="px-4 py-3 border-b border-border/80 bg-background/90 backdrop-blur-md flex items-center justify-between gap-2 shrink-0 select-none">
-              {/* Bot Persona Avatar & Status */}
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="relative size-8 rounded-full bg-gradient-to-tr from-brand-600 to-purple-600 text-white flex items-center justify-center shadow-xs shrink-0 ring-1 ring-white/20">
-                  <Bot className="size-4.5" />
-                  <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-emerald-500 ring-2 ring-card" />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <h4 className="text-xs font-bold text-foreground truncate">
-                      {language === "kh" ? "ជំនួយការ Yamaha AI" : "Yamaha AI Assistant"}
-                    </h4>
-                    <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-300 border border-brand-500/20 shrink-0">
-                      Gemini 2.5
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground truncate">
-                    <span className="size-1 rounded-full bg-emerald-500 shrink-0" />
-                    <span className="truncate">
-                      {activePack
-                        ? (language === "kh" ? `កញ្ចប់៖ ${activePack.name}` : `Active: ${activePack.name}`)
-                        : (language === "kh" ? "ត្រៀមជួយបំប្លែងសំឡេង" : "Sound Engineering Ready")}
-                    </span>
-                  </div>
-                </div>
-              </div>
+          <>
+            {/* Backdrop Dimmer Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setIsOpen(false)}
+              className="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-xs"
+            />
 
-              {/* Window Controls */}
-              <div className="flex items-center gap-1 shrink-0">
-                {/* Reset / New Chat */}
-                {messages.length > 0 && (
+            {/* Right Docked Popup Panel (Slide-Over Drawer) */}
+            <motion.div
+              ref={popupRef}
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 320 }}
+              className="fixed inset-y-0 right-0 z-50 w-full sm:w-[420px] md:w-[450px] bg-card text-card-foreground border-l border-border shadow-2xl flex flex-col overflow-hidden"
+            >
+              {/* Chatbot Header (Always at the very top, never cut off) */}
+              <div className="h-16 px-4.5 border-b border-border/80 bg-background/95 backdrop-blur-md flex items-center justify-between gap-3 shrink-0 select-none">
+                {/* Bot Persona Avatar & Status */}
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="relative size-9 rounded-full bg-gradient-to-tr from-brand-600 to-purple-600 text-white flex items-center justify-center shadow-xs shrink-0 ring-1 ring-white/20">
+                    <Bot className="size-5" />
+                    <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-emerald-500 ring-2 ring-card" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <h4 className="text-xs font-bold text-foreground truncate">
+                        {language === "kh" ? "ជំនួយការ Yamaha AI" : "Yamaha AI Assistant"}
+                      </h4>
+                      <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-300 border border-brand-500/20 shrink-0">
+                        Gemini 2.5
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground truncate mt-0.5">
+                      <span className="size-1 rounded-full bg-emerald-500 shrink-0" />
+                      <span className="truncate">
+                        {activePack
+                          ? (language === "kh" ? `កញ្ចប់៖ ${activePack.name}` : `Active: ${activePack.name}`)
+                          : (language === "kh" ? "ត្រៀមជួយបំប្លែងសំឡេង" : "Sound Engineering Ready")}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Window Controls */}
+                <div className="flex items-center gap-1 shrink-0">
+                  {/* Reset / New Chat */}
+                  {messages.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleClearHistory}
+                      className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer"
+                      title={language === "kh" ? "ចាប់ផ្តើមការសន្ទនាថ្មី" : "Start New Chat"}
+                    >
+                      <RotateCcw className="size-4" />
+                    </button>
+                  )}
+
+                  {/* Maximize to full tab */}
+                  {onNavigateFullTab && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsOpen(false);
+                        onNavigateFullTab();
+                      }}
+                      className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer"
+                      title={language === "kh" ? "ពង្រីកពេញផ្ទាំង" : "Maximize to Full Tab"}
+                    >
+                      <Maximize2 className="size-4" />
+                    </button>
+                  )}
+
+                  {/* Close Button */}
                   <button
                     type="button"
-                    onClick={handleClearHistory}
-                    className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition"
-                    title={language === "kh" ? "ចាប់ផ្តើមការសន្ទនាថ្មី" : "Start New Chat"}
+                    onClick={() => setIsOpen(false)}
+                    className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer"
+                    title={language === "kh" ? "បិទ" : "Close"}
                   >
-                    <RotateCcw className="size-3.5" />
+                    <X className="size-5" />
                   </button>
-                )}
-
-                {/* Maximize to full tab */}
-                {onNavigateFullTab && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsOpen(false);
-                      onNavigateFullTab();
-                    }}
-                    className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition"
-                    title={language === "kh" ? "ពង្រីកពេញផ្ទាំង" : "Maximize to Full Tab"}
-                  >
-                    <Maximize2 className="size-3.5" />
-                  </button>
-                )}
-
-                {/* Close Button */}
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition"
-                  title={language === "kh" ? "បិទ" : "Close"}
-                >
-                  <X className="size-3.5" />
-                </button>
+                </div>
               </div>
-            </div>
 
             {/* Conversation Messages Viewport */}
             <div className="flex-1 min-h-0 p-3.5 overflow-y-auto space-y-3.5 text-xs">
@@ -608,8 +616,9 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
               </div>
             </div>
           </motion.div>
-        )}
-      </AnimatePresence>
-    </>
-  );
+        </>
+      )}
+    </AnimatePresence>
+  </>
+);
 };
