@@ -5,7 +5,7 @@
 
 ---
 
-## 🌟 Available Run Modes
+## Available Run Modes
 
 This repository provides **two complete implementations** to meet both quick-testing and enterprise production needs:
 
@@ -22,7 +22,7 @@ This repository provides **two complete implementations** to meet both quick-tes
 
 ---
 
-## 🚀 Quick Start (Next.js Application)
+## Quick Start (Next.js Application)
 
 ### 1. Install Dependencies
 ```bash
@@ -55,7 +55,7 @@ npm run bot
 
 ---
 
-## 🛠 Complete Tech Stack Breakdown
+## Complete Tech Stack Breakdown
 
 ### Frontend
 - **React.js & Next.js 16 (Turbopack)**: App Router with dynamic API route handlers.
@@ -83,7 +83,7 @@ npm run bot
 
 ---
 
-## 🎹 Yamaha Format Specifications & Conversion Logic
+## Yamaha Format Specifications & Conversion Logic
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -122,7 +122,7 @@ npm run bot
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 ```
 .

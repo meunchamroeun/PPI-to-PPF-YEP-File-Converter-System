@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LogIn, Send, CheckCircle2, LogOut, User } from "lucide-react";
+import { LogIn, Send, CheckCircle2, LogOut, User, ShieldCheck } from "lucide-react";
 
 export interface UserSession {
   id: string;
@@ -178,8 +178,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </Button>
 
             <div className="pt-2 text-center">
-              <span className="text-[11px] text-slate-500">
-                🔒 Protected by End-to-End Session Signing &amp; HMAC WebApp Verification
+              <span className="inline-flex items-center gap-1.5 text-[11px] text-slate-500">
+                <ShieldCheck className="w-3.5 h-3.5 text-brand-600" />
+                <span>Protected by End-to-End Session Signing &amp; HMAC WebApp Verification</span>
               </span>
             </div>
           </div>

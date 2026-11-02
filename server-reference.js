@@ -47,10 +47,10 @@ if (botToken) {
   bot = new Telegraf(botToken);
 
   bot.start((ctx) => {
-    ctx.reply('Welcome to Yamaha Expansion Voice Studio! 🎹\n\nConvert PPI files to PPF or YEP formats directly in Telegram.', {
+    ctx.reply('Welcome to Yamaha Expansion Voice Studio!\n\nConvert PPI files to PPF or YEP formats directly in Telegram.', {
       reply_markup: {
         inline_keyboard: [
-          [{ text: '🚀 Open Mini App', web_app: { url: process.env.MINI_APP_URL || 'https://app.yamaha-converter.io' } }]
+          [{ text: 'Open Mini App', web_app: { url: process.env.MINI_APP_URL || 'https://app.yamaha-converter.io' } }]
         ]
       }
     });
@@ -59,13 +59,13 @@ if (botToken) {
   bot.on('document', async (ctx) => {
     const doc = ctx.message.document;
     if (doc.file_name.endsWith('.ppi') || doc.file_name.endsWith('.cpi')) {
-      ctx.reply(`📥 Received Yamaha pack: "${doc.file_name}" (${(doc.file_size / (1024 * 1024)).toFixed(2)} MB).\nDispatching to conversion engine...`);
+      ctx.reply(`Received Yamaha pack: "${doc.file_name}" (${(doc.file_size / (1024 * 1024)).toFixed(2)} MB).\nDispatching to conversion engine...`);
     } else {
-      ctx.reply('⚠️ Please upload a valid Yamaha .PPI or .CPI file.');
+      ctx.reply('Notice: Please upload a valid Yamaha .PPI or .CPI file.');
     }
   });
 
-  bot.launch().then(() => console.log('🤖 Telegram Bot launched successfully.'));
+  bot.launch().then(() => console.log('[Telegram Bot] Bot launched successfully.'));
 }
 
 // 5. REST API Endpoints
@@ -175,5 +175,5 @@ worker.on('failed', (job, err) => {
 });
 
 app.listen(port, () => {
-  console.log(`🎹 Yamaha Expansion Converter Server running at http://localhost:${port}`);
+  console.log(`[Server] Yamaha Expansion Converter Server running at http://localhost:${port}`);
 });

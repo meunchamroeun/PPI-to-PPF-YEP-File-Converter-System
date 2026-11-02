@@ -23,20 +23,20 @@ export function createTelegramBot(token?: string) {
 
   bot.start((ctx) => {
     ctx.reply(
-      `🎹 *Welcome to Yamaha Expansion Voice Studio!* \n\nConvert compiled Yamaha installation packages (\`.ppi\`) into editable project archives (\`.ppf\`) or legacy instrument formats (\`.yep\`).\n\nTap below to launch the Mini App:`,
+      `*Welcome to Yamaha Expansion Voice Studio!*\n\nConvert compiled Yamaha installation packages (\`.ppi\`) into editable project archives (\`.ppf\`) or legacy instrument formats (\`.yep\`).\n\nTap below to launch the Mini App:`,
       {
         parse_mode: "Markdown",
         reply_markup: {
           inline_keyboard: [
             [
               {
-                text: "🚀 Open ExpVoice Mini App",
+                text: "Open ExpVoice Mini App",
                 web_app: { url: miniAppUrl },
               },
             ],
             [
-              { text: "📖 Conversion Docs", callback_data: "cmd_docs" },
-              { text: "📊 Check Status", callback_data: "cmd_status" },
+              { text: "Conversion Docs", callback_data: "cmd_docs" },
+              { text: "Check Status", callback_data: "cmd_status" },
             ],
           ],
         },
@@ -46,7 +46,7 @@ export function createTelegramBot(token?: string) {
 
   bot.command("convert", (ctx) => {
     ctx.reply(
-      "📁 Send me any unencrypted Yamaha `.ppi` file directly, or launch the Mini App for batch processing and hex analysis.",
+      "Send me any unencrypted Yamaha `.ppi` file directly, or launch the Mini App for batch processing and hex analysis.",
       {
         reply_markup: {
           inline_keyboard: [[{ text: "Launch Converter", web_app: { url: miniAppUrl } }]],
@@ -56,7 +56,7 @@ export function createTelegramBot(token?: string) {
   });
 
   bot.command("status", (ctx) => {
-    ctx.reply("⚡ Conversion Engine Status: *ONLINE*\n- Direct AWM2 Parser: Ready\n- PPF XML Transcoder: Ready\n- DRM Validator: Active", {
+    ctx.reply("Conversion Engine Status: *ONLINE*\n- Direct AWM2 Parser: Ready\n- PPF XML Transcoder: Ready\n- DRM Validator: Active", {
       parse_mode: "Markdown",
     });
   });
@@ -66,12 +66,12 @@ export function createTelegramBot(token?: string) {
     if (doc.file_name?.endsWith(".ppi") || doc.file_name?.endsWith(".cpi")) {
       const isCpi = doc.file_name.endsWith(".cpi");
       if (isCpi) {
-        ctx.reply("⚠️ Protected Yamaha package (`.cpi`) detected. Conversion requires the hardware `.n27` instrument key.");
+        ctx.reply("Notice: Protected Yamaha package (`.cpi`) detected. Conversion requires the hardware `.n27` instrument key.");
       } else {
-        ctx.reply(`📥 Received Yamaha pack: "${doc.file_name}" (${(doc.file_size! / (1024 * 1024)).toFixed(2)} MB).\nProcessing chunk table...`);
+        ctx.reply(`Received Yamaha pack: "${doc.file_name}" (${(doc.file_size! / (1024 * 1024)).toFixed(2)} MB).\nProcessing chunk table...`);
       }
     } else {
-      ctx.reply("⚠️ Please upload a Yamaha `.ppi` or `.cpi` file.");
+      ctx.reply("Please upload a Yamaha `.ppi` or `.cpi` file.");
     }
   });
 
