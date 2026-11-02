@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yamaha-expvoice-v2';
+const CACHE_NAME = 'yamaha-expvoice-v3';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
@@ -8,17 +8,12 @@ const STATIC_ASSETS = [
   '/apple-touch-icon.png'
 ];
 
-// Install Event - Pre-cache core static assets
+// Install Event - Pre-cache core static assets & skip waiting
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
-    })
-  );
   self.skipWaiting();
 });
 
-// Activate Event - Clean up stale caches
+// Activate Event - Clean up stale caches immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -30,7 +25,7 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch Event - Stale-while-revalidate for navigation & static assets; Network-first for APIs
+// Fetch Event - Network-First for Navigation & APIs; Cache-first for immutable static files
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
@@ -52,7 +47,27 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Page Navigation & Static Assets: Stale-While-Revalidate
+  // Page Navigation (HTML): Always Network-First to immediately load latest deployed UI
+  if (event.request.mode === 'navigate' || event.request.headers.get('accept')?.includes('text/html')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          return caches.match(event.request).then((cached) => cached || caches.match('/'));
+        })
+    );
+    return;
+  }
+
+  // Static Assets: Stale-While-Revalidate
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const fetchPromise = fetch(event.request)
@@ -65,12 +80,7 @@ self.addEventListener('fetch', (event) => {
           }
           return networkResponse;
         })
-        .catch(() => {
-          // If offline and request is HTML document, return root cached page
-          if (event.request.headers.get('accept')?.includes('text/html')) {
-            return caches.match('/');
-          }
-        });
+        .catch(() => cachedResponse);
 
       return cachedResponse || fetchPromise;
     })
