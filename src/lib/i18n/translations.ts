@@ -681,6 +681,92 @@ export const translations: TranslationDictionary = {
     kh: "យល់ព្រម",
     en: "Understood",
   },
+
+  // AI Agent & Vercel AI SDK
+  ai_agent_title: {
+    kh: "ភ្នាក់ងារ AI សំឡេង Yamaha (Vercel AI SDK)",
+    en: "Yamaha Expansion Sound AI Agent (Vercel AI SDK)",
+  },
+  ai_agent_subtitle: {
+    kh: "ភ្នាក់ងារស្វ័យប្រវត្តិនឹងពិនិត្យរចនាសម្ព័ន្ធ Chunks គណនា AWM2 Filter Curves និងផ្ទៀងផ្ទាត់ភាពត្រូវគ្នា YEP",
+    en: "Autonomous agent inspecting container chunks, calculating AWM2 filter curves, and evaluating legacy YEP compatibility",
+  },
+  ai_agent_model_badge: {
+    kh: "Gemini 2.5 Flash",
+    en: "Gemini 2.5 Flash",
+  },
+  ai_agent_sdk_badge: {
+    kh: "Vercel AI SDK v7",
+    en: "Vercel AI SDK v7",
+  },
+  ai_agent_tools_badge: {
+    kh: "ឧបករណ៍ស្វ័យប្រវត្តិចំនួន ៥",
+    en: "5 Autonomous Tools",
+  },
+  ai_quick_audit: {
+    kh: "វិភាគបច្ចេកទេសកញ្ចប់",
+    en: "Full Technical Audit",
+  },
+  ai_quick_filter: {
+    kh: "គណនា AWM2 Filter & Envelope",
+    en: "Calculate AWM2 Filter & Envelope",
+  },
+  ai_quick_yep: {
+    kh: "ពិនិត្យភាពត្រូវគ្នា PSR-S950",
+    en: "Check PSR-S950 YEP Compatibility",
+  },
+  ai_quick_midi: {
+    kh: "បែងចែក MIDI Bank (MSB 063)",
+    en: "Generate MIDI Bank Map (MSB 063)",
+  },
+  ai_quick_diagnose: {
+    kh: "វិនិច្ឆ័យកំហុស & DRM Lock",
+    en: "Diagnose Errors & DRM Lock",
+  },
+  ai_input_placeholder: {
+    kh: "សួរភ្នាក់ងារ AI អំពីកញ្ចប់សំឡេង ឬ AWM2 Parameters...",
+    en: "Ask Yamaha AI Agent about expansion packs or AWM2 parameters...",
+  },
+  ai_btn_send: {
+    kh: "ផ្ញើសំណួរ",
+    en: "Send Query",
+  },
+  ai_btn_stop: {
+    kh: "បញ្ឈប់",
+    en: "Stop",
+  },
+  ai_btn_clear: {
+    kh: "សម្អាតការសន្ទនា",
+    en: "Clear Chat",
+  },
+  ai_btn_export: {
+    kh: "ទាញយក (.md)",
+    en: "Export (.md)",
+  },
+  ai_tool_running: {
+    kh: "កំពុងដំណើរការឧបករណ៍ស្វ័យប្រវត្តិ...",
+    en: "Executing autonomous tool...",
+  },
+  ai_tool_finished: {
+    kh: "បានបញ្ចប់ឧបករណ៍ស្វ័យប្រវត្តិ",
+    en: "Tool execution completed",
+  },
+  ai_no_messages: {
+    kh: "មិនទាន់មានការសន្ទនានៅឡើយទេ។ សូមចុចប៊ូតុងសកម្មភាពរហ័សខាងលើ ឬវាយសំណួររបស់អ្នក។",
+    en: "No conversation history yet. Click a quick action preset above or type your question below.",
+  },
+  ai_key_settings: {
+    kh: "កំណត់សោរ Gemini API",
+    en: "Configure Gemini API Key",
+  },
+  ai_key_hint: {
+    kh: "ទទួលបានសោរឥតគិតថ្លៃនៅ Google AI Studio",
+    en: "Get a free API key from Google AI Studio",
+  },
+  ai_key_saved: {
+    kh: "បានរក្សាទុកសោរក្នុងម៉ាស៊ីន",
+    en: "Key saved in local storage",
+  },
 };
 
 export function getTranslation(key: string, lang: Language): string {

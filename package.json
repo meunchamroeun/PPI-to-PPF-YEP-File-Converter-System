@@ -10,6 +10,8 @@
     "bot": "node --loader ts-node/esm src/scripts/bot.ts"
   },
   "dependencies": {
+    "@ai-sdk/google": "^4.0.109",
+    "@ai-sdk/react": "^4.0.163",
     "@base-ui/react": "^1.9.0",
     "@google/genai": "^2.32.0",
     "@radix-ui/react-dialog": "^1.3.1",
@@ -24,6 +26,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/jszip": "^3.4.0",
     "@types/pg": "^8.23.1",
+    "ai": "^7.0.159",
     "bullmq": "^6.5.3",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
@@ -39,7 +42,8 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "tailwind-merge": "^3.7.0",
-    "telegraf": "^4.16.3"
+    "telegraf": "^4.16.3",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
