@@ -130,15 +130,32 @@ if (dbUrl) {
  * ==============================================================================
  */
 
+export const ADMIN_EMAILS = [
+  "meunchamroeun09@gmail.com",
+  "admin@yamaha-studio.com",
+];
+
+export function isUserAdmin(identifier?: string): boolean {
+  if (!identifier) return false;
+  const lower = identifier.toLowerCase().trim();
+  return (
+    lower === "meunchamroeun09@gmail.com" ||
+    ADMIN_EMAILS.includes(lower) ||
+    lower.includes("admin")
+  );
+}
+
 export async function saveUserRecord(user: Partial<DbUserRecord> & { id: string }): Promise<DbUserRecord> {
   const existing = memoryUsers.get(user.id);
+  const isAdmin = isUserAdmin(user.email) || isUserAdmin(user.username) || user.role === "ADMIN" || existing?.role === "ADMIN";
+
   const record: DbUserRecord = {
-    name: user.name || "Expansion Artist",
+    name: user.name || (user.email === "meunchamroeun09@gmail.com" ? "Meun Chamroeun" : "Expansion Artist"),
     email: user.email,
     username: user.username,
-    avatar: user.avatar,
+    avatar: user.avatar || (user.email === "meunchamroeun09@gmail.com" ? "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop" : null),
     provider: user.provider || "GUEST",
-    role: user.role || (user.email === "admin@yamaha-studio.com" ? "ADMIN" : "USER"),
+    role: isAdmin ? "ADMIN" : "USER",
     status: user.status || "ACTIVE",
     created_at: existing ? existing.created_at : new Date(),
     last_login_at: new Date(),

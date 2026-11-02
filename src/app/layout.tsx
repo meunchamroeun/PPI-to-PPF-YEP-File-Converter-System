@@ -42,6 +42,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Google Identity Services for Google One-Tap & Sign-In */}
+        <script src="https://accounts.google.com/gsi/client" async defer />
         {/* Telegram WebApp script for Mini App support */}
         <script src="https://telegram.org/js/telegram-web-app.js" async />
         {/* Immediate Theme Initializer to prevent light/dark flash */}

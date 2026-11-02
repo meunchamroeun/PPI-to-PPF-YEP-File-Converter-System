@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { saveUserRecord, getUserByEmailOrUsername } from "@/lib/db/pg";
+import { saveUserRecord, getUserByEmailOrUsername, isUserAdmin } from "@/lib/db/pg";
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "yamaha-converter-dev-secret-key-2026";
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
 
     // New user registration flow
     const isEmail = cleanIdentifier.includes("@");
-    const isAdmin = cleanIdentifier.toLowerCase().includes("admin");
+    const isAdmin = isUserAdmin(cleanIdentifier);
     const displayName = name && name.trim() ? name.trim() : (isEmail ? cleanIdentifier.split("@")[0] : cleanIdentifier);
 
     const newUser = await saveUserRecord({

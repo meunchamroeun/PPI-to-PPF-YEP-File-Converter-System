@@ -22,6 +22,7 @@ import {
   Lock,
   CheckCircle,
   AlertCircle,
+  Crown,
 } from "lucide-react";
 
 export interface UserSession {
@@ -351,6 +352,60 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             {/* TAB 2: GOOGLE & TELEGRAM VERIFICATION */}
             {authTab === "oauth" && (
               <div className="space-y-4">
+                {/* Master Admin Google Sign In Card */}
+                <div className="p-3 rounded-2xl border border-purple-300 dark:border-purple-800/80 bg-gradient-to-r from-purple-50/80 to-indigo-50/80 dark:from-purple-950/40 dark:to-indigo-950/40 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Crown className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                      <span className="text-xs font-bold text-slate-900 dark:text-white">
+                        {language === "kh" ? "គណនី Master Admin (Google)" : "Master Admin Google Sign In"}
+                      </span>
+                    </div>
+                    <Badge className="text-[9px] bg-purple-600 text-white font-bold">ADMIN</Badge>
+                  </div>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-tight">
+                    meunchamroeun09@gmail.com &bull; {language === "kh" ? "សិទ្ធិគ្រប់គ្រង Admin ពេញលេញ" : "Full Master Console Privileges"}
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={async () => {
+                      setLoadingProvider("google");
+                      setErrorMessage(null);
+                      try {
+                        const res = await fetch("/api/auth/google", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            email: "meunchamroeun09@gmail.com",
+                            name: "Meun Chamroeun",
+                          }),
+                        });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.error || "Google auth failed");
+                        if (data.user) {
+                          onLogin(data.user);
+                          localStorage.setItem("user_session", JSON.stringify(data.user));
+                          onClose();
+                        }
+                      } catch (err: any) {
+                        setErrorMessage(err.message || "Failed to authenticate with Google.");
+                      } finally {
+                        setLoadingProvider(null);
+                      }
+                    }}
+                    disabled={loadingProvider !== null}
+                    size="sm"
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold gap-2 shadow-sm"
+                  >
+                    <Crown className="w-3.5 h-3.5" />
+                    <span>
+                      {loadingProvider === "google"
+                        ? (language === "kh" ? "កំពុងផ្ទៀងផ្ទាត់..." : "Verifying...")
+                        : (language === "kh" ? "ចូលជា Admin ភ្លាមៗ (Meun Chamroeun)" : "Sign In as Admin (Meun Chamroeun)")}
+                    </span>
+                  </Button>
+                </div>
+
                 {/* Google Sign In Form */}
                 <form onSubmit={handleGoogleSubmit} className="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2.5">
                   <div className="flex items-center gap-2">
