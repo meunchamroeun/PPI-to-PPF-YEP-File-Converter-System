@@ -13,6 +13,7 @@ import {
   Key,
   MessageSquare,
   Share2,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -34,6 +35,8 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
   defaultChatId,
 }) => {
   const { t, language } = useTranslation();
+  const TELEGRAM_MAX_BYTES = 50 * 1024 * 1024; // 50 MB Telegram Bot API limit
+
   const [chatId, setChatId] = useState<string>("");
   const [botToken, setBotToken] = useState<string>("");
   const [showTokenInput, setShowTokenInput] = useState<boolean>(false);
@@ -43,23 +46,38 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
     text: string;
   } | null>(null);
 
+  const fileSizeLabel = fileBlob
+    ? fileBlob.size >= 1024 * 1024
+      ? `${(fileBlob.size / 1024 / 1024).toFixed(1)} MB`
+      : `${(fileBlob.size / 1024).toFixed(1)} KB`
+    : "Ready";
+
+  const fileTooLarge = !!fileBlob && fileBlob.size > TELEGRAM_MAX_BYTES;
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedChatId = localStorage.getItem("saved_tg_chat_id");
-      const savedToken = localStorage.getItem("saved_tg_bot_token");
       if (defaultChatId) {
         setChatId(String(defaultChatId));
       } else if (savedChatId) {
         setChatId(savedChatId);
       }
-      if (savedToken) {
-        setBotToken(savedToken);
-        setShowTokenInput(true);
-      }
     }
   }, [defaultChatId, isOpen]);
 
   if (!isOpen) return null;
+
+  const handleDirectDownload = () => {
+    if (!fileBlob) return;
+    const url = URL.createObjectURL(fileBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   const handleSend = async () => {
     if (!chatId.trim()) {
@@ -84,9 +102,7 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
     try {
       if (typeof window !== "undefined") {
         localStorage.setItem("saved_tg_chat_id", chatId.trim());
-        if (botToken.trim()) {
-          localStorage.setItem("saved_tg_bot_token", botToken.trim());
-        }
+        // Note: bot token is intentionally NOT saved to localStorage for security
       }
 
       const formData = new FormData();
@@ -111,7 +127,11 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
         setStatusMessage({
           type: "success",
           text:
-            language === "kh"
+            data.notice === "LARGE_FILE_NOTIFICATION"
+              ? language === "kh"
+                ? `បានផ្ញើព័ត៌មានលម្អិតនៃឯកសារទៅ Telegram រួចរាល់! សូមចុច "ទាញយកឯកសារ PPF" ដើម្បីរក្សាទុកក្នុងកុំព្យូទ័រ។`
+                : `Pack details delivered to Telegram! Please use "Download Converted File" to save the file locally.`
+              : language === "kh"
               ? `ឯកសារ "${filename}" ត្រូវបានផ្ញើទៅ Telegram ដោយជោគជ័យ!`
               : `File "${filename}" was successfully delivered to your Telegram chat!`,
         });
@@ -174,6 +194,18 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
 
         {/* Modal Body */}
         <div className="p-6 space-y-4">
+          {/* 50 MB Telegram limit warning */}
+          {fileTooLarge && (
+            <div className="p-3 rounded-xl text-xs flex items-start gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span className="flex-1 leading-relaxed">
+                {language === "kh"
+                  ? `ឯកសារ ${fileSizeLabel} លើសពីដែនកំណត់ 50 MB របស់ Telegram Bot API។ Telegram នឹងបដិសេធការផ្ញើ។ សូម Compress ឯកសារ ឬផ្ញើតាម Cloud Storage មុន។`
+                  : `File is ${fileSizeLabel} — Telegram Bot API rejects documents over 50 MB. Please compress or share via cloud storage instead.`}
+              </span>
+            </div>
+          )}
+
           {/* File Card Info */}
           <div className="p-3.5 rounded-2xl bg-muted/60 border border-border flex items-center justify-between">
             <div className="flex items-center gap-3 min-w-0">
@@ -185,7 +217,7 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
                   {filename}
                 </div>
                 <div className="text-[10px] text-muted-foreground font-mono">
-                  {fileBlob ? `${(fileBlob.size / 1024).toFixed(1)} KB` : "Ready"}
+                  {fileSizeLabel}
                 </div>
               </div>
             </div>
@@ -275,6 +307,23 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
 
           {/* Action Buttons */}
           <div className="space-y-2.5 pt-2">
+            {/* Direct Download Button (especially useful when file exceeds 50 MB) */}
+            {fileBlob && (
+              <Button
+                onClick={handleDirectDownload}
+                type="button"
+                variant="outline"
+                className="w-full h-11 rounded-2xl border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center justify-center gap-2 transition active:scale-[0.98] cursor-pointer"
+              >
+                <Download className="w-4 h-4" />
+                <span>
+                  {language === "kh"
+                    ? `ទាញយកឯកសារ ${filename.endsWith(".ppf") ? "PPF" : "YEP"} ផ្ទាល់ (${fileSizeLabel})`
+                    : `Direct Download ${filename.endsWith(".ppf") ? "PPF" : "YEP"} (${fileSizeLabel})`}
+                </span>
+              </Button>
+            )}
+
             <Button
               onClick={handleSend}
               disabled={isSending}
@@ -288,7 +337,15 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
               ) : (
                 <>
                   <Send className="w-4 h-4" />
-                  <span>{language === "kh" ? "ផ្ញើឯកសារទៅ Telegram ឥឡូវនេះ" : "Send File to Telegram Now"}</span>
+                  <span>
+                    {fileTooLarge
+                      ? language === "kh"
+                        ? "ផ្ញើព័ត៌មានកញ្ចប់សំឡេងទៅ Telegram"
+                        : "Send Pack Details to Telegram"
+                      : language === "kh"
+                      ? "ផ្ញើឯកសារទៅ Telegram ឥឡូវនេះ"
+                      : "Send File to Telegram Now"}
+                  </span>
                 </>
               )}
             </Button>

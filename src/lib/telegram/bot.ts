@@ -22,8 +22,9 @@ export function createTelegramBot(token?: string) {
   const miniAppUrl = process.env.NEXT_PUBLIC_APP_URL || "https://yamaha-ppi-to-ppf-converter.vercel.app";
 
   bot.start((ctx) => {
+    const chatId = ctx.chat.id;
     ctx.reply(
-      `*សូមស្វាគមន៍មកកាន់ Yamaha ExpVoice Studio Bot!*\n\nConvert compiled Yamaha installation packages (\`.ppi\`) into editable project archives (\`.ppf\`) or legacy instrument formats (\`.yep\`).\n\nTap below to launch the Mini App:`,
+      `*សូមស្វាគមន៍មកកាន់ Yamaha ExpVoice Studio Bot!*\n\nYour Chat ID: \`${chatId}\` (ចុចដើម្បីចម្លង / tap to copy)\n\nConvert compiled Yamaha installation packages (\`.ppi\`) into editable project archives (\`.ppf\`) or legacy instrument formats (\`.yep\`).\n\nTap below to launch the Mini App:`,
       {
         parse_mode: "Markdown",
         reply_markup: {
@@ -42,6 +43,12 @@ export function createTelegramBot(token?: string) {
         },
       }
     );
+  });
+
+  bot.command("id", (ctx) => {
+    ctx.reply(`Your Telegram Chat ID is: \`${ctx.chat.id}\` (tap to copy)`, {
+      parse_mode: "Markdown",
+    });
   });
 
   bot.command("app", (ctx) => {
