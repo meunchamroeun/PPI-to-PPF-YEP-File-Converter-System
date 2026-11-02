@@ -67,13 +67,9 @@ export const translations: TranslationDictionary = {
     kh: "ជំនួយការ AI",
     en: "AI Assistant",
   },
-  hdr_load_sample: {
-    kh: "ផ្ទុកគំរូ PPI",
-    en: "Load Sample PPI",
-  },
-  hdr_test_cpi: {
-    kh: "សាកល្បង CPI ការពារ",
-    en: "Test Encrypted CPI",
+  hdr_browse: {
+    kh: "ជ្រើសរើសឯកសារ",
+    en: "Browse Files",
   },
   hdr_telegram_ready: {
     kh: "ត្រៀម Telegram",
@@ -572,8 +568,8 @@ export const translations: TranslationDictionary = {
     en: "Conversion Queue is Empty",
   },
   queue_empty_desc: {
-    kh: "សូមអូសនិងទម្លាក់ឯកសារ .PPI មកទីនេះ ឬសាកល្បងជាមួយគំរូដែលបង្កើតស្រាប់។",
-    en: "Add Yamaha PPI files via drag-and-drop above, or test right now using our built-in sample generators.",
+    kh: "សូមអូសនិងទម្លាក់ឯកសារ .PPI មកទីនេះ ដើម្បីចាប់ផ្តើមដំណើរការបំប្លែងឯកសារ។",
+    en: "Add Yamaha PPI files via drag-and-drop above to begin genuine file conversion.",
   },
   queue_files_count: {
     kh: "ឯកសារក្នុងជួរ",
@@ -650,14 +646,6 @@ export const translations: TranslationDictionary = {
   cmd_convert_all: {
     kh: "បំលែងឯកសារទាំងអស់ក្នុងជួរ",
     en: "Convert All Pending Items",
-  },
-  cmd_load_sample: {
-    kh: "ផ្ទុកគំរូ PPI ដោយស្វ័យប្រវត្តិ",
-    en: "Load Synthetic Sample PPI",
-  },
-  cmd_test_cpi: {
-    kh: "សាកល្បងឯកសារជាប់សោរ CPI",
-    en: "Test Encrypted CPI Handling",
   },
   cmd_tg_preview: {
     kh: "បើកផ្ទាំងគំរូ Telegram Mini App",
