@@ -27,6 +27,19 @@ export function useTelegramWebApp() {
       if (tg.initDataUnsafe?.user) {
         setUser(tg.initDataUnsafe.user);
       }
+
+      // Sync Telegram window header & background color
+      try {
+        const isLight = tg.colorScheme === "light";
+        if (typeof tg.setHeaderColor === "function") {
+          tg.setHeaderColor(isLight ? "#ffffff" : "#0b0f19");
+        }
+        if (typeof tg.setBackgroundColor === "function") {
+          tg.setBackgroundColor(isLight ? "#f8fafc" : "#0b0f19");
+        }
+      } catch (_) {
+        // Fallback for older Telegram clients
+      }
     }
   }, []);
 
