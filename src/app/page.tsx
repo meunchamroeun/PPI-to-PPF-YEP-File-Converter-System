@@ -674,10 +674,10 @@ export default function YamahaConverterApp() {
                 setActiveTab("dashboard");
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-150 active:scale-[0.98] ${
                 activeTab === "dashboard"
-                  ? "bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-300 font-semibold"
-                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  ? "bg-brand-500/10 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300 font-semibold border border-brand-500/20 shadow-2xs"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/70 border border-transparent"
               }`}
             >
               <LayoutDashboard className="w-4 h-4 shrink-0" />
@@ -689,10 +689,10 @@ export default function YamahaConverterApp() {
                 setActiveTab("converter");
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-150 active:scale-[0.98] ${
                 activeTab === "converter"
-                  ? "bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-300 font-semibold"
-                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  ? "bg-brand-500/10 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300 font-semibold border border-brand-500/20 shadow-2xs"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/70 border border-transparent"
               }`}
             >
               <Repeat className="w-4 h-4 shrink-0" />
@@ -709,10 +709,10 @@ export default function YamahaConverterApp() {
                 setActiveTab("inspector");
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-150 active:scale-[0.98] ${
                 activeTab === "inspector"
-                  ? "bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-300 font-semibold"
-                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  ? "bg-brand-500/10 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300 font-semibold border border-brand-500/20 shadow-2xs"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/70 border border-transparent"
               }`}
             >
               <Binary className="w-4 h-4 shrink-0" />
@@ -724,10 +724,10 @@ export default function YamahaConverterApp() {
                 setActiveTab("history");
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-150 active:scale-[0.98] ${
                 activeTab === "history"
-                  ? "bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-300 font-semibold"
-                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  ? "bg-brand-500/10 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300 font-semibold border border-brand-500/20 shadow-2xs"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/70 border border-transparent"
               }`}
             >
               <History className="w-4 h-4 shrink-0" />
@@ -739,10 +739,10 @@ export default function YamahaConverterApp() {
                 setActiveTab("ai");
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-150 active:scale-[0.98] ${
                 activeTab === "ai"
-                  ? "bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-300 font-semibold"
-                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  ? "bg-brand-500/10 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300 font-semibold border border-brand-500/20 shadow-2xs"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/70 border border-transparent"
               }`}
             >
               <Brain className="w-4 h-4 text-brand-500 shrink-0" />
@@ -763,10 +763,10 @@ export default function YamahaConverterApp() {
                 setActiveTab("architecture");
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-150 active:scale-[0.98] ${
                 activeTab === "architecture"
-                  ? "bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-300 font-semibold"
-                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  ? "bg-brand-500/10 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300 font-semibold border border-brand-500/20 shadow-2xs"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/70 border border-transparent"
               }`}
             >
               <Cpu className="w-4 h-4 shrink-0" />
@@ -778,10 +778,10 @@ export default function YamahaConverterApp() {
                 setActiveTab("settings");
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-150 active:scale-[0.98] ${
                 activeTab === "settings"
-                  ? "bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-300 font-semibold"
-                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  ? "bg-brand-500/10 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300 font-semibold border border-brand-500/20 shadow-2xs"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/70 border border-transparent"
               }`}
             >
               <Sliders className="w-4 h-4 text-brand-500 shrink-0" />
@@ -793,10 +793,10 @@ export default function YamahaConverterApp() {
                 setActiveTab("admin");
                 setMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-150 active:scale-[0.98] ${
                 activeTab === "admin"
-                  ? "bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-300 font-semibold"
-                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  ? "bg-purple-500/10 dark:bg-purple-500/15 text-purple-600 dark:text-purple-300 font-semibold border border-purple-500/20 shadow-2xs"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/70 border border-transparent"
               }`}
             >
               <ShieldCheck className="w-4 h-4 text-purple-600 shrink-0" />
@@ -882,18 +882,24 @@ export default function YamahaConverterApp() {
       {/* MAIN CONTENT AREA                                                     */}
       {/* ===================================================================== */}
       <main className="flex-1 lg:h-screen overflow-y-auto p-4 md:p-8 space-y-6 pb-24 lg:pb-8">
-        {/* Top Header Bar */}
-        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-3">
+        {/* Top Studio Command Bar (Clean, Unified, Glassmorphism) */}
+        <header className="sticky -top-4 md:-top-8 -mx-4 md:-mx-8 px-4 md:px-8 py-3 z-20 bg-white/80 dark:bg-[#0b0f19]/80 backdrop-blur-xl border-b border-slate-200/70 dark:border-slate-800/80 flex items-center justify-between gap-3 sm:gap-4 transition-colors duration-200">
+          {/* Left: Mobile Toggle & View Title */}
+          <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              className="lg:hidden h-9 w-9 rounded-xl border border-slate-200/80 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition active:scale-[0.95]"
               title="Toggle Menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
-            <div>
-              <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+
+            <div className="flex items-center gap-2 truncate">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 hidden sm:inline">
+                Studio
+              </span>
+              <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">/</span>
+              <h1 className="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white truncate">
                 {activeTab === "dashboard" && t("nav_dashboard")}
                 {activeTab === "converter" && t("nav_converter")}
                 {activeTab === "inspector" && t("nav_inspector")}
@@ -902,50 +908,82 @@ export default function YamahaConverterApp() {
                 {activeTab === "settings" && t("nav_settings")}
                 {activeTab === "admin" && t("nav_admin")}
                 {activeTab === "architecture" && t("nav_architecture")}
-              </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                {t("app_subtitle")}
-              </p>
+              </h1>
+
+              {/* Engine Status Dot */}
+              <div className="hidden xl:flex items-center gap-1.5 ml-2 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/60 text-[10px] font-medium text-emerald-700 dark:text-emerald-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span>AWM2 Engine Online</span>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap">
-            {/* Language Switcher (Default: Khmer) */}
-            <div className="shrink-0">
-              <LanguageSwitcher />
+          {/* Center: Command Palette Search Bar */}
+          <button
+            type="button"
+            onClick={() => setCommandPaletteOpen(true)}
+            className="hidden md:flex items-center justify-between w-56 lg:w-72 h-9 px-3 rounded-xl bg-slate-100/70 dark:bg-slate-900/70 hover:bg-slate-100 dark:hover:bg-slate-800/80 border border-slate-200/70 dark:border-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition duration-150 active:scale-[0.98] shrink-0"
+            title="Open Command Palette (Cmd+K)"
+          >
+            <div className="flex items-center gap-2 truncate">
+              <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              <span className="text-xs truncate">{t("hdr_commands")}</span>
             </div>
+            <kbd className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-slate-500 shadow-2xs shrink-0">
+              ⌘K
+            </kbd>
+          </button>
 
-            {/* Command Palette Trigger */}
-            <Button
-              variant="outline"
-              size="sm"
+          {/* Right: Unified Studio Tools Cluster */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Mobile Search Button */}
+            <button
+              type="button"
               onClick={() => setCommandPaletteOpen(true)}
-              className="gap-1.5 text-xs text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 whitespace-nowrap shrink-0"
-              title="Open Command Palette (Cmd+K)"
+              className="md:hidden h-9 w-9 rounded-xl border border-slate-200/80 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition active:scale-[0.97]"
+              title="Search (⌘K)"
             >
-              <Search className="w-3.5 h-3.5 text-slate-400" />
-              <span className="hidden xl:inline">{t("hdr_commands")}</span>
-              <kbd className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-500">
-                ⌘K
-              </kbd>
-            </Button>
+              <Search className="w-4 h-4" />
+            </button>
 
-            {/* AI Studio Assistant Button */}
-            <Button
-              variant="outline"
-              size="sm"
+            {/* AI Studio Assistant */}
+            <button
+              type="button"
               onClick={() => setActiveTab("ai")}
-              className="hidden md:inline-flex gap-1.5 bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border-brand-200 dark:border-brand-800 whitespace-nowrap shrink-0"
+              className={`h-9 px-2.5 sm:px-3 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition active:scale-[0.97] ${
+                activeTab === "ai"
+                  ? "bg-brand-600 text-white shadow-xs"
+                  : "bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border border-brand-200/70 dark:border-brand-800/80"
+              }`}
+              title="AI Studio Assistant"
             >
-              <Brain className="w-3.5 h-3.5 text-brand-600" />
-              <span>{t("hdr_ai_assistant")}</span>
-            </Button>
+              <Brain className="w-3.5 h-3.5 text-brand-600 dark:text-brand-300" />
+              <span className="hidden sm:inline">{t("hdr_ai_assistant")}</span>
+            </button>
 
-            {/* Night / Light / System Mode Toggle Button */}
-            <Button
-              variant="outline"
-              size="icon"
+            {/* Telegram Bot Connector / Simulator Pill */}
+            <button
+              type="button"
+              onClick={() => setTelegramSimulatorOpen(true)}
+              className={`h-9 px-2.5 sm:px-3 rounded-xl text-xs font-medium border flex items-center gap-1.5 transition active:scale-[0.97] ${
+                isInTelegram
+                  ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300 border-sky-300"
+                  : "bg-sky-50/80 hover:bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:hover:bg-sky-900/50 dark:text-sky-300 border-sky-200/80 dark:border-sky-800/60"
+              }`}
+              title="Telegram Mini App Connection"
+            >
+              <Send className="w-3 h-3 text-[#229ED9]" />
+              <span className="hidden lg:inline">{isInTelegram ? t("hdr_telegram_live") : "@PPI_PPF_ConvertBot"}</span>
+            </button>
+
+            {/* Language Switcher (Compact KH/EN) */}
+            <LanguageSwitcher compact />
+
+            {/* Theme Toggle (System / Light / Dark) */}
+            <button
+              type="button"
               onClick={cycleThemeMode}
+              className="h-9 w-9 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center transition active:scale-[0.97]"
               title={
                 themeMode === "system"
                   ? (language === "kh" ? "ទម្រង់តាមប្រព័ន្ធ (ចុចដើម្បីប្តូរ)" : "Following System (Click to toggle)")
@@ -953,7 +991,6 @@ export default function YamahaConverterApp() {
                   ? (language === "kh" ? "ទម្រង់ពន្លឺថ្ងៃ (ចុចដើម្បីប្តូរ)" : "Light Mode (Click to toggle)")
                   : (language === "kh" ? "ទម្រង់ពន្លឺយប់ (ចុចដើម្បីប្តូរ)" : "Night Mode (Click to toggle)")
               }
-              className="rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 shrink-0 active:scale-[0.97]"
             >
               {themeMode === "system" ? (
                 <Monitor className="w-4 h-4 text-brand-600 dark:text-brand-400" />
@@ -962,74 +999,46 @@ export default function YamahaConverterApp() {
               ) : (
                 <Moon className="w-4 h-4" />
               )}
-            </Button>
+            </button>
 
-            {/* User Account & Sign Out */}
+            {/* User Account Avatar & Discrete Sign Out */}
             {currentUser && (
-              <div className="flex items-center gap-1.5 shrink-0">
-                <Button
-                  variant="outline"
-                  size="sm"
+              <div className="flex items-center gap-1 pl-1 border-l border-slate-200 dark:border-slate-800">
+                <button
+                  type="button"
                   onClick={() => setAuthModalOpen(true)}
-                  className="gap-2 rounded-xl text-xs font-semibold border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 whitespace-nowrap shrink-0"
+                  className="h-9 px-2 sm:px-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2 transition active:scale-[0.97]"
+                  title={`${currentUser.name} (${currentUser.role})`}
                 >
-                  <div className="w-5 h-5 rounded-full bg-brand-100 dark:bg-brand-950 flex items-center justify-center text-brand-600 overflow-hidden shrink-0">
+                  <div className="w-5 h-5 rounded-full bg-brand-600 text-white flex items-center justify-center text-[10px] font-bold overflow-hidden shrink-0">
                     {currentUser.avatar ? (
                       <img src={currentUser.avatar} alt="user" className="w-full h-full object-cover" />
                     ) : (
-                      <UserIcon className="w-3 h-3" />
+                      currentUser.name.charAt(0).toUpperCase()
                     )}
                   </div>
-                  <span className="truncate max-w-[120px] sm:max-w-[160px]">{currentUser.name}</span>
-                  <Badge
-                    className={`text-[9px] px-1.5 py-0 ${
-                      currentUser.role === "ADMIN" ? "bg-purple-600 text-white" : "bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-200"
-                    }`}
-                  >
-                    {currentUser.role}
-                  </Badge>
-                </Button>
+                  <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate max-w-[80px] sm:max-w-[100px] hidden sm:inline">
+                    {currentUser.name}
+                  </span>
+                  {currentUser.role === "ADMIN" && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-purple-500 ring-2 ring-purple-500/20" title="Admin" />
+                  )}
+                </button>
 
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <button
+                  type="button"
                   onClick={() => {
                     localStorage.removeItem("user_session");
                     setCurrentUser(null);
                     triggerHaptic("light");
                   }}
-                  className="h-8 px-2 text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 shrink-0"
+                  className="h-9 w-9 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 hover:border-rose-200 dark:hover:border-rose-900 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-400 hover:text-rose-600 flex items-center justify-center transition active:scale-[0.97]"
                   title={t("auth_sign_out")}
                 >
-                  <LogOut className="w-3.5 h-3.5 sm:mr-1" />
-                  <span className="hidden sm:inline">{t("auth_sign_out")}</span>
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setActiveTab("settings")}
-                  title="Settings & API Key"
-                  className="rounded-xl h-8 w-8 shrink-0"
-                >
-                  <Sliders className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-                </Button>
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
               </div>
             )}
-
-            {/* Telegram Mini App indicator / Simulator Launcher */}
-            <button
-              onClick={() => setTelegramSimulatorOpen(true)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium border transition cursor-pointer shadow-sm hover:scale-105 active:scale-95 whitespace-nowrap shrink-0 ${
-                isInTelegram
-                  ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300 border-sky-300"
-                  : "bg-sky-50 hover:bg-sky-100 text-sky-700 dark:bg-sky-950/60 dark:hover:bg-sky-900/60 dark:text-sky-300 border-sky-200 dark:border-sky-800/60"
-              }`}
-              title="Click to preview Telegram Mini App"
-            >
-              <Send className="w-3 h-3 text-[#229ED9]" />
-              <span>{isInTelegram ? t("hdr_telegram_live") : t("hdr_telegram_ready")}</span>
-            </button>
           </div>
         </header>
 
