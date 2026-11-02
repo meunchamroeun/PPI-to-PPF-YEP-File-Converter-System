@@ -28,9 +28,10 @@ interface AIAssistantPanelProps {
     parsedData: ParsedPPIData;
   } | null;
   onSelectAction?: (promptText: string) => void;
+  onLoadSample?: () => void;
 }
 
-export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack }) => {
+export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack, onLoadSample }) => {
   const [apiKey, setApiKey] = useState<string>("");
   const [showKeyInput, setShowKeyInput] = useState<boolean>(false);
   const [customPrompt, setCustomPrompt] = useState<string>("");
@@ -200,11 +201,16 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack }
           )}
         </div>
 
-        {activePack && (
+        {activePack ? (
           <span className="text-brand-600 dark:text-brand-400 font-medium">
             Model: {activePack.parsedData.targetHardware}
           </span>
-        )}
+        ) : onLoadSample ? (
+          <Button size="sm" variant="outline" onClick={onLoadSample} className="gap-1.5 text-xs">
+            <Sparkles className="w-3.5 h-3.5 text-brand-600" />
+            <span>Load Demo Pack Context</span>
+          </Button>
+        ) : null}
       </div>
 
       {/* Preset Action Prompts Grid */}

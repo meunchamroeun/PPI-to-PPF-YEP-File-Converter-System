@@ -126,6 +126,34 @@ export default function YamahaConverterApp() {
     failed: history.filter((h) => h.status === "FAILED").length,
   };
 
+  // Synchronize Light / Night Theme directly on <html> root element
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("theme");
+      const isDark = saved !== null ? saved === "dark" : document.documentElement.classList.contains("dark");
+      setDarkMode(isDark);
+      if (isDark) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    } catch {
+      // safe fallback
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    const next = !darkMode;
+    setDarkMode(next);
+    if (next) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  };
+
   // Sync Telegram User on load
   useEffect(() => {
     if (tgUser && !currentUser) {
@@ -413,7 +441,7 @@ export default function YamahaConverterApp() {
   const activeInspectorItem = queue.find((q) => q.id === inspectorFileId) || queue[0] || null;
 
   return (
-    <div className={`min-h-screen flex flex-col lg:flex-row ${darkMode ? "dark" : ""}`}>
+    <div className="min-h-screen flex flex-col lg:flex-row bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 transition-colors duration-200">
       {/* ===================================================================== */}
       {/* SIDEBAR NAVIGATION                                                    */}
       {/* ===================================================================== */}
@@ -552,7 +580,7 @@ export default function YamahaConverterApp() {
         </div>
 
         {/* Sidebar Footer: Audio Visualizer & User */}
-        <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
+        <div className={`p-4 border-t border-slate-200 dark:border-slate-800 space-y-3 ${mobileMenuOpen ? "block" : "hidden lg:block"}`}>
           {enableToneVisualizer && (
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
@@ -583,8 +611,9 @@ export default function YamahaConverterApp() {
             </button>
 
             <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+              onClick={toggleDarkMode}
+              className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              title={darkMode ? "Switch to Light Mode" : "Switch to Night Mode"}
             >
               {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
@@ -598,18 +627,27 @@ export default function YamahaConverterApp() {
       <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
         {/* Top Header Bar */}
         <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
-          <div>
-            <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-              {activeTab === "dashboard" && "Expansion Voice Dashboard"}
-              {activeTab === "converter" && "Yamaha File Conversion Queue"}
-              {activeTab === "inspector" && "File & Hex Binary Inspector"}
-              {activeTab === "history" && "Conversion History Archive"}
-              {activeTab === "ai" && "Gemini AI Sound Design Studio"}
-              {activeTab === "architecture" && "Production System Blueprint"}
-            </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Professional converter for Yamaha Expansion Voice Manager (.PPI → .PPF / .YEP)
-            </p>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              title="Toggle Menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+            <div>
+              <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                {activeTab === "dashboard" && "Expansion Voice Dashboard"}
+                {activeTab === "converter" && "Yamaha File Conversion Queue"}
+                {activeTab === "inspector" && "File & Hex Binary Inspector"}
+                {activeTab === "history" && "Conversion History Archive"}
+                {activeTab === "ai" && "Gemini AI Sound Design Studio"}
+                {activeTab === "architecture" && "Production System Blueprint"}
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Professional converter for Yamaha Expansion Voice Manager (.PPI → .PPF / .YEP)
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
@@ -644,6 +682,34 @@ export default function YamahaConverterApp() {
             >
               <ShieldAlert className="w-3.5 h-3.5 text-amber-500" />
               <span>Test Protected CPI</span>
+            </Button>
+
+            {/* Night / Light Mode Toggle Button */}
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={toggleDarkMode}
+              title={darkMode ? "Switch to Light Mode" : "Switch to Night Mode"}
+              className="rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"
+            >
+              {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </Button>
+
+            {/* User Account Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setAuthModalOpen(true)}
+              className="gap-2 rounded-xl text-xs font-semibold border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              <div className="w-5 h-5 rounded-full bg-brand-100 dark:bg-brand-950 flex items-center justify-center text-brand-600 overflow-hidden">
+                {currentUser?.avatar ? (
+                  <img src={currentUser.avatar} alt="user" className="w-full h-full object-cover" />
+                ) : (
+                  <UserIcon className="w-3 h-3" />
+                )}
+              </div>
+              <span className="truncate max-w-[80px]">{currentUser ? currentUser.name : "Sign In"}</span>
             </Button>
 
             {/* Telegram Mini App indicator */}
@@ -919,10 +985,33 @@ export default function YamahaConverterApp() {
               </div>
 
               {queue.length === 0 ? (
-                <div className="p-12 text-center rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/20">
-                  <FileMusic className="w-10 h-10 mx-auto text-slate-400 mb-2" />
-                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">Queue is empty</p>
-                  <p className="text-xs text-slate-500 mt-1">Upload a PPI file or click "Load Sample PPI" to test.</p>
+                <div className="p-12 text-center rounded-3xl border border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/40 space-y-4">
+                  <FileMusic className="w-12 h-12 mx-auto text-slate-400" />
+                  <div>
+                    <h4 className="text-base font-bold text-slate-900 dark:text-white">Conversion Queue is Empty</h4>
+                    <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1">
+                      Add Yamaha PPI files via drag-and-drop above, or test right now using our built-in sample generators.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+                    <Button size="sm" onClick={() => handleLoadSample(false)} className="gap-2 shadow-sm">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Load Sample PPI</span>
+                    </Button>
+                    <Button size="sm" variant="secondary" onClick={() => handleLoadSample(true)} className="gap-2">
+                      <ShieldAlert className="w-3.5 h-3.5 text-amber-500" />
+                      <span>Test Protected CPI</span>
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => document.getElementById("file-upload-input")?.click()}
+                      className="gap-2"
+                    >
+                      <FolderSearch className="w-3.5 h-3.5" />
+                      <span>Browse Files</span>
+                    </Button>
+                  </div>
                 </div>
               ) : (
                 <AnimatePresence>
@@ -977,10 +1066,21 @@ export default function YamahaConverterApp() {
                               <button
                                 onClick={() =>
                                   setQueue((prev) =>
-                                    prev.map((q) => (q.id === item.id ? { ...q, targetFormat: "PPF" } : q))
+                                    prev.map((q) =>
+                                      q.id === item.id
+                                        ? {
+                                            ...q,
+                                            targetFormat: "PPF",
+                                            status: "PENDING",
+                                            progress: 0,
+                                            stage: "Ready for conversion",
+                                            output: null,
+                                          }
+                                        : q
+                                    )
                                   )
                                 }
-                                disabled={item.status !== "PENDING"}
+                                disabled={item.status === "CONVERTING"}
                                 className={`px-2.5 py-1 rounded-md transition ${
                                   item.targetFormat === "PPF"
                                     ? "bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-sm"
@@ -992,10 +1092,21 @@ export default function YamahaConverterApp() {
                               <button
                                 onClick={() =>
                                   setQueue((prev) =>
-                                    prev.map((q) => (q.id === item.id ? { ...q, targetFormat: "YEP" } : q))
+                                    prev.map((q) =>
+                                      q.id === item.id
+                                        ? {
+                                            ...q,
+                                            targetFormat: "YEP",
+                                            status: "PENDING",
+                                            progress: 0,
+                                            stage: "Ready for conversion",
+                                            output: null,
+                                          }
+                                        : q
+                                    )
                                   )
                                 }
-                                disabled={item.status !== "PENDING"}
+                                disabled={item.status === "CONVERTING"}
                                 className={`px-2.5 py-1 rounded-md transition ${
                                   item.targetFormat === "YEP"
                                     ? "bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-sm"
@@ -1006,25 +1117,68 @@ export default function YamahaConverterApp() {
                               </button>
                             </div>
 
+                            {/* Convert Button */}
                             {item.status === "PENDING" && (
-                              <Button size="sm" onClick={() => handleConvertItem(item.id)}>
-                                Convert
+                              <Button size="sm" onClick={() => handleConvertItem(item.id)} className="gap-1.5 shadow-sm">
+                                <Play className="w-3.5 h-3.5" />
+                                <span>Convert</span>
                               </Button>
                             )}
 
+                            {/* Cancel Button */}
                             {item.status === "CONVERTING" && (
-                              <Button size="sm" variant="destructive" onClick={() => handleCancelItem(item.id)}>
-                                Cancel
+                              <Button size="sm" variant="destructive" onClick={() => handleCancelItem(item.id)} className="gap-1.5">
+                                <X className="w-3.5 h-3.5" />
+                                <span>Cancel</span>
                               </Button>
                             )}
 
+                            {/* Success: Download & Re-convert */}
                             {item.status === "SUCCESS" && item.output && (
-                              <a href={item.output.downloadUrl} download={item.output.filename}>
-                                <Button size="sm" variant="emerald" className="gap-1.5">
-                                  <Download className="w-3.5 h-3.5" />
-                                  <span>Download</span>
+                              <div className="flex items-center gap-1.5">
+                                <a href={item.output.downloadUrl} download={item.output.filename}>
+                                  <Button size="sm" variant="emerald" className="gap-1.5 shadow-sm">
+                                    <Download className="w-3.5 h-3.5" />
+                                    <span>Download</span>
+                                  </Button>
+                                </a>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleConvertItem(item.id)}
+                                  title="Re-convert package"
+                                  className="gap-1.5 text-xs"
+                                >
+                                  <RefreshCw className="w-3.5 h-3.5" />
+                                  <span className="hidden sm:inline">Re-run</span>
                                 </Button>
-                              </a>
+                              </div>
+                            )}
+
+                            {/* Failed: Retry Button */}
+                            {item.status === "FAILED" && (
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => handleConvertItem(item.id)}
+                                className="gap-1.5"
+                              >
+                                <RefreshCw className="w-3.5 h-3.5" />
+                                <span>Retry</span>
+                              </Button>
+                            )}
+
+                            {/* Cancelled: Restart Button */}
+                            {item.status === "CANCELLED" && (
+                              <Button
+                                size="sm"
+                                variant="secondary"
+                                onClick={() => handleConvertItem(item.id)}
+                                className="gap-1.5"
+                              >
+                                <Play className="w-3.5 h-3.5" />
+                                <span>Start</span>
+                              </Button>
                             )}
 
                             {/* Inspect */}
@@ -1215,10 +1369,31 @@ export default function YamahaConverterApp() {
                 </div>
               </div>
             ) : (
-              <div className="p-16 text-center rounded-3xl border border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/20">
-                <Binary className="w-12 h-12 mx-auto text-slate-400 mb-2" />
-                <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">No file selected for inspection</p>
-                <p className="text-xs text-slate-500 mt-1">Upload a PPI file to view raw binary and chunk tables.</p>
+              <div className="p-16 text-center rounded-3xl border border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/40 space-y-4">
+                <Binary className="w-12 h-12 mx-auto text-slate-400" />
+                <div>
+                  <h4 className="text-base font-bold text-slate-900 dark:text-white">No File Selected for Inspection</h4>
+                  <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1">
+                    Examine raw 512-byte hex streams, PAC chunk tables, and generated Pack.xml manifests.
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                  <Button onClick={() => handleLoadSample(false)} className="gap-2 shadow-md">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Load Demo PPI to Inspect</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setActiveTab("converter");
+                      document.getElementById("file-upload-input")?.click();
+                    }}
+                    className="gap-2"
+                  >
+                    <FolderSearch className="w-3.5 h-3.5" />
+                    <span>Upload a File</span>
+                  </Button>
+                </div>
               </div>
             )}
           </motion.div>
@@ -1340,7 +1515,13 @@ export default function YamahaConverterApp() {
                     {history.length === 0 && (
                       <tr>
                         <td colSpan={6} className="py-12 text-center text-slate-500">
-                          No conversion history records found.
+                          <p className="text-sm font-medium">No conversion history records found.</p>
+                          <div className="pt-3">
+                            <Button size="sm" onClick={() => setActiveTab("converter")} className="gap-2 shadow-sm">
+                              <Play className="w-3.5 h-3.5" />
+                              <span>Convert a File Now</span>
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     )}
@@ -1356,7 +1537,7 @@ export default function YamahaConverterApp() {
         {/* =================================================================== */}
         {activeTab === "ai" && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-            <AIAssistantPanel activePack={activeInspectorItem} />
+            <AIAssistantPanel activePack={activeInspectorItem} onLoadSample={() => handleLoadSample(false)} />
           </motion.div>
         )}
 

@@ -22,6 +22,21 @@
   <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 
+  <!-- Immediate Theme Pre-loader -->
+  <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('theme');
+        var isDark = saved !== null ? saved === 'dark' : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (isDark) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch(e) {}
+    })();
+  </script>
+
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -178,7 +193,7 @@
       </div>
 
       <!-- Sidebar Footer: Instrument Target Badge & Docs -->
-      <div class="p-4 border-t border-slate-200 dark:border-slate-800">
+      <div class="p-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
         <div class="p-3 rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-800/60 dark:to-slate-900/40 border border-slate-200 dark:border-slate-700/60 text-xs">
           <div class="flex items-center justify-between mb-1">
             <span class="font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
@@ -190,6 +205,18 @@
           <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
             Direct Yamaha AWM2 / PAC chunk de-encapsulation &amp; PPF Zip generation.
           </p>
+        </div>
+
+        <div class="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800">
+          <div class="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+            <div class="w-7 h-7 rounded-full bg-brand-100 dark:bg-brand-950 flex items-center justify-center text-brand-600">
+              <i data-lucide="user" class="w-3.5 h-3.5"></i>
+            </div>
+            <span>Guest User</span>
+          </div>
+          <button onclick="toggleDarkMode()" id="sidebar-theme-toggle" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-slate-400 transition" title="Toggle Light/Dark Theme">
+            <span id="sidebar-theme-icon-slot"><i data-lucide="moon" class="w-4 h-4"></i></span>
+          </button>
         </div>
       </div>
     </aside>
@@ -236,8 +263,8 @@
           </button>
 
           <!-- Dark / Light Theme Toggle -->
-          <button onclick="toggleDarkMode()" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-slate-400 transition" aria-label="Toggle Theme">
-            <i id="theme-icon" data-lucide="moon" class="w-5 h-5"></i>
+          <button onclick="toggleDarkMode()" id="header-theme-toggle" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-slate-400 transition" aria-label="Toggle Theme" title="Toggle Light/Dark Theme">
+            <span id="header-theme-icon-slot"><i data-lucide="moon" class="w-5 h-5"></i></span>
           </button>
 
           <!-- Telegram Status Badge -->
@@ -1677,19 +1704,51 @@ bot.launch();</code></pre>
       document.body.removeChild(link);
     }
 
-    function toggleDarkMode() {
-      state.darkMode = !state.darkMode;
-      const html = document.documentElement;
-      const themeIcon = document.getElementById('theme-icon');
+    function initTheme() {
+      try {
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        state.darkMode = saved !== null ? saved === 'dark' : (prefersDark !== undefined ? prefersDark : true);
+        applyTheme();
+      } catch (e) {
+        state.darkMode = true;
+        applyTheme();
+      }
+    }
 
+    function applyTheme() {
+      const html = document.documentElement;
       if (state.darkMode) {
         html.classList.add('dark');
-        themeIcon.setAttribute('data-lucide', 'sun');
       } else {
         html.classList.remove('dark');
-        themeIcon.setAttribute('data-lucide', 'moon');
       }
-      lucide.createIcons();
+
+      const headerSlot = document.getElementById('header-theme-icon-slot');
+      if (headerSlot) {
+        headerSlot.innerHTML = state.darkMode
+          ? '<i data-lucide="sun" class="w-5 h-5 text-amber-400"></i>'
+          : '<i data-lucide="moon" class="w-5 h-5 text-slate-600"></i>';
+      }
+
+      const sidebarSlot = document.getElementById('sidebar-theme-icon-slot');
+      if (sidebarSlot) {
+        sidebarSlot.innerHTML = state.darkMode
+          ? '<i data-lucide="sun" class="w-4 h-4 text-amber-400"></i>'
+          : '<i data-lucide="moon" class="w-4 h-4 text-slate-600"></i>';
+      }
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function toggleDarkMode() {
+      state.darkMode = !state.darkMode;
+      try {
+        localStorage.setItem('theme', state.darkMode ? 'dark' : 'light');
+      } catch (e) {}
+      applyTheme();
     }
 
     function toggleSidebar() {
@@ -1797,8 +1856,14 @@ bot.launch();</code></pre>
 
     function setItemTargetFormat(id, format) {
       const item = state.queue.find(q => q.id === id);
-      if (item && item.status === 'PENDING') {
+      if (item && item.status !== 'CONVERTING') {
         item.targetFormat = format;
+        if (item.status === 'SUCCESS' || item.status === 'FAILED' || item.status === 'CANCELLED') {
+          item.status = 'PENDING';
+          item.progress = 0;
+          item.stage = 'Ready to convert';
+          item.output = null;
+        }
         renderQueueUI();
       }
     }
@@ -2123,11 +2188,22 @@ bot.launch();</code></pre>
       if (filtered.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="6" class="py-8 text-center text-slate-400 text-xs">
-              No conversion history found matching criteria.
+            <td colspan="6" class="py-12 text-center text-slate-500">
+              <p class="text-sm font-medium">No conversion history found matching criteria.</p>
+              <div class="pt-3 flex justify-center gap-2">
+                <button onclick="navigate('converter')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow transition">
+                  <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                  <span>Convert a File Now</span>
+                </button>
+                <button onclick="loadSamplePPI(false); navigate('converter');" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold transition">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-brand-600"></i>
+                  <span>Load Demo Pack</span>
+                </button>
+              </div>
             </td>
           </tr>
         `;
+        if (window.lucide) lucide.createIcons();
         return;
       }
 
@@ -2267,13 +2343,29 @@ bot.launch();</code></pre>
 
       if (state.queue.length === 0) {
         container.innerHTML = `
-          <div id="queue-empty-state" class="p-12 text-center rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/30">
-            <i data-lucide="inbox" class="w-10 h-10 mx-auto text-slate-400 mb-2"></i>
-            <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Queue is empty</p>
-            <p class="text-xs text-slate-500 mt-1">Upload files or click "Load Sample PPI" to start testing.</p>
+          <div id="queue-empty-state" class="p-12 text-center rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/30 space-y-4">
+            <i data-lucide="file-music" class="w-12 h-12 mx-auto text-slate-400"></i>
+            <div>
+              <p class="text-sm font-bold text-slate-800 dark:text-slate-200">Conversion Queue is Empty</p>
+              <p class="text-xs text-slate-500 mt-1">Add Yamaha PPI files via drag-and-drop above, or test right now using our built-in sample generators.</p>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <button onclick="loadSamplePPI(false)" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs shadow-md transition">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                <span>Load Sample PPI</span>
+              </button>
+              <button onclick="loadSamplePPI(true)" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs transition">
+                <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-amber-500"></i>
+                <span>Test Protected CPI</span>
+              </button>
+              <button onclick="triggerFileInput()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs transition">
+                <i data-lucide="folder-search" class="w-3.5 h-3.5"></i>
+                <span>Browse Files</span>
+              </button>
+            </div>
           </div>
         `;
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
         return;
       }
 
@@ -2301,33 +2393,55 @@ bot.launch();</code></pre>
             <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
               <!-- Format Selection Radio / Dropdown -->
               <div class="flex items-center rounded-xl bg-slate-100 dark:bg-slate-800 p-1 text-xs">
-                <button onclick="setItemTargetFormat('${item.id}', 'PPF')" ${item.status !== 'PENDING' ? 'disabled' : ''}
+                <button onclick="setItemTargetFormat('${item.id}', 'PPF')" ${item.status === 'CONVERTING' ? 'disabled' : ''}
                         class="px-3 py-1 rounded-lg font-semibold transition ${item.targetFormat === 'PPF' ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-sm' : 'text-slate-600 dark:text-slate-400'}">
                   PPF (YEM Zip)
                 </button>
-                <button onclick="setItemTargetFormat('${item.id}', 'YEP')" ${item.status !== 'PENDING' ? 'disabled' : ''}
+                <button onclick="setItemTargetFormat('${item.id}', 'YEP')" ${item.status === 'CONVERTING' ? 'disabled' : ''}
                         class="px-3 py-1 rounded-lg font-semibold transition ${item.targetFormat === 'YEP' ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-sm' : 'text-slate-600 dark:text-slate-400'}">
                   YEP (Legacy)
                 </button>
               </div>
 
-              <!-- Main Convert / Download / Cancel Buttons -->
+              <!-- Main Convert / Download / Cancel / Retry / Re-run Buttons -->
               ${item.status === 'PENDING' ? `
-                <button onclick="convertItem('${item.id}')" class="px-4 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs shadow-md transition">
-                  Convert
+                <button onclick="convertItem('${item.id}')" class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs shadow-md transition">
+                  <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                  <span>Convert</span>
                 </button>
               ` : ''}
 
               ${item.status === 'CONVERTING' ? `
-                <button onclick="cancelConversion('${item.id}')" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900 text-xs font-semibold transition">
-                  Cancel
+                <button onclick="cancelConversion('${item.id}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900 text-xs font-semibold transition">
+                  <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                  <span>Cancel</span>
                 </button>
               ` : ''}
 
               ${item.status === 'SUCCESS' ? `
-                <button onclick="downloadConvertedItem('${item.id}')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-md transition">
-                  <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                  <span>Download ${item.output.filename}</span>
+                <div class="inline-flex items-center gap-1.5">
+                  <button onclick="downloadConvertedItem('${item.id}')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-md transition">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                    <span>Download</span>
+                  </button>
+                  <button onclick="convertItem('${item.id}')" title="Re-convert package" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                    <span class="hidden sm:inline">Re-run</span>
+                  </button>
+                </div>
+              ` : ''}
+
+              ${item.status === 'FAILED' ? `
+                <button onclick="convertItem('${item.id}')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs shadow-md transition">
+                  <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                  <span>Retry</span>
+                </button>
+              ` : ''}
+
+              ${item.status === 'CANCELLED' ? `
+                <button onclick="convertItem('${item.id}')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs shadow-md transition">
+                  <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                  <span>Start</span>
                 </button>
               ` : ''}
 
@@ -2460,7 +2574,7 @@ bot.launch();</code></pre>
 
     // Initialize application on load
     window.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
+      initTheme();
       updateStatsUI();
       renderQueueUI();
       renderRecentDashboardTable();
