@@ -107,66 +107,6 @@ export const AuthGate: React.FC<AuthGateProps> = ({
     }
   };
 
-  // Google Identity Services (GIS) One-Tap / Button render if Client ID is configured
-  useEffect(() => {
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    if (!clientId || typeof window === "undefined") return;
-
-    const initGIS = () => {
-      const google = (window as any).google;
-      if (!google?.accounts?.id) return;
-
-      try {
-        google.accounts.id.initialize({
-          client_id: clientId.trim(),
-          callback: async (response: any) => {
-            if (response?.credential) {
-              setLoading(true);
-              try {
-                const res = await fetch("/api/auth/google", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ credential: response.credential }),
-                });
-                const data = await res.json();
-                if (res.ok && data.user) {
-                  onLogin(data.user);
-                } else {
-                  setError(data.error || (language === "kh" ? "ការផ្ទៀងផ្ទាត់ Google បរាជ័យ" : "Google verification failed"));
-                }
-              } catch (e: any) {
-                setError(e.message || (language === "kh" ? "មានបញ្ហាក្នុងការផ្ទៀងផ្ទាត់ Google" : "Google authentication error"));
-              } finally {
-                setLoading(false);
-              }
-            }
-          },
-        });
-
-        const btnContainer = document.getElementById("google_gis_btn_container");
-        if (btnContainer) {
-          btnContainer.innerHTML = "";
-          google.accounts.id.renderButton(btnContainer, {
-            theme: darkMode ? "filled_black" : "outline",
-            size: "large",
-            shape: "rectangular",
-            text: "continue_with",
-            width: btnContainer.offsetWidth || 340,
-          });
-        }
-      } catch (e) {
-        console.warn("Google Identity Services initialization:", e);
-      }
-    };
-
-    if ((window as any).google?.accounts?.id) {
-      initGIS();
-    } else {
-      const timer = setTimeout(initGIS, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [darkMode, authMode, language]);
-
   // Telegram Authentication Handler
   const handleTelegramSignInClick = async () => {
     setLoading(true);
@@ -222,11 +162,11 @@ export const AuthGate: React.FC<AuthGateProps> = ({
   };
 
   return (
-    <div className="relative isolate flex min-h-dvh items-center justify-center overflow-hidden bg-[#f4ede1] p-0 sm:p-6 dark:bg-[#070b14] transition-colors duration-200">
-      {/* Subtle Background Pattern */}
-      <div className="absolute inset-0 -z-10 pointer-events-none bg-[radial-gradient(#d1d5db_1px,transparent_1px)] dark:bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:20px_20px] opacity-60" />
-      <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full bg-brand-500/10 dark:bg-brand-500/5 blur-3xl pointer-events-none -z-10" />
-      <div className="absolute bottom-1/4 -right-32 w-96 h-96 rounded-full bg-purple-500/10 dark:bg-purple-500/5 blur-3xl pointer-events-none -z-10" />
+    <div className="relative isolate flex min-h-dvh items-center justify-center overflow-hidden bg-slate-50 dark:bg-[#070b14] p-0 sm:p-6 transition-colors duration-200">
+      {/* Clean Ambient Studio Background */}
+      <div className="absolute inset-0 -z-10 pointer-events-none bg-gradient-to-b from-slate-100/80 via-slate-50 to-slate-100/80 dark:from-[#0a0f1d] dark:via-[#070b14] dark:to-[#05070d]" />
+      <div className="absolute top-1/3 -left-32 w-96 h-96 rounded-full bg-brand-500/10 dark:bg-brand-500/10 blur-[100px] pointer-events-none -z-10" />
+      <div className="absolute bottom-1/3 -right-32 w-96 h-96 rounded-full bg-purple-500/10 dark:bg-purple-500/10 blur-[100px] pointer-events-none -z-10" />
 
       {/* Top-Right Floating Controls (Language & Theme) */}
       <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 rounded-xl border border-slate-300/80 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 p-1 backdrop-blur-md shadow-sm">
@@ -257,24 +197,14 @@ export const AuthGate: React.FC<AuthGateProps> = ({
 
       {/* Main Split-Screen Login Card */}
       <div className="login-card grid w-full max-w-[760px] overflow-hidden bg-white shadow-2xl shadow-slate-900/10 ring-1 ring-slate-900/5 sm:rounded-2xl lg:min-h-[580px] lg:grid-cols-[330px_1fr] dark:bg-[#020817] dark:shadow-black/70 dark:ring-white/10">
-        {/* Left Hero Sidebar (Desktop) */}
-        <aside className="relative hidden shrink-0 flex-col justify-between overflow-hidden bg-[#070b14] text-white lg:flex">
-          {/* Hero Photo / Studio Cover */}
-          <Image
-            src="/telegram-mini-app-640x360.jpg"
-            alt="Yamaha ExpVoice Studio"
-            fill
-            priority
-            sizes="330px"
-            className="hero-photo scale-105 object-cover opacity-55"
-          />
-
-          {/* Overlay Vignette Gradients */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-[48%] bg-gradient-to-b from-[#070b14]/95 via-[#070b14]/55 to-transparent" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[48%] bg-gradient-to-t from-[#070b14] via-[#070b14]/85 to-transparent" />
+        {/* Left Hero Sidebar (Desktop - Clean Studio Aesthetics) */}
+        <aside className="relative hidden shrink-0 flex-col justify-between overflow-hidden bg-gradient-to-b from-[#0b1020] via-[#080d1a] to-[#04060d] text-white lg:flex border-r border-white/5">
+          {/* Subtle Studio Glow Highlights */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500/15 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+          <div className="absolute bottom-16 left-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none -ml-20" />
 
           {/* Top Branding Section */}
-          <div className="relative px-7 pt-[34px]">
+          <div className="relative px-7 pt-[34px] z-10">
             <div className="size-[52px] overflow-hidden rounded-[14px] bg-white/95 p-2 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.7),0_10px_28px_-12px_rgba(0,0,0,0.5)] flex items-center justify-center">
               <Image
                 src="/logomark.svg"
@@ -284,22 +214,57 @@ export const AuthGate: React.FC<AuthGateProps> = ({
                 className="rounded-lg"
               />
             </div>
-            <h2 className="mt-3 font-heading text-[22px] leading-tight font-bold tracking-[-0.77px] text-white/[0.97] [text-shadow:0_2px_12px_rgba(0,0,0,0.45)]">
+            <h2 className="mt-4 font-heading text-[22px] leading-tight font-bold tracking-[-0.77px] text-white">
               ExpVoice Studio
             </h2>
-            <p className="mt-1 text-[11px] font-medium text-slate-300/85 tracking-wide">
+            <p className="mt-1 text-[11px] font-medium text-slate-400 tracking-wide">
               Yamaha PPI / PPF / YEP Suite
             </p>
           </div>
 
+          {/* Middle Sound Wave / Synthesizer Graphic */}
+          <div className="relative px-7 py-6 z-10 space-y-4">
+            <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/10 backdrop-blur-sm space-y-2.5">
+              <div className="flex items-center justify-between text-[11px] text-slate-300 font-medium">
+                <span>AWM2 Synthesis Engine</span>
+                <span className="text-emerald-400 font-mono text-[10px]">44.1kHz • 16-Bit</span>
+              </div>
+              {/* Animated / Soundwave Frequency Bars */}
+              <div className="flex items-end gap-1 h-10 pt-2">
+                {[40, 65, 85, 45, 95, 70, 50, 80, 100, 60, 75, 90, 55, 85, 65, 40, 70, 95, 50, 35].map((h, idx) => (
+                  <div
+                    key={idx}
+                    className="flex-1 rounded-full bg-gradient-to-t from-brand-500/60 to-cyan-400/80 transition-all duration-300"
+                    style={{ height: `${h}%` }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-1.5 text-[11px] text-slate-400">
+              <div className="flex items-center gap-2">
+                <span className="size-1 rounded-full bg-brand-400" />
+                <span>Lossless Voice & Wave Transcoder</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="size-1 rounded-full bg-brand-400" />
+                <span>PSR-SX / Genos / S-Series Compatibility</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="size-1 rounded-full bg-brand-400" />
+                <span>Khmer & World Acoustic Presets</span>
+              </div>
+            </div>
+          </div>
+
           {/* Bottom Information Section */}
-          <div className="relative px-7 pb-6">
+          <div className="relative px-7 pb-6 z-10">
             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[11px] font-medium">
               <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span>Neon Cloud DB &bull; AWM2 v2.5</span>
             </div>
-            <div className="my-3 h-px w-10 bg-white/35" />
-            <p className="text-[10px] tracking-[1.4px] text-white/[0.65] uppercase leading-relaxed [text-shadow:0_1px_8px_rgba(0,0,0,0.3)]">
+            <div className="my-3 h-px w-10 bg-white/20" />
+            <p className="text-[10px] tracking-[1.4px] text-slate-400 uppercase leading-relaxed">
               Professional Yamaha Expansion Voice File Converter System
             </p>
           </div>
@@ -517,9 +482,6 @@ export const AuthGate: React.FC<AuthGateProps> = ({
                     <span>Telegram</span>
                   </button>
                 </div>
-
-                {/* Google Identity Services Container */}
-                <div id="google_gis_btn_container" className="w-full flex justify-center empty:hidden mt-2" />
               </div>
             </form>
 

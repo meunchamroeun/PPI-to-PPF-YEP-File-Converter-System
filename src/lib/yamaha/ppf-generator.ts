@@ -48,26 +48,54 @@ export class YamahaPPFGenerator {
     const packXml = this.generatePackXml(data);
     zip.file("Pack.xml", packXml);
 
-    // 2. Add Voices Folder & .uvf XML files
+    const voiceList =
+      data.voiceNames && data.voiceNames.length > 0
+        ? data.voiceNames
+        : Array.from({ length: data.voicesCount }, (_, i) => `${data.packName} Voice ${i + 1}`);
+
+    // 2. Add Voices Folder & .uvf XML files + .vce standalone files
     const voicesFolder = zip.folder("Voices");
-    for (let i = 1; i <= data.voicesCount; i++) {
+    const vceFolder = zip.folder("VCE_Direct_USB");
+
+    voiceList.forEach((voiceName, idx) => {
+      const i = idx + 1;
+      const sanitizedName = voiceName.replace(/[^a-zA-Z0-9_\- ]/g, "_");
       const uvfXml = `<?xml version="1.0" encoding="UTF-8"?>
-<UserVoiceFormat version="1.0">
-  <VoiceName>${this.escapeXML(data.packName)} Voice ${i}</VoiceName>
-  <Oscillator count="2">
-    <Element id="1">
-      <WaveformRef>W${String(i).padStart(3, "0")}</WaveformRef>
-      <KeyRangeLow>0</KeyRangeLow>
-      <KeyRangeHigh>127</KeyRangeHigh>
-      <FilterCutoff>64</FilterCutoff>
-      <Resonance>32</Resonance>
-      <AttackTime>12</AttackTime>
-      <ReleaseTime>48</ReleaseTime>
-    </Element>
-  </Oscillator>
-</UserVoiceFormat>`;
-      voicesFolder?.file(`Voice_${String(i).padStart(3, "0")}.uvf`, uvfXml);
-    }
+<uvf version="2.0">
+  <information>
+    <voiceName>${this.escapeXML(voiceName)}</voiceName>
+    <msb>63</msb>
+    <lsb>32</lsb>
+    <programChange>${i}</programChange>
+    <format>AWM2</format>
+  </information>
+  <voiceCommon>
+    <monoPoly>poly</monoPoly>
+    <portamento>off</portamento>
+    <keyAssign>single</keyAssign>
+  </voiceCommon>
+  <voiceSet>
+    <filterCutoff>64</filterCutoff>
+    <resonance>32</resonance>
+    <attackTime>16</attackTime>
+    <decayTime>32</decayTime>
+    <releaseTime>48</releaseTime>
+  </voiceSet>
+  <element count="1">
+    <elementId>1</elementId>
+    <waveformRef>W${String(i).padStart(3, "0")}</waveformRef>
+    <lowKey>0</lowKey>
+    <highKey>127</highKey>
+    <lowVelocity>1</lowVelocity>
+    <highVelocity>127</highVelocity>
+  </element>
+</uvf>`;
+      voicesFolder?.file(`Voice_${String(i).padStart(3, "0")}_${sanitizedName}.uvf`, uvfXml);
+
+      // Create valid Yamaha Voice (.vce) MIDI container for direct keyboard USB loading
+      const vceData = this.createSyntheticVce(voiceName, 63, 32, i);
+      vceFolder?.file(`${sanitizedName}.vce`, vceData);
+    });
 
     // 3. Add Styles Folder & Yamaha SFF2 accompaniment chunk
     const stylesFolder = zip.folder("Styles");
@@ -104,6 +132,11 @@ export class YamahaPPFGenerator {
    * Produce the complete Pack.xml manifest
    */
   public static generatePackXml(data: ParsedPPIData): string {
+    const voiceList =
+      data.voiceNames && data.voiceNames.length > 0
+        ? data.voiceNames
+        : Array.from({ length: data.voicesCount }, (_, i) => `${data.packName} Voice ${i + 1}`);
+
     return `<?xml version="1.0" encoding="UTF-8"?>
 <PackProject xmlns="http://yamaha.com/expansion/pack/1.0">
   <Header>
@@ -118,17 +151,21 @@ export class YamahaPPFGenerator {
     <CreatedAt>${new Date().toISOString()}</CreatedAt>
   </Header>
   <Contents>
-    <Voices count="${data.voicesCount}">
-      ${Array.from({ length: data.voicesCount })
+    <Voices count="${voiceList.length}">
+      ${voiceList
         .map(
-          (_, i) => `
-      <Voice id="V${String(i + 1).padStart(3, "0")}">
-        <Name>${this.escapeXML(data.packName)} Voice ${i + 1}</Name>
-        <ProgramChange>${i + 1}</ProgramChange>
+          (voiceName, idx) => {
+            const i = idx + 1;
+            const sanitizedName = voiceName.replace(/[^a-zA-Z0-9_\- ]/g, "_");
+            return `
+      <Voice id="V${String(i).padStart(3, "0")}">
+        <Name>${this.escapeXML(voiceName)}</Name>
+        <ProgramChange>${i}</ProgramChange>
         <BankMSB>63</BankMSB>
         <BankLSB>32</BankLSB>
-        <File>Voices/Voice_${String(i + 1).padStart(3, "0")}.uvf</File>
-      </Voice>`
+        <File>Voices/Voice_${String(i).padStart(3, "0")}_${sanitizedName}.uvf</File>
+      </Voice>`;
+          }
         )
         .join("")}
     </Voices>
@@ -158,6 +195,36 @@ export class YamahaPPFGenerator {
     </Waveforms>
   </Contents>
 </PackProject>`;
+  }
+
+  /**
+   * Generate valid Yamaha .vce Voice file (MIDI Header + Voice Meta) for direct USB loading
+   */
+  public static createSyntheticVce(name: string, msb = 63, lsb = 32, pc = 1): Uint8Array {
+    const header = [
+      0x4d, 0x54, 0x68, 0x64, // 'MThd'
+      0x00, 0x00, 0x00, 0x06, // size = 6
+      0x00, 0x00,             // format 0
+      0x00, 0x01,             // 1 track
+      0x01, 0xe0,             // 480 ppqn
+      0x4d, 0x54, 0x72, 0x6b, // 'MTrk'
+    ];
+    const trackData = [
+      0x00, 0xb0, 0x00, msb & 0x7f,
+      0x00, 0xb0, 0x20, lsb & 0x7f,
+      0x00, 0xc0, (pc - 1) & 0x7f,
+      0x00, 0xff, 0x03, Math.min(name.length, 64),
+      ...Array.from(name.slice(0, 64)).map((c) => c.charCodeAt(0)),
+      0x00, 0xff, 0x2f, 0x00,
+    ];
+    const trackSize = trackData.length;
+    const sizeBytes = [
+      (trackSize >> 24) & 0xff,
+      (trackSize >> 16) & 0xff,
+      (trackSize >> 8) & 0xff,
+      trackSize & 0xff,
+    ];
+    return new Uint8Array([...header, ...sizeBytes, ...trackData]);
   }
 
   /**
