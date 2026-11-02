@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
+import { Logo } from "@/components/ui/logo";
 import { UserSession } from "@/components/AuthModal";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
@@ -249,24 +250,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 transition-colors duration-200">
       {/* Top Header */}
       <header className="w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 sm:px-8 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center text-white font-black text-sm shadow-md shadow-brand-500/20">
-            Y
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-black text-sm sm:text-base tracking-tight text-slate-900 dark:text-white">
-                YAMAHA
-              </span>
-              <span className="text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-800">
-                Expansion Studio
-              </span>
-            </div>
-            <p className="text-[10px] text-slate-500 font-medium hidden sm:block">
-              PPI to PPF / YEP Converter &bull; AWM2 Inspector &bull; Sound AI
-            </p>
-          </div>
-        </div>
+        <Logo variant="full" size="sm" />
 
         <div className="flex items-center gap-2">
           <LanguageSwitcher />

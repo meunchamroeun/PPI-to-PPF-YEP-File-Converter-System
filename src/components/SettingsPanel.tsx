@@ -22,6 +22,7 @@ import {
   Lock,
   User,
   Crown,
+  Download,
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ import { Badge } from "@/components/ui/badge";
 import { BaseSwitch } from "@/components/ui/base-switch";
 import { UserSession } from "@/components/AuthModal";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
+import { Logo } from "@/components/ui/logo";
 
 interface SettingsPanelProps {
   currentUser: UserSession | null;
@@ -325,6 +327,62 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 <Moon className="w-3.5 h-3.5 shrink-0" />
                 <span>{t("theme_dark")}</span>
               </button>
+            </div>
+          </Card>
+
+          {/* Logo & Brand Identity Kit */}
+          <Card className="p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  {language === "kh" ? "ឡូហ្គោប្រព័ន្ធ & Brand Kit" : "System Logo & Brand Kit"}
+                </CardTitle>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  {language === "kh" ? "ទាញយកឡូហ្គោច្បាស់កម្រិតខ្ពស់ (Vector SVG & HD PNG)" : "Download high-resolution vector and PNG brand logos"}
+                </p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden">
+              <Logo variant="full" size="sm" showBadge={false} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <a
+                href="/logo.svg"
+                download="yamaha-expvoice-logo.svg"
+                className="flex items-center justify-between p-2 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/80 text-xs font-medium text-slate-700 dark:text-slate-300 transition active:scale-[0.97]"
+              >
+                <span>Vector SVG</span>
+                <Download className="w-3.5 h-3.5 text-brand-500" />
+              </a>
+
+              <a
+                href="/logomark.png"
+                download="yamaha-expvoice-mark-1024.png"
+                className="flex items-center justify-between p-2 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/80 text-xs font-medium text-slate-700 dark:text-slate-300 transition active:scale-[0.97]"
+              >
+                <span>Mark (1024px)</span>
+                <Download className="w-3.5 h-3.5 text-indigo-500" />
+              </a>
+
+              <a
+                href="/logo-dark.png"
+                download="yamaha-expvoice-dark.png"
+                className="flex items-center justify-between p-2 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/80 text-xs font-medium text-slate-700 dark:text-slate-300 transition active:scale-[0.97]"
+              >
+                <span>Dark Logo (HD)</span>
+                <Download className="w-3.5 h-3.5 text-cyan-500" />
+              </a>
+
+              <a
+                href="/logo-light.png"
+                download="yamaha-expvoice-light.png"
+                className="flex items-center justify-between p-2 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/80 text-xs font-medium text-slate-700 dark:text-slate-300 transition active:scale-[0.97]"
+              >
+                <span>Light Logo (HD)</span>
+                <Download className="w-3.5 h-3.5 text-amber-500" />
+              </a>
             </div>
           </Card>
         </div>
