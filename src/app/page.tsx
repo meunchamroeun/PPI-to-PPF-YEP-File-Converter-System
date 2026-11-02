@@ -1687,7 +1687,7 @@ export default function YamahaConverterApp() {
                     <div className="p-3 bg-slate-900 text-emerald-400 font-mono text-xs max-h-56 overflow-y-auto">
                       <pre>
                         {activeInspectorItem.output?.xml ||
-                          YamahaPPFGenerator.generatePackXml(activeInspectorItem.parsedData)}
+                          YamahaPPFGenerator.generatePackXml(activeInspectorItem.parsedData, activeInspectorItem.parsedData.voiceNames ?? Array.from({ length: activeInspectorItem.parsedData.voicesCount }, (_, i) => `Voice ${i + 1}`), activeInspectorItem.parsedData.signature === "XPIH")}
                       </pre>
                     </div>
                   </Card>

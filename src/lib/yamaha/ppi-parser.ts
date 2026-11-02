@@ -3,23 +3,41 @@
  * YAMAHA PPI (PACK PROJECT INSTALLATION) BINARY PARSER
  * ==============================================================================
  * Yamaha Arranger Keyboards (Genos, Tyros, PSR-SX, PSR-S series)
- * 
- * PPI Binary Container Specification:
- * - Magic Signature: "PAC " (0x50 0x41 0x43 0x20) or "PAC1" (0x50 0x41 0x43 0x31)
- * - Protected Signature: "CPI " (0x43 0x50 0x49 0x20) - Encrypted via .n27 key
- * - Version: 4 bytes (major, minor)
- * - Header Size: 4 bytes (uint32)
- * - Security / DRM Flag: byte 12 (0x00 = unencrypted, 0x01 = encrypted)
- * - Target Model: 48 bytes ASCII string
- * - Pack Name: 64 bytes UTF-8 null-terminated string
- * - Author / Designer: 64 bytes UTF-8 string
- * - Chunk stream: [TAG: 4B] [SIZE: 4B uint32 BE] [PAYLOAD: SIZE bytes]
+ *
+ * XPIH PPI Binary Container Specification:
+ * - Magic: "XPIH" (0x58 0x50 0x49 0x48) - Expansion Pack Installer Header
+ * - XMDL chunk: target model string (e.g. "PSR-S770")
+ * - XPID chunk: pack UUID / signature
+ * - VWDL chunk: wave descriptor lookup table (index into VWST)
+ * - VWST chunk: AWM2 compressed sample binary (proprietary, Yamaha hardware-locked)
+ * - VPRS chunk: voice parameter registers (AWM2 filter/AEG/pitch/pan etc.)
+ * - PACK chunks: manifest with ETIT (voice title), BLOB (voice data), FICO (icon)
+ *
+ * PAC / PAC1 / YPAC Container:
+ * - Magic: "PAC " / "PAC1" / "YPAC"
+ * - Version: bytes 4-5
+ * - DRM flag: byte 12 (0x01 = encrypted)
+ * - Pack name: 64 bytes at offset 64
+ * - Author: 64 bytes at offset 128
+ * - Chunk stream: [TAG 4B][SIZE 4B uint32 BE][PAYLOAD SIZE bytes]
+ *
+ * CPI Container: Same as PAC but encrypted (requires .n27 hardware key)
  */
 
 export interface ParsedChunk {
   type: string;
   offset: number;
   size: number;
+}
+
+export interface XPIHChunkMap {
+  vwdlOffset: number;
+  vwdlSize: number;
+  vwstOffset: number;
+  vwstSize: number;
+  vprsOffset: number;
+  vprsSize: number;
+  packOffsets: Array<{ offset: number; size: number }>;
 }
 
 export interface ParsedPPIData {
@@ -36,6 +54,8 @@ export interface ParsedPPIData {
   chunks: ParsedChunk[];
   byteLength: number;
   rawBuffer: ArrayBuffer;
+  /** XPIH-specific chunk map — populated when magic === "XPIH" */
+  xpihChunks?: XPIHChunkMap;
 }
 
 export class YamahaPPIParser {
@@ -54,9 +74,9 @@ export class YamahaPPIParser {
     const isXPIH = magic === "XPIH";
     const isPAC = magic === "PAC " || magic === "PAC1" || magic === "YPAC";
     const isCPI = magic === "CPI " || magic === "CPI1";
-    const isPKZip = uint8[0] === 0x50 && uint8[1] === 0x4b; // Already zipped PPF
+    const isPKZip = uint8[0] === 0x50 && uint8[1] === 0x4b; // Already a PPF ZIP
 
-    // 2. Encryption / DRM Security Check
+    // 2. DRM / encryption check
     let isEncrypted = false;
     if (isCPI || fileName.toLowerCase().endsWith(".cpi")) {
       isEncrypted = true;
@@ -64,47 +84,83 @@ export class YamahaPPIParser {
       isEncrypted = true;
     }
 
-    // 3. Metadata Extraction
+    // 3. Metadata extraction
     let packName = fileName.replace(/\.[^/.]+$/, "");
     let author = "Expansion Voice Designer";
     let targetHardware = "Yamaha Arranger Keyboard";
     let formatVersion = "v2.0";
     let chunksFound: ParsedChunk[] = [];
     let detectedVoices: string[] = [];
+    let xpihChunks: XPIHChunkMap | undefined;
 
     if (isXPIH) {
-      formatVersion = "Yamaha PPI Container (XPIH v2.5)";
-      
-      // Parse XPIH header chunks (XMDL, XPID)
-      const xmdlIndex = this.findAscii(uint8, "XMDL", 0, 1024);
+      formatVersion = "XPIH v2.5";
+
+      // --- Parse XMDL (target model string) ---
+      const xmdlIndex = this.findTag(uint8, "XMDL", 0, 1024);
       if (xmdlIndex !== -1) {
-        const xmdlSize = (uint8[xmdlIndex + 4] << 24) | (uint8[xmdlIndex + 5] << 16) | (uint8[xmdlIndex + 6] << 8) | uint8[xmdlIndex + 7];
+        const xmdlSize = this.readUint32BE(uint8, xmdlIndex + 4);
         const rawModel = this.extractString(uint8, xmdlIndex + 8, Math.min(xmdlSize || 32, 64));
         if (rawModel) targetHardware = `Yamaha ${rawModel}`;
       }
 
-      // Scan for real Voice titles (ETIT) inside PACK chunk
-      detectedVoices = this.extractVoiceTitles(uint8);
+      // --- Locate primary XPIH chunks ---
+      const vwdlIdx = this.findTag(uint8, "VWDL", 0, buffer.byteLength);
+      const vwstIdx = this.findTag(uint8, "VWST", 0, buffer.byteLength);
+      const vprsIdx = this.findTag(uint8, "VPRS", 0, buffer.byteLength);
+
+      const vwdlOffset = vwdlIdx !== -1 ? vwdlIdx : -1;
+      const vwdlSize   = vwdlIdx !== -1 ? this.readUint32BE(uint8, vwdlIdx + 4) : 0;
+      const vwstOffset = vwstIdx !== -1 ? vwstIdx : -1;
+      const vwstSize   = vwstIdx !== -1 ? this.readUint32BE(uint8, vwstIdx + 4) : 0;
+      const vprsOffset = vprsIdx !== -1 ? vprsIdx : -1;
+      const vprsSize   = vprsIdx !== -1 ? this.readUint32BE(uint8, vprsIdx + 4) : 0;
+
+      // --- Locate all PACK chunks and extract ETIT voice titles ---
+      const packOffsets: Array<{ offset: number; size: number }> = [];
+      let searchPos = 0;
+      while (searchPos < buffer.byteLength - 8) {
+        const packIdx = this.findTag(uint8, "PACK", searchPos, buffer.byteLength);
+        if (packIdx === -1) break;
+        const packSize = this.readUint32BE(uint8, packIdx + 4);
+        packOffsets.push({ offset: packIdx, size: packSize });
+        // Extract ETIT entries from this PACK chunk
+        const etitVoices = this.extractEtitTitles(uint8, packIdx + 8, packSize);
+        for (const v of etitVoices) {
+          if (!detectedVoices.includes(v)) detectedVoices.push(v);
+        }
+        searchPos = packIdx + 8 + packSize;
+      }
+
+      xpihChunks = {
+        vwdlOffset,
+        vwdlSize,
+        vwstOffset,
+        vwstSize,
+        vprsOffset,
+        vprsSize,
+        packOffsets,
+      };
+
       chunksFound.push({ type: "XPIH", offset: 0, size: 28 });
-      chunksFound.push({ type: "VWDL", offset: 36, size: 50656 });
-      chunksFound.push({ type: "VOIC", offset: 155546900, size: detectedVoices.length });
+      if (vwdlIdx !== -1) chunksFound.push({ type: "VWDL", offset: vwdlOffset, size: vwdlSize });
+      if (vwstIdx !== -1) chunksFound.push({ type: "VWST", offset: vwstOffset, size: vwstSize });
+      if (vprsIdx !== -1) chunksFound.push({ type: "VPRS", offset: vprsOffset, size: vprsSize });
+      for (const p of packOffsets) {
+        chunksFound.push({ type: "PACK", offset: p.offset, size: p.size });
+      }
+
     } else if (isPAC || isCPI) {
       formatVersion = `v${uint8[4] || 1}.${uint8[5] || 0}`;
 
-      // Extract pack title from header offset 64
       const extractedTitle = this.extractString(uint8, 64, 64);
-      if (extractedTitle && extractedTitle.length > 2) {
-        packName = extractedTitle;
-      }
+      if (extractedTitle && extractedTitle.length > 2) packName = extractedTitle;
 
-      // Extract author from header offset 128
       const extractedAuthor = this.extractString(uint8, 128, 64);
-      if (extractedAuthor && extractedAuthor.length > 2) {
-        author = extractedAuthor;
-      }
+      if (extractedAuthor && extractedAuthor.length > 2) author = extractedAuthor;
 
-      // Scan for Yamaha chunk tags
       chunksFound = this.scanChunks(uint8);
+
     } else if (isPKZip) {
       formatVersion = "PPF Project Archive (PKZip)";
       chunksFound.push({ type: "ZIP_ENTRY", offset: 0, size: buffer.byteLength });
@@ -113,9 +169,16 @@ export class YamahaPPIParser {
       chunksFound.push({ type: "DATA", offset: 0, size: buffer.byteLength });
     }
 
-    const voicesCount = detectedVoices.length > 0 ? detectedVoices.length : chunksFound.filter((c) => c.type === "VOIC").length || 3;
-    const stylesCount = chunksFound.filter((c) => c.type === "STYL").length || (isXPIH ? 4 : 1);
-    const waveCount = chunksFound.filter((c) => c.type === "WAVE" || c.type === "SAMP").length || (isXPIH ? Math.max(voicesCount, 8) : 4);
+    // Count derived stats
+    const voicesCount =
+      detectedVoices.length > 0
+        ? detectedVoices.length
+        : chunksFound.filter((c) => c.type === "VOIC").length || 3;
+    const stylesCount =
+      chunksFound.filter((c) => c.type === "STYL").length || (isXPIH ? 0 : 1);
+    const waveCount =
+      chunksFound.filter((c) => c.type === "WAVE" || c.type === "SAMP" || c.type === "VWST").length ||
+      (isXPIH ? Math.max(voicesCount, 8) : 4);
 
     return {
       signature: magic || "BIN",
@@ -131,40 +194,46 @@ export class YamahaPPIParser {
       chunks: chunksFound,
       byteLength: buffer.byteLength,
       rawBuffer: buffer,
+      xpihChunks,
     };
   }
 
-  /**
-   * Extract Voice Titles (ETIT chunks) from real Yamaha PPI PACK
-   */
-  private static extractVoiceTitles(uint8: Uint8Array): string[] {
-    const titles: string[] = [];
-    const searchLimit = uint8.length - 16;
-    let pos = Math.max(0, uint8.length - 2000000); // ETIT is located inside the PACK index near the end
+  // ---------------------------------------------------------------------------
+  // XPIH helpers
+  // ---------------------------------------------------------------------------
 
-    while (pos < searchLimit) {
+  /**
+   * Extract voice title strings from ETIT sub-chunks within a PACK chunk payload.
+   */
+  private static extractEtitTitles(
+    uint8: Uint8Array,
+    payloadStart: number,
+    payloadSize: number
+  ): string[] {
+    const titles: string[] = [];
+    const limit = Math.min(payloadStart + payloadSize, uint8.length - 8);
+    let pos = payloadStart;
+    while (pos < limit) {
       if (
         uint8[pos] === 0x45 && // E
         uint8[pos + 1] === 0x54 && // T
         uint8[pos + 2] === 0x49 && // I
-        uint8[pos + 3] === 0x54 // T
+        uint8[pos + 3] === 0x54   // T
       ) {
-        const size = (uint8[pos + 4] << 24) | (uint8[pos + 5] << 16) | (uint8[pos + 6] << 8) | uint8[pos + 7];
+        const size = this.readUint32BE(uint8, pos + 4);
         if (size > 0 && size < 128) {
           let name = "";
           for (let k = 0; k < size; k++) {
             const byte = uint8[pos + 8 + k];
-            if (byte >= 32 && byte <= 126) {
-              name += String.fromCharCode(byte);
-            }
+            if (byte >= 32 && byte <= 126) name += String.fromCharCode(byte);
           }
           name = name.trim();
           if (name.length > 1 && !titles.includes(name)) {
             titles.push(name);
           }
-          pos += 8 + size;
-          continue;
         }
+        pos += 8 + Math.max(size, 0);
+        continue;
       }
       pos++;
     }
@@ -172,17 +241,61 @@ export class YamahaPPIParser {
   }
 
   /**
-   * Find ASCII token in buffer
+   * Search for a 4-byte ASCII tag in the buffer, returning its start index or -1.
    */
-  private static findAscii(uint8: Uint8Array, token: string, start: number, maxRange: number): number {
+  public static findTag(
+    uint8: Uint8Array,
+    tag: string,
+    start: number,
+    end: number
+  ): number {
+    const limit = Math.min(uint8.length - tag.length, end);
+    const c0 = tag.charCodeAt(0);
+    const c1 = tag.charCodeAt(1);
+    const c2 = tag.charCodeAt(2);
+    const c3 = tag.charCodeAt(3);
+    for (let i = start; i < limit; i++) {
+      if (
+        uint8[i] === c0 &&
+        uint8[i + 1] === c1 &&
+        uint8[i + 2] === c2 &&
+        uint8[i + 3] === c3
+      ) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  /** Read big-endian uint32 at offset */
+  private static readUint32BE(uint8: Uint8Array, offset: number): number {
+    return (
+      ((uint8[offset] << 24) |
+        (uint8[offset + 1] << 16) |
+        (uint8[offset + 2] << 8) |
+        uint8[offset + 3]) >>>
+      0
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // PAC helpers
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Find ASCII token in buffer (limited range search)
+   */
+  private static findAscii(
+    uint8: Uint8Array,
+    token: string,
+    start: number,
+    maxRange: number
+  ): number {
     const limit = Math.min(uint8.length - token.length, start + maxRange);
     for (let i = start; i < limit; i++) {
       let match = true;
       for (let j = 0; j < token.length; j++) {
-        if (uint8[i + j] !== token.charCodeAt(j)) {
-          match = false;
-          break;
-        }
+        if (uint8[i + j] !== token.charCodeAt(j)) { match = false; break; }
       }
       if (match) return i;
     }
@@ -190,7 +303,7 @@ export class YamahaPPIParser {
   }
 
   /**
-   * Scan byte stream for 4-byte chunk tags (EMHD, INFO, VOIC, STYL, WAVE)
+   * Scan byte stream for known 4-byte chunk tags (PAC/EMHD format)
    */
   public static scanChunks(uint8: Uint8Array): ParsedChunk[] {
     const chunks: ParsedChunk[] = [];
@@ -199,12 +312,13 @@ export class YamahaPPIParser {
     for (let i = 0; i < uint8.length - 8; i++) {
       const tag = String.fromCharCode(uint8[i], uint8[i + 1], uint8[i + 2], uint8[i + 3]);
       if (validTags.includes(tag)) {
-        const size = (uint8[i + 4] << 24) | (uint8[i + 5] << 16) | (uint8[i + 6] << 8) | uint8[i + 7];
-        chunks.push({
-          type: tag,
-          offset: i,
-          size: Math.abs(size) || 128,
-        });
+        const size =
+          ((uint8[i + 4] << 24) |
+            (uint8[i + 5] << 16) |
+            (uint8[i + 6] << 8) |
+            uint8[i + 7]) >>>
+          0;
+        chunks.push({ type: tag, offset: i, size: Math.max(size, 128) });
         i += 7;
       }
     }
@@ -221,9 +335,13 @@ export class YamahaPPIParser {
   }
 
   /**
-   * Read ASCII / UTF-8 null-terminated string
+   * Read ASCII / UTF-8 null-terminated string from buffer
    */
-  private static extractString(uint8: Uint8Array, start: number, maxLength: number): string {
+  private static extractString(
+    uint8: Uint8Array,
+    start: number,
+    maxLength: number
+  ): string {
     let str = "";
     for (let i = start; i < Math.min(uint8.length, start + maxLength); i++) {
       if (uint8[i] === 0 || uint8[i] < 32 || uint8[i] > 126) break;
