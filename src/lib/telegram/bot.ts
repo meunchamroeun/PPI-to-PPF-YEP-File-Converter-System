@@ -19,29 +19,37 @@ export function createTelegramBot(token?: string) {
   }
 
   const bot = new Telegraf(botToken);
-  const miniAppUrl = process.env.NEXT_PUBLIC_APP_URL || "https://app.yamaha-converter.io";
+  const miniAppUrl = process.env.NEXT_PUBLIC_APP_URL || "https://yamaha-ppi-to-ppf-converter.vercel.app";
 
   bot.start((ctx) => {
     ctx.reply(
-      `*Welcome to Yamaha Expansion Voice Studio!*\n\nConvert compiled Yamaha installation packages (\`.ppi\`) into editable project archives (\`.ppf\`) or legacy instrument formats (\`.yep\`).\n\nTap below to launch the Mini App:`,
+      `*សូមស្វាគមន៍មកកាន់ Yamaha ExpVoice Studio Bot!*\n\nConvert compiled Yamaha installation packages (\`.ppi\`) into editable project archives (\`.ppf\`) or legacy instrument formats (\`.yep\`).\n\nTap below to launch the Mini App:`,
       {
         parse_mode: "Markdown",
         reply_markup: {
           inline_keyboard: [
             [
               {
-                text: "Open ExpVoice Mini App",
+                text: "Launch Studio Mini App",
                 web_app: { url: miniAppUrl },
               },
             ],
             [
-              { text: "Conversion Docs", callback_data: "cmd_docs" },
-              { text: "Check Status", callback_data: "cmd_status" },
+              { text: "Documentation", callback_data: "cmd_docs" },
+              { text: "Server Status", callback_data: "cmd_status" },
             ],
           ],
         },
       }
     );
+  });
+
+  bot.command("app", (ctx) => {
+    ctx.reply("Tap the button below to open the Yamaha Expansion Studio Web Mini App:", {
+      reply_markup: {
+        inline_keyboard: [[{ text: "Launch Studio", web_app: { url: miniAppUrl } }]],
+      },
+    });
   });
 
   bot.command("convert", (ctx) => {
@@ -56,9 +64,30 @@ export function createTelegramBot(token?: string) {
   });
 
   bot.command("status", (ctx) => {
-    ctx.reply("Conversion Engine Status: *ONLINE*\n- Direct AWM2 Parser: Ready\n- PPF XML Transcoder: Ready\n- DRM Validator: Active", {
-      parse_mode: "Markdown",
-    });
+    ctx.reply(
+      "Conversion Engine Status: *ONLINE*\n- Direct AWM2 Parser: Ready\n- PPF XML Transcoder: Ready\n- DRM Validator: Active\n- Cloud Database: Neon PostgreSQL Connected",
+      {
+        parse_mode: "Markdown",
+      }
+    );
+  });
+
+  bot.action("cmd_docs", (ctx) => {
+    ctx.answerCbQuery();
+    ctx.reply(
+      "*Yamaha ExpVoice Studio Documentation*\n\n1. Supported inputs: unencrypted `.ppi` packages.\n2. Supported outputs: `.ppf` (Yamaha Expansion Manager project) and `.yep` (legacy PSR-S series).\n3. Encrypted `.cpi` packages require the matching hardware `.n27` instrument key.",
+      { parse_mode: "Markdown" }
+    );
+  });
+
+  bot.action("cmd_status", (ctx) => {
+    ctx.answerCbQuery();
+    ctx.reply(
+      "Conversion Engine Status: *ONLINE*\n- Cloud Database: Neon PostgreSQL\n- WebApp: https://yamaha-ppi-to-ppf-converter.vercel.app",
+      {
+        parse_mode: "Markdown",
+      }
+    );
   });
 
   bot.on("document", async (ctx) => {
@@ -68,7 +97,14 @@ export function createTelegramBot(token?: string) {
       if (isCpi) {
         ctx.reply("Notice: Protected Yamaha package (`.cpi`) detected. Conversion requires the hardware `.n27` instrument key.");
       } else {
-        ctx.reply(`Received Yamaha pack: "${doc.file_name}" (${(doc.file_size! / (1024 * 1024)).toFixed(2)} MB).\nProcessing chunk table...`);
+        ctx.reply(
+          `Received Yamaha pack: "${doc.file_name}" (${(doc.file_size! / (1024 * 1024)).toFixed(2)} MB).\nProcessing chunk table...\n\nYou can also launch the Mini App to inspect waveform tables and presets:`,
+          {
+            reply_markup: {
+              inline_keyboard: [[{ text: "Open in Mini App", web_app: { url: miniAppUrl } }]],
+            },
+          }
+        );
       }
     } else {
       ctx.reply("Please upload a Yamaha `.ppi` or `.cpi` file.");

@@ -111,8 +111,8 @@ export const TelegramSimulatorModal: React.FC<TelegramSimulatorModalProps> = ({
                     <Send className="w-3 h-3 text-white" />
                   </div>
                   <div>
-                    <p className="font-bold text-[11px] leading-tight">ExpVoice Bot</p>
-                    <p className="text-[9px] text-sky-300">bot</p>
+                    <p className="font-bold text-[11px] leading-tight">PPI_PPF_ConvertBot</p>
+                    <p className="text-[9px] text-sky-300">@PPI_PPF_ConvertBot</p>
                   </div>
                 </div>
                 <span className="text-[10px] text-slate-400">Close</span>
@@ -208,11 +208,21 @@ export const TelegramSimulatorModal: React.FC<TelegramSimulatorModalProps> = ({
 
             {/* Quick Actions */}
             <div className="space-y-2">
+              <a
+                href="https://t.me/PPI_PPF_ConvertBot"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full h-10 rounded-xl bg-[#229ED9] hover:bg-[#1E8BC0] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition"
+              >
+                <Send className="w-3.5 h-3.5" />
+                <span>Open @PPI_PPF_ConvertBot in Telegram</span>
+              </a>
               <Button
                 onClick={() => {
                   simulateSendFileToChat();
                 }}
-                className="w-full bg-brand-600 hover:bg-brand-500 text-xs font-semibold gap-2 shadow-sm"
+                variant="outline"
+                className="w-full text-xs font-semibold gap-2 border-slate-300 dark:border-slate-700"
               >
                 <Share2 className="w-3.5 h-3.5" />
                 <span>Simulate Telegram Upload & Conversion</span>
