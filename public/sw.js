@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yamaha-expvoice-v3';
+const CACHE_NAME = 'yamaha-expvoice-v4';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
