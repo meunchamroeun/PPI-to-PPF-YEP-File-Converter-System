@@ -1,6 +1,21 @@
 import type { Metadata, Viewport } from "next";
+import { Roboto, Kantumruy_Pro } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/lib/i18n/LanguageContext";
+
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700"],
+  variable: "--font-roboto",
+  display: "swap",
+});
+
+const kantumruyPro = Kantumruy_Pro({
+  subsets: ["khmer", "latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-kantumruy",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Yamaha ExpVoice Studio | PPI to PPF & YEP File Converter",
@@ -43,7 +58,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="kh"
+      data-lang="kh"
+      className={`${roboto.variable} ${kantumruyPro.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         {/* Google Identity Services for Google One-Tap & Sign-In */}
         <script src="https://accounts.google.com/gsi/client" async defer />

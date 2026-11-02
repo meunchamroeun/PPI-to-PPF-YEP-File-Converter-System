@@ -14,6 +14,8 @@
   --color-brand-800: #5b21b6;
   --color-brand-900: #4c1d95;
   --color-brand-950: #2e1065;
+  --font-roboto: var(--font-roboto), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-kantumruy: var(--font-kantumruy), "Kantumruy Pro", system-ui, sans-serif;
 }
 
 :root {
@@ -43,6 +45,23 @@ body {
   color: var(--foreground);
   transition: background-color 0.2s ease, color 0.2s ease;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  /* Default font: Khmer Kantumruy Pro with Roboto fallback */
+  font-family: var(--font-kantumruy), var(--font-roboto), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Khmer language font priority (Kantumruy Pro) */
+html[lang="kh"] body,
+html[lang="km"] body,
+[data-lang="kh"],
+[data-lang="km"] {
+  font-family: var(--font-kantumruy), var(--font-roboto), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* English language font priority (Roboto) */
+html[lang="en"] body,
+[data-lang="en"],
+.font-en {
+  font-family: var(--font-roboto), var(--font-kantumruy), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 /* Emil Kowalski Mobile Native Baseline: Prevent double-tap zoom & text select on buttons */

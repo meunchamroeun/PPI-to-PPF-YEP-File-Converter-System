@@ -25,10 +25,18 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const stored = localStorage.getItem("app_lang");
       if (stored === "kh" || stored === "en") {
         setLanguageState(stored);
+        if (typeof document !== "undefined") {
+          document.documentElement.lang = stored;
+          document.documentElement.setAttribute("data-lang", stored);
+        }
       } else {
         // Default to "kh"
         setLanguageState("kh");
         localStorage.setItem("app_lang", "kh");
+        if (typeof document !== "undefined") {
+          document.documentElement.lang = "kh";
+          document.documentElement.setAttribute("data-lang", "kh");
+        }
       }
     } catch (_) {}
     setMounted(true);
@@ -39,6 +47,10 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     try {
       localStorage.setItem("app_lang", lang);
     } catch (_) {}
+    if (typeof document !== "undefined") {
+      document.documentElement.lang = lang;
+      document.documentElement.setAttribute("data-lang", lang);
+    }
   };
 
   const t = (key: string): string => {
