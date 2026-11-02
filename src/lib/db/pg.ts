@@ -188,10 +188,36 @@ export async function getUserByEmailOrUsername(identifier: string): Promise<DbUs
       return user;
     }
   }
+  if (pool) {
+    try {
+      const res = await pool.query(
+        "SELECT * FROM users WHERE LOWER(email) = $1 OR LOWER(username) = $1 LIMIT 1",
+        [idLower]
+      );
+      if (res.rows.length > 0) {
+        const u = res.rows[0];
+        memoryUsers.set(u.id, u);
+        return u;
+      }
+    } catch (err) {
+      console.warn("PostgreSQL getUserByEmailOrUsername error:", err);
+    }
+  }
   return null;
 }
 
 export async function getAllUserRecords(): Promise<DbUserRecord[]> {
+  if (pool) {
+    try {
+      const res = await pool.query("SELECT * FROM users ORDER BY last_login_at DESC");
+      if (res.rows.length > 0) {
+        res.rows.forEach((u) => memoryUsers.set(u.id, u));
+        return res.rows;
+      }
+    } catch (err) {
+      console.warn("PostgreSQL getAllUserRecords error:", err);
+    }
+  }
   try {
     const supabaseUsers = await fetchUsersFromSupabase();
     if (supabaseUsers && supabaseUsers.length > 0) {

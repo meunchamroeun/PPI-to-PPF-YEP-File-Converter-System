@@ -39,6 +39,7 @@ import {
   ShieldCheck,
   Crown,
   LogIn,
+  LogOut,
   Search,
 } from "lucide-react";
 
@@ -52,6 +53,7 @@ import { BaseSwitch } from "@/components/ui/base-switch";
 import { GSAPAudioVisualizer } from "@/components/GSAPAudioVisualizer";
 import { HexViewer } from "@/components/HexViewer";
 import { AuthModal, UserSession } from "@/components/AuthModal";
+import { AuthGate } from "@/components/AuthGate";
 import { AIAssistantPanel } from "@/components/AIAssistantPanel";
 import { SettingsPanel } from "@/components/SettingsPanel";
 import { AdminPanel } from "@/components/AdminPanel";
@@ -65,7 +67,6 @@ import { useTelegramWebApp } from "@/hooks/useTelegramWebApp";
 import { YamahaPPIParser, ParsedPPIData } from "@/lib/yamaha/ppi-parser";
 import { YamahaPPFGenerator } from "@/lib/yamaha/ppf-generator";
 import { YamahaYEPGenerator } from "@/lib/yamaha/yep-generator";
-import { createDemoPPIBuffer } from "@/lib/yamaha/sample-generator";
 import { formatBytes, generateUUID } from "@/lib/utils";
 
 // Queue Item Interface
@@ -126,6 +127,7 @@ export default function YamahaConverterApp() {
   const [drmModalOpen, setDrmModalOpen] = useState<boolean>(false);
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<UserSession | null>(null);
+  const [isSessionLoading, setIsSessionLoading] = useState<boolean>(true);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState<boolean>(false);
   const [telegramSimulatorOpen, setTelegramSimulatorOpen] = useState<boolean>(false);
 
@@ -152,7 +154,10 @@ export default function YamahaConverterApp() {
       if (savedUser) {
         setCurrentUser(JSON.parse(savedUser));
       }
-    } catch (e) {}
+    } catch (e) {
+    } finally {
+      setIsSessionLoading(false);
+    }
   }, []);
 
   // Fetch persisted history from DB API
@@ -213,15 +218,12 @@ export default function YamahaConverterApp() {
     }
   };
 
-  // Global Keyboard Shortcuts (Cmd+K / Ctrl+K, Alt+S, Alt+T)
+  // Global Keyboard Shortcuts (Cmd+K / Ctrl+K, Alt+T)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setCommandPaletteOpen((prev) => !prev);
-      } else if (e.altKey && e.key.toLowerCase() === "s") {
-        e.preventDefault();
-        handleLoadSample(false);
       } else if (e.altKey && e.key.toLowerCase() === "t") {
         e.preventDefault();
         toggleDarkMode();
@@ -291,21 +293,6 @@ export default function YamahaConverterApp() {
       setInspectorFileId(newItems[0].id);
       setActiveTab("converter");
     }
-  };
-
-  // Instant Sample Generator (Zero Setup Demo)
-  const handleLoadSample = (isEncrypted = false) => {
-    triggerHaptic("medium");
-    const demoBuffer = createDemoPPIBuffer(isEncrypted);
-    const fileName = isEncrypted ? "Yamaha_Premium_Ballad.cpi" : "Yamaha_Celtic_Expansion.ppi";
-
-    const mockFile = {
-      name: fileName,
-      size: demoBuffer.byteLength,
-      arrayBuffer: async () => demoBuffer,
-    };
-
-    processFiles([mockFile]);
   };
 
   // Conversion Execution Logic
@@ -568,6 +555,37 @@ export default function YamahaConverterApp() {
   // Active Inspector Item
   const activeInspectorItem = queue.find((q) => q.id === inspectorFileId) || queue[0] || null;
 
+  // Session verification loading splash
+  if (isSessionLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#0b0f19]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-12 h-12 rounded-2xl bg-brand-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-brand-500/20 animate-pulse">
+            Y
+          </div>
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+            Yamaha Expansion Voice Studio...
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  // Mandatory Authentication Gate (All users must login to access)
+  if (!currentUser) {
+    return (
+      <AuthGate
+        onLogin={(user) => {
+          setCurrentUser(user);
+          localStorage.setItem("user_session", JSON.stringify(user));
+          notifyHaptic("success");
+        }}
+        darkMode={darkMode}
+        onToggleTheme={toggleDarkMode}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 transition-colors duration-200">
       {/* PWA Install Prompt & Offline Awareness Banner */}
@@ -759,19 +777,32 @@ export default function YamahaConverterApp() {
           )}
 
           <div className="flex items-center justify-between pt-1">
-            <button
-              onClick={() => setAuthModalOpen(true)}
-              className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 min-w-0"
-            >
-              <div className="w-7 h-7 rounded-full bg-brand-100 dark:bg-brand-950 flex items-center justify-center text-brand-600 shrink-0">
-                {currentUser?.avatar ? (
-                  <img src={currentUser.avatar} alt="user" className="w-full h-full rounded-full object-cover" />
-                ) : (
-                  <UserIcon className="w-3.5 h-3.5" />
-                )}
-              </div>
-              <span className="truncate max-w-[130px] whitespace-nowrap">{currentUser ? currentUser.name : t("hdr_sign_in")}</span>
-            </button>
+            <div className="flex items-center gap-1.5 min-w-0">
+              <button
+                onClick={() => setAuthModalOpen(true)}
+                className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 min-w-0"
+              >
+                <div className="w-7 h-7 rounded-full bg-brand-100 dark:bg-brand-950 flex items-center justify-center text-brand-600 shrink-0">
+                  {currentUser?.avatar ? (
+                    <img src={currentUser.avatar} alt="user" className="w-full h-full rounded-full object-cover" />
+                  ) : (
+                    <UserIcon className="w-3.5 h-3.5" />
+                  )}
+                </div>
+                <span className="truncate max-w-[100px] whitespace-nowrap">{currentUser?.name}</span>
+              </button>
+              <button
+                onClick={() => {
+                  localStorage.removeItem("user_session");
+                  setCurrentUser(null);
+                  triggerHaptic("light");
+                }}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition shrink-0"
+                title={t("auth_sign_out")}
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
 
             <div className="flex items-center gap-1.5 shrink-0">
               <LanguageSwitcher compact />
@@ -850,28 +881,6 @@ export default function YamahaConverterApp() {
               <span>{t("hdr_ai_assistant")}</span>
             </Button>
 
-            {/* Quick Demo Sample Generator */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleLoadSample(false)}
-              className="hidden sm:inline-flex gap-2 bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border-brand-200 dark:border-brand-800 whitespace-nowrap shrink-0"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-brand-600" />
-              <span>{t("hdr_load_sample")}</span>
-            </Button>
-
-            {/* Test Encrypted CPI Button */}
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => handleLoadSample(true)}
-              className="hidden sm:inline-flex gap-1.5 text-slate-700 dark:text-slate-300 whitespace-nowrap shrink-0"
-            >
-              <ShieldAlert className="w-3.5 h-3.5 text-amber-500" />
-              <span>{t("hdr_test_cpi")}</span>
-            </Button>
-
             {/* Night / Light Mode Toggle Button */}
             <Button
               variant="outline"
@@ -883,8 +892,8 @@ export default function YamahaConverterApp() {
               {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </Button>
 
-            {/* User Account / Prominent Login Button */}
-            {currentUser ? (
+            {/* User Account & Sign Out */}
+            {currentUser && (
               <div className="flex items-center gap-1.5 shrink-0">
                 <Button
                   variant="outline"
@@ -911,6 +920,21 @@ export default function YamahaConverterApp() {
 
                 <Button
                   variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    localStorage.removeItem("user_session");
+                    setCurrentUser(null);
+                    triggerHaptic("light");
+                  }}
+                  className="h-8 px-2 text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 shrink-0"
+                  title={t("auth_sign_out")}
+                >
+                  <LogOut className="w-3.5 h-3.5 sm:mr-1" />
+                  <span className="hidden sm:inline">{t("auth_sign_out")}</span>
+                </Button>
+
+                <Button
+                  variant="ghost"
                   size="icon"
                   onClick={() => setActiveTab("settings")}
                   title="Settings & API Key"
@@ -919,15 +943,6 @@ export default function YamahaConverterApp() {
                   <Sliders className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                 </Button>
               </div>
-            ) : (
-              <Button
-                size="sm"
-                onClick={() => setAuthModalOpen(true)}
-                className="gap-2 rounded-xl text-xs font-semibold bg-brand-600 hover:bg-brand-500 text-white shadow-md shadow-brand-600/25 whitespace-nowrap shrink-0"
-              >
-                <LogIn className="w-3.5 h-3.5" />
-                <span>{t("hdr_sign_in")}</span>
-              </Button>
             )}
 
             {/* Telegram Mini App indicator / Simulator Launcher */}
@@ -973,10 +988,13 @@ export default function YamahaConverterApp() {
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => handleLoadSample(false)}
+                    onClick={() => {
+                      setActiveTab("converter");
+                      document.getElementById("file-upload-input")?.click();
+                    }}
                     className="gap-2 bg-white/10 hover:bg-white/15 border-white/20 text-white"
                   >
-                    <PlayCircle className="w-4 h-4" />
+                    <FolderSearch className="w-4 h-4" />
                     <span>{t("dash_btn_demo")}</span>
                   </Button>
                 </div>
@@ -1215,21 +1233,12 @@ export default function YamahaConverterApp() {
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
-                    <Button size="sm" onClick={() => handleLoadSample(false)} className="gap-2 shadow-sm">
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>{t("hdr_load_sample")}</span>
-                    </Button>
-                    <Button size="sm" variant="secondary" onClick={() => handleLoadSample(true)} className="gap-2">
-                      <ShieldAlert className="w-3.5 h-3.5 text-amber-500" />
-                      <span>{t("hdr_test_cpi")}</span>
-                    </Button>
                     <Button
                       size="sm"
-                      variant="outline"
                       onClick={() => document.getElementById("file-upload-input")?.click()}
-                      className="gap-2"
+                      className="gap-2 shadow-sm"
                     >
-                      <FolderSearch className="w-3.5 h-3.5" />
+                      <UploadCloud className="w-4 h-4" />
                       <span>{t("queue_dropzone_btn")}</span>
                     </Button>
                   </div>
@@ -1610,19 +1619,14 @@ export default function YamahaConverterApp() {
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                  <Button onClick={() => handleLoadSample(false)} className="gap-2 shadow-md">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>{t("hdr_load_sample")}</span>
-                  </Button>
                   <Button
-                    variant="outline"
                     onClick={() => {
                       setActiveTab("converter");
                       document.getElementById("file-upload-input")?.click();
                     }}
-                    className="gap-2"
+                    className="gap-2 shadow-md"
                   >
-                    <FolderSearch className="w-3.5 h-3.5" />
+                    <UploadCloud className="w-4 h-4" />
                     <span>{t("queue_dropzone_btn")}</span>
                   </Button>
                 </div>
@@ -1659,22 +1663,6 @@ export default function YamahaConverterApp() {
                 </Button>
               </div>
             </div>
-
-            {/* Guest Sign-In Notice */}
-            {!currentUser && (
-              <div className="p-4 rounded-2xl bg-brand-50/60 dark:bg-brand-950/40 border border-brand-200 dark:border-brand-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                <div className="flex items-center gap-2.5">
-                  <UserIcon className="w-4 h-4 text-brand-600 shrink-0" />
-                  <span className="text-slate-700 dark:text-slate-300">
-                    {t("hist_guest_banner_desc")}
-                  </span>
-                </div>
-                <Button size="sm" onClick={() => setAuthModalOpen(true)} className="gap-1.5 shrink-0 bg-brand-600 text-white font-semibold">
-                  <LogIn className="w-3.5 h-3.5" />
-                  <span>{t("hdr_sign_in")}</span>
-                </Button>
-              </div>
-            )}
 
             {/* User Session Scope Selector */}
             {currentUser && (
@@ -1827,7 +1815,7 @@ export default function YamahaConverterApp() {
         {/* =================================================================== */}
         {activeTab === "ai" && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-            <AIAssistantPanel activePack={activeInspectorItem} onLoadSample={() => handleLoadSample(false)} />
+            <AIAssistantPanel activePack={activeInspectorItem} />
           </motion.div>
         )}
 
@@ -1985,7 +1973,6 @@ CREATE TABLE public.conversion_jobs (
           setActiveTab(tab);
           triggerHaptic("light");
         }}
-        onLoadSample={(isEncrypted) => handleLoadSample(isEncrypted)}
         onConvertAll={handleConvertAll}
         onToggleTheme={toggleDarkMode}
         onOpenTelegramSimulator={() => setTelegramSimulatorOpen(true)}
@@ -1998,7 +1985,6 @@ CREATE TABLE public.conversion_jobs (
       <TelegramSimulatorModal
         isOpen={telegramSimulatorOpen}
         onClose={() => setTelegramSimulatorOpen(false)}
-        onLoadSample={() => handleLoadSample(false)}
       />
 
       {/* ===================================================================== */}

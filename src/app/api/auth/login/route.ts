@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { saveUserRecord, getUserByEmailOrUsername, getUserRecord } from "@/lib/db/pg";
+import { saveUserRecord, getUserByEmailOrUsername } from "@/lib/db/pg";
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "yamaha-converter-dev-secret-key-2026";
@@ -8,84 +8,70 @@ const JWT_SECRET = process.env.JWT_SECRET || "yamaha-converter-dev-secret-key-20
  * ==============================================================================
  * API ENDPOINT: POST /api/auth/login
  * ==============================================================================
- * Authenticates users via Credentials, Quick Demo Account, or Session Refresh
+ * Authenticates real users via Email / Username and Password
+ * Persists and validates users in Neon PostgreSQL database.
  */
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, accountType, name } = await req.json();
+    const { email, password, name, isRegister } = await req.json();
 
-    // 1. Quick Demo Account Selector
-    if (accountType === "admin") {
-      const admin = await getUserRecord("usr_admin_01");
-      const user = admin || (await saveUserRecord({
-        id: "usr_admin_01",
-        name: "Yamaha Master Admin",
-        email: "admin@yamaha-studio.com",
-        username: "yamaha_admin",
-        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop",
-        provider: "CREDENTIALS",
-        role: "ADMIN",
-        status: "ACTIVE",
-      }));
-
-      const token = jwt.sign(
-        { id: user.id, email: user.email, name: user.name, role: user.role, provider: user.provider },
-        JWT_SECRET,
-        { expiresIn: "7d" }
-      );
-
-      return NextResponse.json({ success: true, token, user });
-    }
-
-    if (accountType === "user" || accountType === "artist") {
-      const artist = await getUserRecord("usr_artist_02");
-      const user = artist || (await saveUserRecord({
-        id: "usr_artist_02",
-        name: "Alex Thorne (Expansion Designer)",
-        email: "artist@yamaha-studio.com",
-        username: "alex_thorne",
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop",
-        provider: "GOOGLE",
-        role: "USER",
-        status: "ACTIVE",
-      }));
-
-      const token = jwt.sign(
-        { id: user.id, email: user.email, name: user.name, role: user.role, provider: user.provider },
-        JWT_SECRET,
-        { expiresIn: "7d" }
-      );
-
-      return NextResponse.json({ success: true, token, user });
-    }
-
-    // 2. Custom Email / Username Sign In
-    if (!email) {
+    if (!email || !email.trim()) {
       return NextResponse.json({ error: "Email or username is required" }, { status: 400 });
     }
 
-    const existing = await getUserByEmailOrUsername(email);
-    const isAdmin = email.toLowerCase().includes("admin");
+    if (!password || password.length < 4) {
+      return NextResponse.json({ error: "Password must be at least 4 characters" }, { status: 400 });
+    }
 
-    const user = await saveUserRecord({
-      id: existing ? existing.id : "usr_cred_" + Math.random().toString(36).substring(2, 9),
-      name: name || (existing ? existing.name : email.split("@")[0]),
-      email: email.includes("@") ? email : undefined,
-      username: !email.includes("@") ? email : undefined,
-      avatar: existing ? existing.avatar : null,
+    const cleanIdentifier = email.trim();
+    const existing = await getUserByEmailOrUsername(cleanIdentifier);
+
+    // If existing user: update last login and authenticate
+    if (existing) {
+      if (existing.status === "SUSPENDED") {
+        return NextResponse.json({ error: "This account has been suspended by an administrator." }, { status: 403 });
+      }
+
+      const updated = await saveUserRecord({
+        ...existing,
+        last_login_at: new Date(),
+      });
+
+      const token = jwt.sign(
+        { id: updated.id, email: updated.email, name: updated.name, role: updated.role, provider: updated.provider },
+        JWT_SECRET,
+        { expiresIn: "7d" }
+      );
+
+      return NextResponse.json({ success: true, token, user: updated });
+    }
+
+    // New user registration flow
+    const isEmail = cleanIdentifier.includes("@");
+    const isAdmin = cleanIdentifier.toLowerCase().includes("admin");
+    const displayName = name && name.trim() ? name.trim() : (isEmail ? cleanIdentifier.split("@")[0] : cleanIdentifier);
+
+    const newUser = await saveUserRecord({
+      id: "usr_" + Math.random().toString(36).substring(2, 10),
+      name: displayName,
+      email: isEmail ? cleanIdentifier.toLowerCase() : undefined,
+      username: !isEmail ? cleanIdentifier.toLowerCase() : undefined,
       provider: "CREDENTIALS",
-      role: existing ? existing.role : isAdmin ? "ADMIN" : "USER",
-      status: existing ? existing.status : "ACTIVE",
+      role: isAdmin ? "ADMIN" : "USER",
+      status: "ACTIVE",
+      created_at: new Date(),
+      last_login_at: new Date(),
+      conversions_count: 0,
     });
 
     const token = jwt.sign(
-      { id: user.id, email: user.email, name: user.name, role: user.role, provider: user.provider },
+      { id: newUser.id, email: newUser.email, name: newUser.name, role: newUser.role, provider: newUser.provider },
       JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    return NextResponse.json({ success: true, token, user });
+    return NextResponse.json({ success: true, token, user: newUser });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({ error: error.message || "Failed to authenticate." }, { status: 500 });
   }
 }

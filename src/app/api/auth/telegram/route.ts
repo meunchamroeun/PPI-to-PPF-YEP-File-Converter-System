@@ -10,11 +10,11 @@ const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
  * ==============================================================================
  * API ENDPOINT: POST /api/auth/telegram
  * ==============================================================================
- * Validates Telegram Mini App initData or widget auth data
+ * Validates Telegram Mini App initData, widget auth, or username
  */
 export async function POST(req: NextRequest) {
   try {
-    const { initData, widgetData, role } = await req.json();
+    const { initData, widgetData, username } = await req.json();
 
     let tgUser: any = null;
 
@@ -28,29 +28,41 @@ export async function POST(req: NextRequest) {
       } else {
         const params = new URLSearchParams(initData);
         const userJson = params.get("user");
-        tgUser = userJson ? JSON.parse(userJson) : { id: 88776655, first_name: "Yamaha Keyboardist", username: "yamaha_synth_pro" };
+        if (userJson) {
+          tgUser = JSON.parse(userJson);
+        }
       }
     } else if (widgetData) {
       tgUser = widgetData;
-    } else {
+    } else if (username && username.trim()) {
       tgUser = {
-        id: 88776655,
-        first_name: "Yamaha Keyboardist",
-        username: "yamaha_synth_pro",
+        id: Math.floor(10000000 + Math.random() * 90000000),
+        first_name: username.trim(),
+        username: username.trim().replace(/^@/, ""),
       };
     }
 
-    const userId = "usr_tg_" + (tgUser.id || "guest");
-    const existing = await getUserByEmailOrUsername(tgUser.username || userId);
+    if (!tgUser) {
+      return NextResponse.json({ error: "Telegram account verification data is required." }, { status: 400 });
+    }
+
+    const userId = "usr_tg_" + (tgUser.id || Math.random().toString(36).substring(2, 8));
+    const cleanUsername = tgUser.username || "tg_user_" + tgUser.id;
+    const existing = await getUserByEmailOrUsername(cleanUsername);
+
+    if (existing && existing.status === "SUSPENDED") {
+      return NextResponse.json({ error: "This account has been suspended." }, { status: 403 });
+    }
 
     const savedUser = await saveUserRecord({
       id: existing ? existing.id : userId,
-      name: (tgUser.first_name || "") + (tgUser.last_name ? ` ${tgUser.last_name}` : "") || "Yamaha Keyboardist",
-      username: tgUser.username || "yamaha_synth_pro",
-      avatar: tgUser.photo_url || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
+      name: (tgUser.first_name || "") + (tgUser.last_name ? ` ${tgUser.last_name}` : "") || cleanUsername,
+      username: cleanUsername,
+      avatar: tgUser.photo_url || existing?.avatar || null,
       provider: "TELEGRAM",
-      role: existing ? existing.role : role === "ADMIN" ? "ADMIN" : "USER",
+      role: existing ? existing.role : "USER",
       status: "ACTIVE",
+      last_login_at: new Date(),
     });
 
     const token = jwt.sign(
@@ -71,6 +83,6 @@ export async function POST(req: NextRequest) {
       user: savedUser,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({ error: error.message || "Failed to authenticate via Telegram." }, { status: 500 });
   }
 }

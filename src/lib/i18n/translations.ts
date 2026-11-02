@@ -122,8 +122,8 @@ export const translations: TranslationDictionary = {
     en: "Upload & Convert Files",
   },
   dash_btn_demo: {
-    kh: "សាកល្បងគំរូក្នុងអង្គចងចាំ",
-    en: "Try In-Memory Demo",
+    kh: "ជ្រើសរើសឯកសារ PPI ផ្ទាល់",
+    en: "Browse Real PPI Files",
   },
 
   // Dashboard Stats
@@ -586,12 +586,12 @@ export const translations: TranslationDictionary = {
     en: "Sign In to Your Account",
   },
   auth_modal_desc: {
-    kh: "ជ្រើសរើសវិធីចូលគណនី Google, Telegram, ឬសាកល្បងដោយផ្ទាល់។",
-    en: "Sign in with Google, Telegram, or choose a one-click demo profile.",
+    kh: "ចូលគណនីរបស់អ្នកតាមរយៈ អ៊ីមែល, Google ឬ Telegram ដើម្បីដំណើរការប្រព័ន្ធ។",
+    en: "Sign in with your Email credentials, Google, or Telegram to access the system.",
   },
   auth_tab_quick: {
-    kh: "ចូលរហ័ស (Demo)",
-    en: "Quick Demo",
+    kh: "ចូលគណនី",
+    en: "Sign In",
   },
   auth_tab_oauth: {
     kh: "Google / Telegram",
@@ -602,15 +602,15 @@ export const translations: TranslationDictionary = {
     en: "Email & Password",
   },
   auth_btn_admin_demo: {
-    kh: "ចូលជា Admin គ្រប់គ្រង",
-    en: "Sign In as Master Admin",
+    kh: "ចូលជា Admin",
+    en: "Sign In as Admin",
   },
   auth_btn_artist_demo: {
-    kh: "ចូលជាអ្នកប្រើតន្ត្រីករ",
-    en: "Sign In as Keyboard Artist",
+    kh: "ចូលជាអ្នកប្រើប្រាស់",
+    en: "Sign In as Musician",
   },
   auth_btn_tg_demo: {
-    kh: "ចូលតាមគណនី Telegram",
+    kh: "ចូលតាម Telegram",
     en: "Sign In via Telegram",
   },
   auth_btn_google: {

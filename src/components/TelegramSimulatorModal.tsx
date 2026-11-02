@@ -20,13 +20,11 @@ import { Badge } from "@/components/ui/badge";
 interface TelegramSimulatorModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLoadSample: () => void;
 }
 
 export const TelegramSimulatorModal: React.FC<TelegramSimulatorModalProps> = ({
   isOpen,
   onClose,
-  onLoadSample,
 }) => {
   const [lastHaptic, setLastHaptic] = useState<string>("None");
   const [chatMessages, setChatMessages] = useState<Array<{ sender: "user" | "bot"; text: string; time: string }>>([
@@ -212,7 +210,6 @@ export const TelegramSimulatorModal: React.FC<TelegramSimulatorModalProps> = ({
             <div className="space-y-2">
               <Button
                 onClick={() => {
-                  onLoadSample();
                   simulateSendFileToChat();
                 }}
                 className="w-full bg-brand-600 hover:bg-brand-500 text-xs font-semibold gap-2 shadow-sm"

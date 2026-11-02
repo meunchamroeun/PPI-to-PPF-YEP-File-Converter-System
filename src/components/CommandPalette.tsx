@@ -37,7 +37,6 @@ interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigate: (tab: string) => void;
-  onLoadSample: (isProtected: boolean) => void;
   onConvertAll: () => void;
   onToggleTheme: () => void;
   onOpenTelegramSimulator: () => void;
@@ -48,7 +47,6 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   isOpen,
   onClose,
   onNavigate,
-  onLoadSample,
   onConvertAll,
   onToggleTheme,
   onOpenTelegramSimulator,
@@ -142,27 +140,6 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     },
 
     // Quick Actions
-    {
-      id: "act-load-sample",
-      title: t("cmd_load_sample"),
-      category: "Quick Actions",
-      icon: <Sparkles className="w-4 h-4 text-brand-500" />,
-      shortcut: "Alt+S",
-      action: () => {
-        onLoadSample(false);
-        onClose();
-      },
-    },
-    {
-      id: "act-load-cpi",
-      title: t("cmd_test_cpi"),
-      category: "Quick Actions",
-      icon: <ShieldAlert className="w-4 h-4 text-amber-500" />,
-      action: () => {
-        onLoadSample(true);
-        onClose();
-      },
-    },
     {
       id: "act-convert-all",
       title: t("cmd_convert_all"),
