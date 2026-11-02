@@ -1852,29 +1852,33 @@ export default function YamahaConverterApp() {
 
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
                   <span className="text-brand-600 font-bold uppercase text-[10px]">Database</span>
-                  <h5 className="font-bold mt-1 text-slate-900 dark:text-white">PostgreSQL</h5>
-                  <p className="text-slate-500 mt-1">Audit logs, user profiles, daily KPI tracking.</p>
+                  <h5 className="font-bold mt-1 text-slate-900 dark:text-white">Supabase (PostgreSQL)</h5>
+                  <p className="text-slate-500 mt-1">Managed PG pooler, PostgREST API, RLS security, audit telemetry.</p>
                 </div>
 
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-                  <span className="text-brand-600 font-bold uppercase text-[10px]">Mini App &amp; Bot</span>
-                  <h5 className="font-bold mt-1 text-slate-900 dark:text-white">Telegram + PWA</h5>
-                  <p className="text-slate-500 mt-1">Telegraf bot daemon, TMA WebApp SDK, installable PWA.</p>
+                  <span className="text-brand-600 font-bold uppercase text-[10px]">Cloud &amp; Mini App</span>
+                  <h5 className="font-bold mt-1 text-slate-900 dark:text-white">Vercel + Telegram PWA</h5>
+                  <p className="text-slate-500 mt-1">Serverless edge, Telegraf webhook, installable PWA manifest.</p>
                 </div>
               </div>
             </Card>
 
             <Card className="p-6">
               <CardTitle className="text-xs uppercase tracking-wider text-slate-500 font-bold mb-3">
-                PostgreSQL Schema Reference (schema.sql)
+                Supabase Schema Reference (supabase_schema.sql)
               </CardTitle>
               <div className="p-4 bg-slate-950 text-slate-300 font-mono text-xs rounded-xl overflow-x-auto max-h-56">
-                <pre>{`CREATE TABLE conversion_jobs (
-    id UUID PRIMARY KEY,
+                <pre>{`-- Supabase PostgreSQL Table Definition
+CREATE TABLE public.conversion_jobs (
+    id TEXT PRIMARY KEY,
+    user_id TEXT REFERENCES public.users(id) ON DELETE SET NULL,
     original_filename VARCHAR(255) NOT NULL,
-    original_size_bytes BIGINT NOT NULL,
-    target_format VARCHAR(20) NOT NULL, -- 'PPF' or 'YEP'
-    status VARCHAR(50) NOT NULL,
+    original_size_bytes BIGINT NOT NULL DEFAULT 0,
+    target_format VARCHAR(20) NOT NULL DEFAULT 'PPF',
+    output_filename VARCHAR(255),
+    download_url TEXT,
+    status VARCHAR(50) NOT NULL DEFAULT 'QUEUED',
     progress_percent INT DEFAULT 0,
     pack_name VARCHAR(255),
     voices_count INT DEFAULT 0,

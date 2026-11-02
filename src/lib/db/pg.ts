@@ -1,4 +1,10 @@
 import { Pool } from "pg";
+import {
+  saveUserToSupabase,
+  fetchUsersFromSupabase,
+  saveJobToSupabase,
+  fetchJobsFromSupabase,
+} from "./supabase";
 
 /**
  * ==============================================================================
@@ -98,11 +104,23 @@ memoryUsers.set(defaultArtist.id, defaultArtist);
 memoryUsers.set(defaultTelegramUser.id, defaultTelegramUser);
 
 let pool: Pool | null = null;
-if (process.env.DATABASE_URL) {
+const dbUrl =
+  process.env.DATABASE_URL ||
+  process.env.POSTGRES_URL ||
+  process.env.SUPABASE_DB_URL;
+
+if (dbUrl) {
   try {
-    pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    const isLocal = dbUrl.includes("localhost") || dbUrl.includes("127.0.0.1");
+    pool = new Pool({
+      connectionString: dbUrl,
+      ssl: isLocal ? false : { rejectUnauthorized: false },
+      max: 10,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 5000,
+    });
   } catch (err) {
-    console.warn("PostgreSQL connection error, using in-memory store:", err);
+    console.warn("PostgreSQL/Supabase connection error, using in-memory store:", err);
   }
 }
 
@@ -130,6 +148,7 @@ export async function saveUserRecord(user: Partial<DbUserRecord> & { id: string 
   };
 
   memoryUsers.set(record.id, record);
+  saveUserToSupabase(record).catch(() => {});
 
   if (pool) {
     try {
@@ -173,6 +192,12 @@ export async function getUserByEmailOrUsername(identifier: string): Promise<DbUs
 }
 
 export async function getAllUserRecords(): Promise<DbUserRecord[]> {
+  try {
+    const supabaseUsers = await fetchUsersFromSupabase();
+    if (supabaseUsers && supabaseUsers.length > 0) {
+      supabaseUsers.forEach((u) => memoryUsers.set(u.id, u));
+    }
+  } catch {}
   return Array.from(memoryUsers.values()).sort((a, b) => b.last_login_at.getTime() - a.last_login_at.getTime());
 }
 
@@ -240,6 +265,7 @@ export async function saveJobRecord(job: Partial<DbJobRecord> & { id: string }):
   };
 
   memoryJobs.set(record.id, record);
+  saveJobToSupabase(record).catch(() => {});
 
   // If associated with a user, increment conversion count
   if (record.user_id && memoryUsers.has(record.user_id)) {
@@ -280,10 +306,22 @@ export async function getJobRecord(id: string): Promise<DbJobRecord | null> {
 }
 
 export async function getAllJobRecords(): Promise<DbJobRecord[]> {
+  try {
+    const supabaseJobs = await fetchJobsFromSupabase();
+    if (supabaseJobs && supabaseJobs.length > 0) {
+      supabaseJobs.forEach((j) => memoryJobs.set(j.id, j));
+    }
+  } catch {}
   return Array.from(memoryJobs.values()).sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
 }
 
 export async function getUserJobRecords(userId: string): Promise<DbJobRecord[]> {
+  try {
+    const supabaseJobs = await fetchJobsFromSupabase(userId);
+    if (supabaseJobs && supabaseJobs.length > 0) {
+      supabaseJobs.forEach((j) => memoryJobs.set(j.id, j));
+    }
+  } catch {}
   return Array.from(memoryJobs.values())
     .filter((j) => j.user_id === userId)
     .sort((a, b) => b.created_at.getTime() - a.created_at.getTime());

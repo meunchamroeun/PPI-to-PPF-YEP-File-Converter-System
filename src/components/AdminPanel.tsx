@@ -266,12 +266,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateT
             <Database className="w-4 h-4 text-emerald-500" />
           </div>
           <div className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <span>PostgreSQL Engine</span>
+            <span>Supabase / PG Engine</span>
             <Badge variant="outline" className="text-[9px] text-emerald-500 border-emerald-500/40">
               HEALTHY
             </Badge>
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Dual-mode: Direct / In-Memory resilient</p>
+          <p className="text-[11px] text-slate-500 mt-1">Supabase Pooler &amp; PostgREST verified</p>
         </Card>
 
         <Card className="p-4">
