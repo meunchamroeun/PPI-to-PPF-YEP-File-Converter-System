@@ -250,6 +250,13 @@
         </div>
 
         <div class="flex items-center gap-3">
+          <!-- Command Palette Button -->
+          <button onclick="openCommandPalette()" class="hidden md:flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition shadow-sm" title="Press Cmd+K or Ctrl+K">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400"></i>
+            <span>Commands</span>
+            <kbd class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-500">⌘K</kbd>
+          </button>
+
           <!-- AI Studio Assistant Button -->
           <button onclick="navigate('ai')" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border border-brand-200 dark:border-brand-800 transition shadow-sm">
             <i data-lucide="brain" class="w-3.5 h-3.5 text-brand-600"></i>
@@ -283,8 +290,8 @@
             <!-- Rendered dynamically by renderAuthUI() -->
           </div>
 
-          <!-- Telegram Status Badge -->
-          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 text-[11px] font-medium border border-sky-200 dark:border-sky-800/50">
+          <!-- Telegram Status Badge / Simulator Launcher -->
+          <div onclick="openTelegramSimulator()" class="cursor-pointer flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/40 dark:hover:bg-sky-900/60 text-sky-700 dark:text-sky-300 text-[11px] font-medium border border-sky-200 dark:border-sky-800/50 transition shadow-sm" title="Click to open Telegram Mini App Simulator">
             <i data-lucide="send" class="w-3.5 h-3.5"></i>
             <span class="hidden md:inline">Telegram Ready</span>
           </div>
@@ -676,6 +683,68 @@
               </div>
             </div>
 
+          </div>
+
+          <!-- Interactive Web Audio Yamaha Voice Player Bed -->
+          <div class="glass-card p-6 rounded-2xl border shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-slate-800">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-brand-500/10 text-brand-600 flex items-center justify-center">
+                  <i data-lucide="music" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h4 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                    <span>Yamaha AWM2 Voice Synthesizer &amp; Audition Player</span>
+                    <span class="text-[10px] font-mono px-2 py-0.5 rounded font-bold bg-brand-100 text-brand-700 dark:bg-brand-950 dark:text-brand-300">WEB AUDIO</span>
+                  </h4>
+                  <p class="text-xs text-slate-500">Play simulated Yamaha voice textures &amp; audition tone frequencies directly in your browser.</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <button onclick="playAuditionDemo()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-sm transition">
+                  <i data-lucide="play" class="w-3 h-3"></i>
+                  <span>Audition Demo Phrase</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Voice Presets Selection -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <button onclick="setSynthPreset('piano')" class="p-3 rounded-xl border text-left bg-brand-50/50 dark:bg-brand-950/40 border-brand-500 dark:border-brand-500">
+                <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-brand-200 text-brand-800">PIANO</span>
+                <p class="font-bold text-xs text-slate-900 dark:text-white mt-1">CFX Concert Grand</p>
+                <p class="text-[10px] text-slate-500">AWM2 Multi-Layered</p>
+              </button>
+              <button onclick="setSynthPreset('strings')" class="p-3 rounded-xl border text-left bg-slate-50/50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 hover:border-slate-300">
+                <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-purple-100 text-purple-800">STRINGS</span>
+                <p class="font-bold text-xs text-slate-900 dark:text-white mt-1">Symphonic Strings</p>
+                <p class="text-[10px] text-slate-500">Stereo Ensemble PWM</p>
+              </button>
+              <button onclick="setSynthPreset('dx')" class="p-3 rounded-xl border text-left bg-slate-50/50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 hover:border-slate-300">
+                <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-sky-100 text-sky-800">SYNTH</span>
+                <p class="font-bold text-xs text-slate-900 dark:text-white mt-1">DX7 Sparkle FM Lead</p>
+                <p class="text-[10px] text-slate-500">FM Matrix Operator</p>
+              </button>
+              <button onclick="setSynthPreset('oud')" class="p-3 rounded-xl border text-left bg-slate-50/50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 hover:border-slate-300">
+                <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">ETHNIC</span>
+                <p class="font-bold text-xs text-slate-900 dark:text-white mt-1">Oriental Oud Solo</p>
+                <p class="text-[10px] text-slate-500">Microtonal Plucked</p>
+              </button>
+            </div>
+
+            <!-- Virtual 2-Octave Piano Keyboard (C3-C5) -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs text-slate-500">
+                <span>Interactive Piano Keys (Touch or Click)</span>
+                <span id="synth-active-note" class="font-mono text-emerald-500 font-bold">Idle</span>
+              </div>
+              <div class="relative flex justify-center bg-slate-900 p-3 rounded-2xl border border-slate-800 select-none overflow-x-auto shadow-inner">
+                <div class="relative flex h-32">
+                  <!-- White & Black Keys generated by JavaScript -->
+                  <div id="html-virtual-keys" class="relative flex"></div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -1539,6 +1608,85 @@ bot.launch();</code></pre>
         </button>
       </div>
 
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: PRO COMMAND PALETTE (CMD+K / CTRL+K)                               -->
+  <!-- ========================================================================= -->
+  <div id="modal-command-palette" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-start justify-center pt-20 p-4 hidden">
+    <div class="glass-card max-w-xl w-full rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden animate-scale-in">
+      <div class="flex items-center gap-3 px-4 py-3.5 border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50">
+        <i data-lucide="search" class="w-4 h-4 text-slate-400 shrink-0"></i>
+        <input type="text" id="command-palette-input" oninput="filterCommandPalette(this.value)" placeholder="Type a command or jump to view (e.g. converter, audio, admin)..." class="w-full text-xs bg-transparent text-slate-900 dark:text-white outline-none">
+        <kbd class="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-500">ESC</kbd>
+        <button onclick="closeModal('modal-command-palette')" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div id="command-palette-results" class="max-h-[320px] overflow-y-auto p-2 divide-y divide-slate-100 dark:divide-slate-800/40">
+        <!-- Rendered by renderCommandPalette() -->
+      </div>
+      <div class="flex items-center justify-between px-4 py-2 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-[10px] text-slate-500">
+        <span>Press ESC to close</span>
+        <span class="font-mono">ExpVoice Studio v2.4</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: TELEGRAM MINI APP SIMULATOR                                        -->
+  <!-- ========================================================================= -->
+  <div id="modal-telegram-simulator" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-card max-w-xl w-full rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden animate-scale-in">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center">
+            <i data-lucide="send" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-slate-900 dark:text-white">Telegram Mini App &amp; Bot Simulator</h3>
+            <p class="text-xs text-slate-500">Simulate mobile musician experience inside Telegram.</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-telegram-simulator')" class="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50/50 dark:bg-slate-900/30">
+        <div class="flex justify-center">
+          <div class="w-[240px] h-[380px] bg-slate-900 rounded-[32px] border-4 border-slate-700 shadow-xl p-2 flex flex-col justify-between">
+            <div class="bg-[#17212b] text-white px-2.5 py-1.5 rounded-t-xl flex items-center justify-between text-[10px]">
+              <span class="font-bold">ExpVoice Bot</span>
+              <span class="text-slate-400">Close</span>
+            </div>
+            <div id="simulated-chat-box" class="flex-1 bg-[#0e1621] p-2 overflow-y-auto space-y-2 text-[10px]">
+              <div class="bg-[#182533] text-slate-200 p-2 rounded-xl rounded-bl-none">
+                Send a Yamaha .ppi file or click 'Convert &amp; Send' below.
+              </div>
+            </div>
+            <div class="pt-2 bg-[#17212b] -mx-2 -mb-2 p-2 rounded-b-[24px]">
+              <button onclick="simulateSendTelegram()" class="w-full py-1.5 px-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-bold text-[11px] shadow">
+                Convert &amp; Send to Chat
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1.5">
+            <span class="font-bold text-slate-900 dark:text-white">Seamless Cloud Conversion</span>
+            <p class="text-slate-500 text-[11px]">Musicians on stage can upload PPI files directly from their phone in Telegram, receive PPF projects, and inspect voice limits on the fly.</p>
+          </div>
+          <button onclick="loadSamplePPI(false); simulateSendTelegram();" class="w-full py-2 px-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs shadow">
+            Simulate File Upload &amp; Convert
+          </button>
+          <button onclick="closeModal('modal-telegram-simulator')" class="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs">
+            Done
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -3752,6 +3900,276 @@ bot.launch();</code></pre>
       showToast('success', 'System audit JSON log exported.');
     }
 
+    /**
+     * ============================================================================
+     * WEB AUDIO YAMAHA AWM2 SYNTHESIZER ENGINE
+     * ============================================================================
+     */
+    let audioCtx = null;
+    let masterGain = null;
+    let activeSynthPreset = 'piano';
+
+    const SYNTH_NOTES = [
+      { note: 'C3', freq: 130.81, isBlack: false },
+      { note: 'C#3', freq: 138.59, isBlack: true },
+      { note: 'D3', freq: 146.83, isBlack: false },
+      { note: 'D#3', freq: 155.56, isBlack: true },
+      { note: 'E3', freq: 164.81, isBlack: false },
+      { note: 'F3', freq: 174.61, isBlack: false },
+      { note: 'F#3', freq: 184.99, isBlack: true },
+      { note: 'G3', freq: 195.99, isBlack: false },
+      { note: 'G#3', freq: 207.65, isBlack: true },
+      { note: 'A3', freq: 220.0, isBlack: false },
+      { note: 'A#3', freq: 233.08, isBlack: true },
+      { note: 'B3', freq: 246.94, isBlack: false },
+      { note: 'C4', freq: 261.63, isBlack: false },
+      { note: 'C#4', freq: 277.18, isBlack: true },
+      { note: 'D4', freq: 293.66, isBlack: false },
+      { note: 'D#4', freq: 311.13, isBlack: true },
+      { note: 'E4', freq: 329.63, isBlack: false },
+      { note: 'F4', freq: 349.23, isBlack: false },
+      { note: 'F#4', freq: 369.99, isBlack: true },
+      { note: 'G4', freq: 391.0, isBlack: false },
+      { note: 'G#4', freq: 415.3, isBlack: true },
+      { note: 'A4', freq: 440.0, isBlack: false },
+      { note: 'A#4', freq: 466.16, isBlack: true },
+      { note: 'B4', freq: 493.88, isBlack: false },
+      { note: 'C5', freq: 523.25, isBlack: false }
+    ];
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioClass();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+        masterGain.connect(audioCtx.destination);
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playSynthNote(freq, noteName, duration = 0.5) {
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const filter = ctx.createBiquadFilter();
+        const noteGain = ctx.createGain();
+
+        const waveforms = {
+          piano: 'triangle',
+          strings: 'sawtooth',
+          dx: 'sawtooth',
+          oud: 'square'
+        };
+
+        const cutoffs = {
+          piano: 3500,
+          strings: 2200,
+          dx: 4800,
+          oud: 1800
+        };
+
+        osc1.type = waveforms[activeSynthPreset] || 'triangle';
+        osc1.frequency.setValueAtTime(freq, now);
+
+        osc2.type = osc1.type;
+        osc2.frequency.setValueAtTime(freq * 1.003, now); // subtle detune
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(cutoffs[activeSynthPreset] || 3000, now);
+
+        noteGain.gain.setValueAtTime(0.001, now);
+        noteGain.gain.linearRampToValueAtTime(0.6, now + 0.02);
+        noteGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+        osc1.connect(filter);
+        osc2.connect(filter);
+        filter.connect(noteGain);
+        noteGain.connect(masterGain);
+
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + duration + 0.05);
+        osc2.stop(now + duration + 0.05);
+
+        const label = document.getElementById('synth-active-note');
+        if (label) {
+          label.textContent = noteName;
+          setTimeout(() => { if (label.textContent === noteName) label.textContent = 'Idle'; }, duration * 1000);
+        }
+      } catch (e) {
+        console.warn('Audio play error:', e);
+      }
+    }
+
+    function setSynthPreset(presetName) {
+      activeSynthPreset = presetName;
+      showToast('info', `Active Voice Preset: ${presetName.toUpperCase()}`);
+    }
+
+    function playAuditionDemo() {
+      const phrase = [
+        { note: 'C4', freq: 261.63, delay: 0, dur: 0.35 },
+        { note: 'E4', freq: 329.63, delay: 280, dur: 0.35 },
+        { note: 'G4', freq: 391.0, delay: 560, dur: 0.35 },
+        { note: 'C5', freq: 523.25, delay: 840, dur: 0.7 }
+      ];
+
+      phrase.forEach(p => {
+        setTimeout(() => playSynthNote(p.freq, p.note, p.dur), p.delay);
+      });
+    }
+
+    function renderVirtualKeyboard() {
+      const container = document.getElementById('html-virtual-keys');
+      if (!container) return;
+
+      container.innerHTML = SYNTH_NOTES.map(k => {
+        if (k.isBlack) {
+          return `
+            <button onmousedown="playSynthNote(${k.freq}, '${k.note}', 0.6)"
+                    class="absolute z-10 w-5 h-20 bg-slate-950 hover:bg-slate-800 border border-slate-700 rounded-b-md shadow transition active:scale-95 text-[8px] font-mono text-slate-400 flex items-end justify-center pb-1"
+                    style="left: ${getBlackKeyHtmlOffset(k.note)}"
+                    title="${k.note}">
+              ${k.note}
+            </button>
+          `;
+        }
+        return `
+          <button onmousedown="playSynthNote(${k.freq}, '${k.note}', 0.6)"
+                  class="w-7 h-32 bg-white hover:bg-slate-100 border-r border-slate-300 last:border-r-0 rounded-b-lg shadow transition active:bg-slate-200 text-[8px] font-mono text-slate-500 flex items-end justify-center pb-1"
+                  title="${k.note}">
+            ${k.note}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function getBlackKeyHtmlOffset(note) {
+      const w = 28;
+      const map = {
+        'C#3': 0 * w + 18, 'D#3': 1 * w + 18,
+        'F#3': 3 * w + 18, 'G#3': 4 * w + 18, 'A#3': 5 * w + 18,
+        'C#4': 7 * w + 18, 'D#4': 8 * w + 18,
+        'F#4': 10 * w + 18, 'G#4': 11 * w + 18, 'A#4': 12 * w + 18
+      };
+      return `${map[note] || 0}px`;
+    }
+
+    /**
+     * ============================================================================
+     * COMMAND PALETTE
+     * ============================================================================
+     */
+    const PALETTE_COMMANDS = [
+      { id: 'p1', title: 'Go to Dashboard Overview', cat: 'Navigation', icon: 'layout-dashboard', action: () => navigate('dashboard') },
+      { id: 'p2', title: 'Go to File Converter Queue', cat: 'Navigation', icon: 'repeat', action: () => navigate('converter') },
+      { id: 'p3', title: 'Go to File & Hex Inspector', cat: 'Navigation', icon: 'binary', action: () => navigate('inspector') },
+      { id: 'p4', title: 'Go to Conversion History Archive', cat: 'Navigation', icon: 'history', action: () => navigate('history') },
+      { id: 'p5', title: 'Go to Gemini AI Sound Studio', cat: 'Navigation', icon: 'brain', action: () => navigate('ai') },
+      { id: 'p6', title: 'Go to Settings & API Key Manager', cat: 'Navigation', icon: 'sliders', action: () => navigate('settings') },
+      { id: 'p7', title: 'Go to Admin Management Console', cat: 'Navigation', icon: 'shield-check', action: () => navigate('admin') },
+      { id: 'p8', title: 'Load Sample PPI Pack (Demo Voice Archive)', cat: 'Actions', icon: 'sparkles', action: () => { loadSamplePPI(false); navigate('converter'); } },
+      { id: 'p9', title: 'Test Encrypted CPI Package (DRM Rejection)', cat: 'Actions', icon: 'shield-alert', action: () => loadSamplePPI(true) },
+      { id: 'p10', title: 'Audition Yamaha AWM2 Voice Phrase', cat: 'Audio', icon: 'music', action: () => playAuditionDemo() },
+      { id: 'p11', title: 'Toggle Light / Dark Mode', cat: 'System', icon: 'moon', action: () => toggleDarkMode() }
+    ];
+
+    function openCommandPalette() {
+      openModal('modal-command-palette');
+      const input = document.getElementById('command-palette-input');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+      renderCommandPaletteResults(PALETTE_COMMANDS);
+    }
+
+    function filterCommandPalette(query) {
+      const q = (query || '').toLowerCase();
+      const filtered = PALETTE_COMMANDS.filter(c => c.title.toLowerCase().includes(q) || c.cat.toLowerCase().includes(q));
+      renderCommandPaletteResults(filtered);
+    }
+
+    function renderCommandPaletteResults(items) {
+      const container = document.getElementById('command-palette-results');
+      if (!container) return;
+
+      if (items.length === 0) {
+        container.innerHTML = '<div class="py-6 text-center text-xs text-slate-400">No commands found.</div>';
+        return;
+      }
+
+      container.innerHTML = items.map((item, idx) => `
+        <div onclick="executePaletteCommand('${item.id}')"
+             class="flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer text-xs text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-brand-950/60 transition">
+          <div class="flex items-center gap-3">
+            <i data-lucide="${item.icon}" class="w-4 h-4 text-brand-600"></i>
+            <span>${item.title}</span>
+          </div>
+          <span class="text-[10px] font-mono text-slate-400">${item.cat}</span>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function executePaletteCommand(cmdId) {
+      const cmd = PALETTE_COMMANDS.find(x => x.id === cmdId);
+      if (cmd) {
+        closeModal('modal-command-palette');
+        cmd.action();
+      }
+    }
+
+    /**
+     * ============================================================================
+     * TELEGRAM SIMULATOR
+     * ============================================================================
+     */
+    function openTelegramSimulator() {
+      openModal('modal-telegram-simulator');
+    }
+
+    function simulateSendTelegram() {
+      const box = document.getElementById('simulated-chat-box');
+      if (!box) return;
+
+      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      box.innerHTML += `
+        <div class="bg-sky-600 text-white p-2 rounded-xl rounded-br-none text-right">
+          Sent: Traditional_Arabic_Strings.ppi
+          <span class="text-[7px] block opacity-80 mt-0.5">${now}</span>
+        </div>
+        <div class="bg-[#182533] text-slate-200 p-2 rounded-xl rounded-bl-none">
+          Converted! Traditional_Arabic_Strings.ppf is ready for Yamaha Genos & PSR-SX900.
+          <span class="text-[7px] block opacity-60 mt-0.5">${now}</span>
+        </div>
+      `;
+      box.scrollTop = box.scrollHeight;
+      showToast('success', 'Telegram conversion sent to chat simulator.');
+    }
+
+    // Global Keyboard Shortcuts (Cmd+K, Alt+S, Alt+T)
+    window.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        openCommandPalette();
+      } else if (e.altKey && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        loadSamplePPI(false);
+      } else if (e.altKey && e.key.toLowerCase() === 't') {
+        e.preventDefault();
+        toggleDarkMode();
+      }
+    });
+
     // Initialize application on load
     window.addEventListener('DOMContentLoaded', () => {
       initTheme();
@@ -3759,6 +4177,7 @@ bot.launch();</code></pre>
       updateStatsUI();
       renderQueueUI();
       renderRecentDashboardTable();
+      renderVirtualKeyboard();
     });
   </script>
 </body>

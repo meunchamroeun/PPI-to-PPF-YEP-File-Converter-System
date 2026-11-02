@@ -39,6 +39,7 @@ import {
   ShieldCheck,
   Crown,
   LogIn,
+  Search,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -54,6 +55,9 @@ import { AuthModal, UserSession } from "@/components/AuthModal";
 import { AIAssistantPanel } from "@/components/AIAssistantPanel";
 import { SettingsPanel } from "@/components/SettingsPanel";
 import { AdminPanel } from "@/components/AdminPanel";
+import { YamahaVoicePlayer } from "@/components/YamahaVoicePlayer";
+import { CommandPalette } from "@/components/CommandPalette";
+import { TelegramSimulatorModal } from "@/components/TelegramSimulatorModal";
 import { useTelegramWebApp } from "@/hooks/useTelegramWebApp";
 import { YamahaPPIParser, ParsedPPIData } from "@/lib/yamaha/ppi-parser";
 import { YamahaPPFGenerator } from "@/lib/yamaha/ppf-generator";
@@ -116,6 +120,8 @@ export default function YamahaConverterApp() {
   const [drmModalOpen, setDrmModalOpen] = useState<boolean>(false);
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<UserSession | null>(null);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState<boolean>(false);
+  const [telegramSimulatorOpen, setTelegramSimulatorOpen] = useState<boolean>(false);
 
   // Search & Filter
   const [historySearch, setHistorySearch] = useState<string>("");
@@ -200,6 +206,25 @@ export default function YamahaConverterApp() {
       localStorage.setItem("theme", "light");
     }
   };
+
+  // Global Keyboard Shortcuts (Cmd+K / Ctrl+K, Alt+S, Alt+T)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setCommandPaletteOpen((prev) => !prev);
+      } else if (e.altKey && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        handleLoadSample(false);
+      } else if (e.altKey && e.key.toLowerCase() === "t") {
+        e.preventDefault();
+        toggleDarkMode();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [darkMode]);
 
   // Sync Telegram User on load
   useEffect(() => {
@@ -789,6 +814,21 @@ export default function YamahaConverterApp() {
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
+            {/* Command Palette Trigger */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCommandPaletteOpen(true)}
+              className="gap-1.5 text-xs text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800"
+              title="Open Command Palette (Cmd+K)"
+            >
+              <Search className="w-3.5 h-3.5 text-slate-400" />
+              <span className="hidden xl:inline">Commands</span>
+              <kbd className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-500">
+                ⌘K
+              </kbd>
+            </Button>
+
             {/* AI Studio Assistant Button */}
             <Button
               variant="outline"
@@ -880,18 +920,19 @@ export default function YamahaConverterApp() {
               </Button>
             )}
 
-            {/* Telegram Mini App indicator */}
-            <Badge
-              variant="secondary"
-              className={`gap-1.5 px-3 py-1 text-[11px] ${
+            {/* Telegram Mini App indicator / Simulator Launcher */}
+            <button
+              onClick={() => setTelegramSimulatorOpen(true)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium border transition cursor-pointer shadow-sm hover:scale-105 active:scale-95 ${
                 isInTelegram
-                  ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300"
-                  : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                  ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300 border-sky-300"
+                  : "bg-sky-50 hover:bg-sky-100 text-sky-700 dark:bg-sky-950/60 dark:hover:bg-sky-900/60 dark:text-sky-300 border-sky-200 dark:border-sky-800/60"
               }`}
+              title="Click to preview Telegram Mini App"
             >
               <Send className="w-3 h-3 text-[#229ED9]" />
               <span>{isInTelegram ? "Mini App Live" : "Telegram Ready"}</span>
-            </Badge>
+            </button>
           </div>
         </header>
 
@@ -1012,6 +1053,11 @@ export default function YamahaConverterApp() {
                 <span>Launch AI Assistant</span>
               </Button>
             </Card>
+
+            {/* Real-time Web Audio Synthesizer & Voice Player */}
+            <YamahaVoicePlayer
+              packVoices={queue.length > 0 ? ["Concert Grand", "Warm Strings", "Synth Brass", "Oriental Oud"] : []}
+            />
 
             {/* Base UI Settings Toggle & Format Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1535,6 +1581,17 @@ export default function YamahaConverterApp() {
                     </div>
                   </Card>
                 </div>
+
+                {/* Embedded Web Audio Voice Player with Detected Pack Voices */}
+                <div className="lg:col-span-3 pt-2">
+                  <YamahaVoicePlayer
+                    packVoices={
+                      activeInspectorItem.parsedData.voicesCount > 0
+                        ? ["Concert Grand (AWM2)", "Warm Symphonic Strings", "DX7 FM Lead", "Oriental Solo Oud"]
+                        : []
+                    }
+                  />
+                </div>
               </div>
             ) : (
               <div className="p-16 text-center rounded-3xl border border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/40 space-y-4">
@@ -1906,6 +1963,32 @@ export default function YamahaConverterApp() {
           setCurrentUser(null);
           triggerHaptic("light");
         }}
+      />
+
+      {/* ===================================================================== */}
+      {/* MODAL: PRO COMMAND PALETTE (CMD+K / CTRL+K)                           */}
+      {/* ===================================================================== */}
+      <CommandPalette
+        isOpen={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
+        onNavigate={(tab) => {
+          setActiveTab(tab);
+          triggerHaptic("light");
+        }}
+        onLoadSample={(isEncrypted) => handleLoadSample(isEncrypted)}
+        onConvertAll={handleConvertAll}
+        onToggleTheme={toggleDarkMode}
+        onOpenTelegramSimulator={() => setTelegramSimulatorOpen(true)}
+        darkMode={darkMode}
+      />
+
+      {/* ===================================================================== */}
+      {/* MODAL: TELEGRAM MINI APP SIMULATOR                                    */}
+      {/* ===================================================================== */}
+      <TelegramSimulatorModal
+        isOpen={telegramSimulatorOpen}
+        onClose={() => setTelegramSimulatorOpen(false)}
+        onLoadSample={() => handleLoadSample(false)}
       />
     </div>
   );
