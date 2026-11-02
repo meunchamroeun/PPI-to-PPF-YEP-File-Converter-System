@@ -34,6 +34,7 @@ import {
   ShieldX,
   PlayCircle,
   ExternalLink,
+  Brain,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,7 @@ import { BaseSwitch } from "@/components/ui/base-switch";
 import { GSAPAudioVisualizer } from "@/components/GSAPAudioVisualizer";
 import { HexViewer } from "@/components/HexViewer";
 import { AuthModal, UserSession } from "@/components/AuthModal";
+import { AIAssistantPanel } from "@/components/AIAssistantPanel";
 import { useTelegramWebApp } from "@/hooks/useTelegramWebApp";
 import { YamahaPPIParser, ParsedPPIData } from "@/lib/yamaha/ppi-parser";
 import { YamahaPPFGenerator } from "@/lib/yamaha/ppf-generator";
@@ -508,6 +510,24 @@ export default function YamahaConverterApp() {
               <span>Conversion History</span>
             </button>
 
+            <button
+              onClick={() => {
+                setActiveTab("ai");
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                activeTab === "ai"
+                  ? "bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-300 font-semibold"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+              }`}
+            >
+              <Brain className="w-4 h-4 text-brand-500" />
+              <span>AI Studio Assistant</span>
+              <Badge variant="default" className="ml-auto text-[9px] px-1.5 py-0 bg-brand-600 text-white">
+                Gemini
+              </Badge>
+            </button>
+
             <div className="pt-4">
               <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 Specifications
@@ -584,6 +604,7 @@ export default function YamahaConverterApp() {
               {activeTab === "converter" && "Yamaha File Conversion Queue"}
               {activeTab === "inspector" && "File & Hex Binary Inspector"}
               {activeTab === "history" && "Conversion History Archive"}
+              {activeTab === "ai" && "Gemini AI Sound Design Studio"}
               {activeTab === "architecture" && "Production System Blueprint"}
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -592,6 +613,17 @@ export default function YamahaConverterApp() {
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
+            {/* AI Studio Assistant Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setActiveTab("ai")}
+              className="gap-1.5 bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border-brand-200 dark:border-brand-800"
+            >
+              <Brain className="w-3.5 h-3.5 text-brand-600" />
+              <span>AI Assistant</span>
+            </Button>
+
             {/* Quick Demo Sample Generator */}
             <Button
               variant="outline"
@@ -724,6 +756,28 @@ export default function YamahaConverterApp() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Gemini AI Sound Assistant Banner */}
+            <Card className="p-5 border-brand-200/60 dark:border-brand-900/60 bg-gradient-to-r from-brand-900/10 via-purple-900/10 to-indigo-900/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center shrink-0">
+                  <Brain className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-bold text-sm text-slate-900 dark:text-white">AI Sound Design &amp; Architecture Assistant</h4>
+                    <Badge variant="default" className="text-[10px] bg-brand-600">Gemini 2.5 Flash</Badge>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Leverage Google Gemini AI to analyze AWM2 voice filters, envelope curves, and legacy down-conversion compatibility.
+                  </p>
+                </div>
+              </div>
+              <Button size="sm" onClick={() => setActiveTab("ai")} className="gap-2 shrink-0">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Launch AI Assistant</span>
+              </Button>
+            </Card>
 
             {/* Base UI Settings Toggle & Format Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1298,7 +1352,16 @@ export default function YamahaConverterApp() {
         )}
 
         {/* =================================================================== */}
-        {/* TAB 5: BACKEND & TECH SPECS                                         */}
+        {/* TAB 5: AI STUDIO ASSISTANT (GEMINI)                                 */}
+        {/* =================================================================== */}
+        {activeTab === "ai" && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+            <AIAssistantPanel activePack={activeInspectorItem} />
+          </motion.div>
+        )}
+
+        {/* =================================================================== */}
+        {/* TAB 6: BACKEND & TECH SPECS                                         */}
         {/* =================================================================== */}
         {activeTab === "architecture" && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
