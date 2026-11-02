@@ -39,10 +39,16 @@ export const TelegramSimulatorModal: React.FC<TelegramSimulatorModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="relative max-w-2xl w-full rounded-3xl bg-card text-card-foreground border border-border shadow-2xl overflow-hidden animate-scale-in ring-1 ring-border/50 specular-card">
+    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+      <div
+        className="relative max-w-2xl w-full rounded-3xl border border-border shadow-2xl overflow-hidden animate-scale-in ring-1 ring-border/50 text-foreground"
+        style={{ backgroundColor: "var(--card)" }}
+      >
         {/* Modal Top Bar */}
-        <div className="flex items-center justify-between px-6 py-4.5 border-b border-border bg-muted/30">
+        <div
+          className="flex items-center justify-between px-6 py-4.5 border-b border-border"
+          style={{ backgroundColor: "var(--card)" }}
+        >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-sky-500/10 text-sky-500 flex items-center justify-center shrink-0 shadow-xs ring-1 ring-sky-500/20">
               <Send className="w-5 h-5" />
@@ -61,7 +67,7 @@ export const TelegramSimulatorModal: React.FC<TelegramSimulatorModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition"
+            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer"
             title="Close"
           >
             <X className="w-5 h-5" />
@@ -69,10 +75,16 @@ export const TelegramSimulatorModal: React.FC<TelegramSimulatorModalProps> = ({
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 bg-muted/20">
+        <div
+          className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6"
+          style={{ backgroundColor: "var(--card)" }}
+        >
           {/* Left Column: Official Bot Profile Card */}
           <div className="space-y-4">
-            <div className="p-5 rounded-2xl bg-card border border-border space-y-4 shadow-xs">
+            <div
+              className="p-5 rounded-2xl border border-border space-y-4 shadow-xs"
+              style={{ backgroundColor: "var(--muted)" }}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
                   <Bot className="w-6 h-6" />
@@ -124,7 +136,10 @@ export const TelegramSimulatorModal: React.FC<TelegramSimulatorModalProps> = ({
             </div>
 
             {/* Bot Commands Quick Reference */}
-            <div className="p-4 rounded-2xl bg-card border border-border space-y-2 shadow-xs">
+            <div
+              className="p-4 rounded-2xl border border-border space-y-2 shadow-xs"
+              style={{ backgroundColor: "var(--muted)" }}
+            >
               <span className="font-bold text-foreground flex items-center gap-1.5 text-xs">
                 <Terminal className="w-3.5 h-3.5 text-brand-600" />
                 <span>Supported Bot Commands</span>
@@ -140,7 +155,10 @@ export const TelegramSimulatorModal: React.FC<TelegramSimulatorModalProps> = ({
 
           {/* Right Column: WebApp Features & Haptics */}
           <div className="space-y-4 text-xs">
-            <div className="p-4 rounded-2xl bg-card border border-border space-y-2 shadow-xs">
+            <div
+              className="p-4 rounded-2xl border border-border space-y-2 shadow-xs"
+              style={{ backgroundColor: "var(--muted)" }}
+            >
               <span className="font-bold text-foreground flex items-center gap-1.5">
                 <Smartphone className="w-4 h-4 text-brand-600" />
                 <span>Telegram Mini App Features</span>
@@ -151,7 +169,10 @@ export const TelegramSimulatorModal: React.FC<TelegramSimulatorModalProps> = ({
             </div>
 
             {/* Haptic Feedback Tester */}
-            <div className="p-4 rounded-2xl bg-card border border-border space-y-2 shadow-xs">
+            <div
+              className="p-4 rounded-2xl border border-border space-y-2 shadow-xs"
+              style={{ backgroundColor: "var(--muted)" }}
+            >
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-foreground">
                   Telegram Haptic Feedback

@@ -263,10 +263,16 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-md flex items-start justify-center pt-20 p-4">
-      <div className="relative w-full max-w-xl rounded-2xl bg-card text-card-foreground border border-border shadow-2xl overflow-hidden animate-scale-in ring-1 ring-border/50 specular-card">
+    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-start justify-center pt-20 p-4">
+      <div
+        className="relative w-full max-w-xl rounded-2xl border border-border shadow-2xl overflow-hidden animate-scale-in ring-1 ring-border/50 text-foreground"
+        style={{ backgroundColor: "var(--card)" }}
+      >
         {/* Search Header */}
-        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border bg-muted/30">
+        <div
+          className="flex items-center gap-3 px-4 py-3.5 border-b border-border"
+          style={{ backgroundColor: "var(--card)" }}
+        >
           <Search className="w-4 h-4 text-muted-foreground shrink-0" />
           <input
             type="text"

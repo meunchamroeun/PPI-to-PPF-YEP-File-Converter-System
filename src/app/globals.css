@@ -14,6 +14,15 @@
   --color-brand-800: #4338ca;
   --color-brand-900: #3730a3;
   --color-brand-950: #1e1b4b;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-brand: var(--brand);
+  --color-sidebar: var(--sidebar);
   --font-roboto: var(--font-roboto), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-kantumruy: var(--font-kantumruy), "Kantumruy Pro", system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 12px);
@@ -123,17 +132,40 @@ html[lang="en"] body,
 
 /* Somleng Glass Card Baseline - Opaque/Themed Surface Protection */
 .glass-card {
-  background-color: var(--card);
-  border-color: var(--border);
-  color: var(--card-foreground);
+  background-color: var(--card) !important;
+  border-color: var(--border) !important;
+  color: var(--card-foreground) !important;
   box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
 }
 
 .dark .glass-card {
-  background-color: var(--card);
-  border-color: var(--border);
-  color: var(--card-foreground);
+  background-color: var(--card) !important;
+  border-color: var(--border) !important;
+  color: var(--card-foreground) !important;
   box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.35);
+}
+
+/* Bulletproof Themed Surface Utilities (Opaque Guarantee) */
+.bg-card {
+  background-color: var(--card) !important;
+}
+.bg-muted {
+  background-color: var(--muted) !important;
+}
+.bg-background {
+  background-color: var(--background) !important;
+}
+.border-border {
+  border-color: var(--border) !important;
+}
+.text-foreground {
+  color: var(--foreground) !important;
+}
+.text-card-foreground {
+  color: var(--card-foreground) !important;
+}
+.text-muted-foreground {
+  color: var(--muted-foreground) !important;
 }
 
 /* Somleng Glass Navbar */

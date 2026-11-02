@@ -132,10 +132,16 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="relative w-full max-w-lg rounded-3xl bg-card border border-border shadow-2xl overflow-hidden animate-scale-in ring-1 ring-border/50 specular-card text-foreground">
+    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+      <div
+        className="relative w-full max-w-lg rounded-3xl border border-border shadow-2xl overflow-hidden animate-scale-in ring-1 ring-border/50 text-foreground"
+        style={{ backgroundColor: "var(--card)" }}
+      >
         {/* Modal Top Bar */}
-        <div className="flex items-center justify-between px-6 py-4.5 border-b border-border bg-muted/30">
+        <div
+          className="flex items-center justify-between px-6 py-4.5 border-b border-border"
+          style={{ backgroundColor: "var(--card)" }}
+        >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-[#229ED9]/10 text-[#229ED9] flex items-center justify-center shrink-0 shadow-xs ring-1 ring-[#229ED9]/20">
               <Send className="w-5 h-5" />

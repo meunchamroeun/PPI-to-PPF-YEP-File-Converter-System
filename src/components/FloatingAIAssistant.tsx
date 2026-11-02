@@ -271,7 +271,8 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 320 }}
-              className="fixed inset-y-0 right-0 z-50 w-full sm:w-[420px] md:w-[450px] bg-card text-card-foreground border-l border-border shadow-2xl flex flex-col overflow-hidden"
+              className="fixed inset-y-0 right-0 z-50 w-full sm:w-[420px] md:w-[450px] text-card-foreground border-l border-border shadow-2xl flex flex-col overflow-hidden"
+              style={{ backgroundColor: "var(--card)" }}
             >
               {/* Chatbot Header (Always at the very top, never cut off) */}
               <div className="h-16 px-4.5 border-b border-border/80 bg-background/95 backdrop-blur-md flex items-center justify-between gap-3 shrink-0 select-none">
