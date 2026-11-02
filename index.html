@@ -189,6 +189,17 @@
             <i data-lucide="cpu" class="w-4 h-4"></i>
             <span>Backend & Tech Specs</span>
           </button>
+
+          <button onclick="navigate('settings')" id="nav-settings" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all">
+            <i data-lucide="sliders" class="w-4 h-4 text-brand-500"></i>
+            <span>Settings &amp; API Key</span>
+          </button>
+
+          <button onclick="navigate('admin')" id="nav-admin" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all">
+            <i data-lucide="shield-check" class="w-4 h-4 text-purple-600"></i>
+            <span>Admin Console</span>
+            <span class="ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded bg-purple-600 text-white">Admin</span>
+          </button>
         </div>
       </div>
 
@@ -208,7 +219,7 @@
         </div>
 
         <div class="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800">
-          <div class="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <div id="sidebar-user-container" class="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
             <div class="w-7 h-7 rounded-full bg-brand-100 dark:bg-brand-950 flex items-center justify-center text-brand-600">
               <i data-lucide="user" class="w-3.5 h-3.5"></i>
             </div>
@@ -266,6 +277,11 @@
           <button onclick="toggleDarkMode()" id="header-theme-toggle" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-slate-400 transition" aria-label="Toggle Theme" title="Toggle Light/Dark Theme">
             <span id="header-theme-icon-slot"><i data-lucide="moon" class="w-5 h-5"></i></span>
           </button>
+
+          <!-- User Authentication Profile / Sign In Pill -->
+          <div id="header-user-container" class="flex items-center">
+            <!-- Rendered dynamically by renderAuthUI() -->
+          </div>
 
           <!-- Telegram Status Badge -->
           <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 text-[11px] font-medium border border-sky-200 dark:border-sky-800/50">
@@ -668,12 +684,34 @@
         <!-- ===================================================================== -->
         <section id="view-history" class="view-section view-hidden space-y-6 max-w-7xl mx-auto">
           
+          <!-- Guest Sign-in Warning Banner (Hidden when logged in) -->
+          <div id="history-guest-banner" class="hidden p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <i data-lucide="info" class="w-5 h-5 shrink-0 text-amber-600 dark:text-amber-400"></i>
+              <div>
+                <p class="font-bold text-xs">You are currently browsing as Guest</p>
+                <p class="text-[11px] opacity-90">Sign in to sync your conversion history across sessions, enable cloud database backups, and access administrative oversight.</p>
+              </div>
+            </div>
+            <button onclick="openAuthModal()" class="px-3.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold shadow-sm shrink-0 flex items-center gap-1.5">
+              <i data-lucide="log-in" class="w-3.5 h-3.5"></i>
+              <span>Sign In</span>
+            </button>
+          </div>
+
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 class="font-extrabold text-xl text-slate-900 dark:text-white">Conversion History Archive</h3>
               <p class="text-xs text-slate-500 dark:text-slate-400">Complete audit log of all PPI conversions, statuses, and generated download links.</p>
             </div>
             <div class="flex items-center gap-2">
+              <!-- Admin scope toggle if admin -->
+              <div id="history-scope-container" class="hidden">
+                <select id="history-scope-select" onchange="renderHistoryTable()" class="px-2.5 py-1.5 rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-semibold focus:outline-none">
+                  <option value="user">My Conversions</option>
+                  <option value="all">All Users (Admin View)</option>
+                </select>
+              </div>
               <button onclick="exportHistoryCSV()" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium transition">
                 <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>
                 <span>Export CSV</span>
@@ -707,6 +745,7 @@
                 <thead>
                   <tr class="border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-slate-600 dark:text-slate-300 font-semibold uppercase">
                     <th class="py-3.5 px-4">Original File</th>
+                    <th class="py-3.5 px-4">User</th>
                     <th class="py-3.5 px-4">File Size</th>
                     <th class="py-3.5 px-4">Conversion Type</th>
                     <th class="py-3.5 px-4">Status</th>
@@ -987,6 +1026,357 @@ bot.launch();</code></pre>
 
         </section>
 
+        <!-- ===================================================================== -->
+        <!-- VIEW 6: SETTINGS & GEMINI API KEY MANAGEMENT                          -->
+        <!-- ===================================================================== -->
+        <section id="view-settings" class="view-section view-hidden space-y-6 max-w-7xl mx-auto">
+          <!-- Heading -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 class="font-extrabold text-xl text-slate-900 dark:text-white">Settings &amp; API Key Management</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Manage Gemini AI Studio credentials, conversion engine preferences, and your account profile.</p>
+            </div>
+            <div id="settings-role-badge">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column: User Profile Card & Role Switcher -->
+            <div class="space-y-6">
+              <div class="glass-card p-6 rounded-2xl border shadow-sm space-y-4">
+                <div class="flex items-center gap-3">
+                  <div id="settings-avatar-icon" class="w-12 h-12 rounded-2xl bg-brand-100 dark:bg-brand-950/80 text-brand-600 dark:text-brand-400 flex items-center justify-center font-bold text-lg">
+                    <i data-lucide="user" class="w-6 h-6"></i>
+                  </div>
+                  <div>
+                    <h4 id="settings-user-name" class="font-bold text-slate-900 dark:text-white text-base">Guest User</h4>
+                    <p id="settings-user-email" class="text-xs text-slate-500 font-mono">Not logged in</p>
+                  </div>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 text-xs space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="text-slate-500">Access Level:</span>
+                    <span id="settings-user-role-tag" class="font-bold font-mono px-2 py-0.5 rounded text-[10px] bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">GUEST</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-slate-500">Storage Sync:</span>
+                    <span id="settings-cloud-sync-status" class="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                      <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                      <span>Local Persistence Active</span>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Account Actions -->
+                <div class="space-y-2 pt-2">
+                  <button onclick="toggleUserRole()" id="btn-toggle-role" class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 transition">
+                    <i data-lucide="shield" class="w-3.5 h-3.5"></i>
+                    <span id="btn-toggle-role-text">Switch to Master Admin</span>
+                  </button>
+                  <button onclick="openAuthModal()" class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-brand-600 hover:bg-brand-500 text-white shadow-sm transition">
+                    <i data-lucide="log-in" class="w-3.5 h-3.5"></i>
+                    <span>Switch / Sign In Account</span>
+                  </button>
+                  <button onclick="logoutUser()" id="btn-settings-signout" class="hidden w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900 transition">
+                    <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Quick Links -->
+              <div class="glass-card p-5 rounded-2xl border shadow-sm space-y-3 text-xs">
+                <span class="font-bold text-slate-700 dark:text-slate-200">Helpful Resources</span>
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition">
+                  <span class="flex items-center gap-2">
+                    <i data-lucide="key" class="w-4 h-4 text-brand-600"></i>
+                    <span>Get Gemini API Key (Google AI Studio)</span>
+                  </span>
+                  <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-400"></i>
+                </a>
+                <a href="https://usa.yamaha.com" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition">
+                  <span class="flex items-center gap-2">
+                    <i data-lucide="music" class="w-4 h-4 text-purple-600"></i>
+                    <span>Yamaha Expansion Voice Specs</span>
+                  </span>
+                  <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-400"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- Right Columns (Span 2): Gemini API Key Manager & Preferences -->
+            <div class="lg:col-span-2 space-y-6">
+              
+              <!-- Gemini AI API Key Card -->
+              <div class="glass-card p-6 rounded-2xl border shadow-sm space-y-5">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-brand-500/10 text-brand-600 flex items-center justify-center">
+                      <i data-lucide="brain" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                      <h4 class="font-bold text-sm text-slate-900 dark:text-white">Google Gemini AI API Key</h4>
+                      <p class="text-xs text-slate-500">Powers real-time AWM2 voice parameter analysis, legacy compatibility diagnostics, and metadata extraction.</p>
+                    </div>
+                  </div>
+                  <span id="gemini-key-status-pill" class="px-2.5 py-1 rounded-full text-[10px] font-bold font-mono bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                    Checking...
+                  </span>
+                </div>
+
+                <div class="space-y-2">
+                  <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between">
+                    <span>API Key (AI Studio / Vertex AI)</span>
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1 text-[11px]">
+                      <span>Get a free key</span>
+                      <i data-lucide="external-link" class="w-3 h-3"></i>
+                    </a>
+                  </label>
+                  <div class="relative">
+                    <input type="password" id="settings-gemini-key-input" placeholder="AIzaSy..." 
+                           class="w-full pl-3 pr-10 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <button type="button" onclick="toggleApiKeyVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                      <i id="eye-icon-apikey" data-lucide="eye" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                  <p class="text-[11px] text-slate-500 dark:text-slate-400">Your key is stored securely in browser localStorage and is never logged to external servers.</p>
+                </div>
+
+                <!-- Live Test Connection Feedback Area -->
+                <div id="api-test-feedback" class="hidden p-3 rounded-xl text-xs flex items-center gap-2.5">
+                  <!-- Populated by testGeminiKeyConnection() -->
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 pt-2">
+                  <button onclick="testGeminiKeyConnection()" id="btn-test-apikey" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold transition">
+                    <i data-lucide="activity" class="w-3.5 h-3.5 text-brand-600"></i>
+                    <span>Test Connection</span>
+                  </button>
+                  <button onclick="saveSettingsGeminiKey()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-sm transition">
+                    <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                    <span>Save Key</span>
+                  </button>
+                  <button onclick="clearSettingsGeminiKey()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-semibold transition">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    <span>Clear Key</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Conversion Engine Preferences -->
+              <div class="glass-card p-6 rounded-2xl border shadow-sm space-y-4">
+                <div class="flex items-center gap-2.5 mb-2">
+                  <div class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center">
+                    <i data-lucide="sliders" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-sm text-slate-900 dark:text-white">Conversion Engine Preferences</h4>
+                    <p class="text-xs text-slate-500">Fine-tune binary packaging, DRM verification, and audio inspection defaults.</p>
+                  </div>
+                </div>
+
+                <div class="space-y-3 divide-y divide-slate-100 dark:divide-slate-800">
+                  <div class="flex items-center justify-between pt-3">
+                    <div>
+                      <p class="font-semibold text-xs text-slate-800 dark:text-slate-200">Default Target Container</p>
+                      <p class="text-[11px] text-slate-500">Preferred format when dropping or uploading new PPI files.</p>
+                    </div>
+                    <select id="pref-default-format" onchange="saveEnginePreferences()" class="px-3 py-1.5 text-xs rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200">
+                      <option value="PPF">PPF (Project Zip with Pack.xml)</option>
+                      <option value="YEP">YEP (Legacy Yamaha Pack Image)</option>
+                    </select>
+                  </div>
+
+                  <div class="flex items-center justify-between pt-3">
+                    <div>
+                      <p class="font-semibold text-xs text-slate-800 dark:text-slate-200">Strict CPI &amp; DRM Protection Check</p>
+                      <p class="text-[11px] text-slate-500">Halt conversion if commercial instrument hardware key is missing.</p>
+                    </div>
+                    <input type="checkbox" id="pref-strict-drm" checked onchange="saveEnginePreferences()" class="w-4 h-4 text-brand-600 rounded">
+                  </div>
+
+                  <div class="flex items-center justify-between pt-3">
+                    <div>
+                      <p class="font-semibold text-xs text-slate-800 dark:text-slate-200">Automatic File Download</p>
+                      <p class="text-[11px] text-slate-500">Trigger browser download immediately upon successful conversion.</p>
+                    </div>
+                    <input type="checkbox" id="pref-auto-download" onchange="saveEnginePreferences()" class="w-4 h-4 text-brand-600 rounded">
+                  </div>
+
+                  <div class="flex items-center justify-between pt-3">
+                    <div>
+                      <p class="font-semibold text-xs text-slate-800 dark:text-slate-200">Audio Sample Waveform Visualizer</p>
+                      <p class="text-[11px] text-slate-500">Render interactive canvas visualizer for VOIC samples.</p>
+                    </div>
+                    <input type="checkbox" id="pref-audio-visualizer" checked onchange="saveEnginePreferences()" class="w-4 h-4 text-brand-600 rounded">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- VIEW 7: ADMIN MANAGEMENT CONSOLE                                      -->
+        <!-- ===================================================================== -->
+        <section id="view-admin" class="view-section view-hidden space-y-6 max-w-7xl mx-auto">
+          <!-- Heading -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="font-extrabold text-xl text-slate-900 dark:text-white">Admin Management Console</h3>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300 font-mono">SYS_ADMIN</span>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400">User directory oversight, cluster health metrics, and global conversion audit trails.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="exportAdminAuditJSON()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium transition">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                <span>Export Audit JSON</span>
+              </button>
+              <button onclick="renderAdminUI()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-sm transition">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                <span>Refresh Telemetry</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Non-Admin Notice Banner (Visible if current user is not ADMIN) -->
+          <div id="admin-restricted-banner" class="hidden p-4 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-300 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <i data-lucide="shield-alert" class="w-5 h-5 shrink-0 text-purple-600 dark:text-purple-400"></i>
+              <div>
+                <p class="font-bold text-xs">Standard User Mode Active</p>
+                <p class="text-[11px] opacity-90">You are previewing the Admin Console. Click below to promote your session to Master Admin to perform user status modifications and system purges.</p>
+              </div>
+            </div>
+            <button onclick="promoteToAdmin()" class="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-sm shrink-0 flex items-center gap-1.5">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+              <span>Switch to Master Admin</span>
+            </button>
+          </div>
+
+          <!-- 4 Telemetry Metric Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="glass-card p-4 rounded-2xl border shadow-sm flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-600 flex items-center justify-center">
+                <i data-lucide="users" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <p class="text-[11px] text-slate-500 font-medium">Registered Accounts</p>
+                <h4 id="admin-stat-users" class="text-xl font-bold text-slate-900 dark:text-white">3</h4>
+              </div>
+            </div>
+
+            <div class="glass-card p-4 rounded-2xl border shadow-sm flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+                <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <p class="text-[11px] text-slate-500 font-medium">Global Conversions</p>
+                <h4 id="admin-stat-jobs" class="text-xl font-bold text-slate-900 dark:text-white">0</h4>
+              </div>
+            </div>
+
+            <div class="glass-card p-4 rounded-2xl border shadow-sm flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-600 flex items-center justify-center">
+                <i data-lucide="database" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <p class="text-[11px] text-slate-500 font-medium">PostgreSQL Cluster</p>
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span class="text-xs font-bold text-slate-900 dark:text-white font-mono">Port 5432 (Healthy)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass-card p-4 rounded-2xl border shadow-sm flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center">
+                <i data-lucide="zap" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <p class="text-[11px] text-slate-500 font-medium">Redis Queue &amp; Cache</p>
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span class="text-xs font-bold text-slate-900 dark:text-white font-mono">BullMQ (Connected)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- User Management Table Card -->
+          <div class="glass-card rounded-2xl border shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h4 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                  <i data-lucide="users" class="w-4 h-4 text-brand-600"></i>
+                  <span>User Management Directory</span>
+                </h4>
+                <p class="text-xs text-slate-500">Manage user authorization roles, grant admin privileges, or suspend abusive accounts.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="promptCreateUser()" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-sm transition">
+                  <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                  <span>Add New User</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-slate-600 dark:text-slate-300 font-semibold uppercase">
+                    <th class="py-3 px-4">User</th>
+                    <th class="py-3 px-4">Email / Identifier</th>
+                    <th class="py-3 px-4">Role</th>
+                    <th class="py-3 px-4">Status</th>
+                    <th class="py-3 px-4">Created Date</th>
+                    <th class="py-3 px-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-users-table-tbody">
+                  <!-- Populated by renderAdminUsersTable() -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Global Jobs Conversion Audit Table Card -->
+          <div class="glass-card rounded-2xl border shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <div>
+                <h4 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                  <i data-lucide="shield-check" class="w-4 h-4 text-purple-600"></i>
+                  <span>Global Conversions Audit Stream</span>
+                </h4>
+                <p class="text-xs text-slate-500">Auditable conversion log across all connected users and Telegram bots.</p>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-slate-600 dark:text-slate-300 font-semibold uppercase">
+                    <th class="py-3 px-4">Job / Pack</th>
+                    <th class="py-3 px-4">User</th>
+                    <th class="py-3 px-4">Conversion Type</th>
+                    <th class="py-3 px-4">Status</th>
+                    <th class="py-3 px-4">Timestamp</th>
+                    <th class="py-3 px-4 text-right">Download</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-jobs-table-tbody">
+                  <!-- Populated by renderAdminJobsTable() -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
       </main>
     </div>
   </div>
@@ -1017,6 +1407,141 @@ bot.launch();</code></pre>
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- MODAL: AUTHENTICATION / SIGN IN                                           -->
+  <!-- ========================================================================= -->
+  <div id="modal-auth" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-card max-w-lg w-full p-6 sm:p-7 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl space-y-5 animate-scale-in">
+      
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between">
+        <div>
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-brand-500/10 text-brand-600 text-[10px] font-bold font-mono mb-1.5">
+            <i data-lucide="lock" class="w-3 h-3"></i>
+            <span>SECURE ACCESS</span>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white">Sign In to Yamaha Expansion Studio</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Save your conversions, access admin oversight, and sync presets.</p>
+        </div>
+        <button onclick="closeModal('modal-auth')" class="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Auth Tabs -->
+      <div class="flex border-b border-slate-200 dark:border-slate-800 gap-4 text-xs font-semibold">
+        <button onclick="setAuthTab('fast')" id="authtab-btn-fast" class="pb-2 border-b-2 border-brand-600 text-brand-600 dark:text-brand-400 transition">
+          1-Click Fast Login
+        </button>
+        <button onclick="setAuthTab('oauth')" id="authtab-btn-oauth" class="pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-white transition">
+          Google / Telegram
+        </button>
+        <button onclick="setAuthTab('credentials')" id="authtab-btn-credentials" class="pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-white transition">
+          Credentials
+        </button>
+      </div>
+
+      <!-- Tab 1: 1-Click Fast Login -->
+      <div id="authtab-content-fast" class="space-y-3">
+        <p class="text-[11px] text-slate-500">Choose a pre-configured account to test instant role capabilities:</p>
+        
+        <!-- Admin Account -->
+        <button onclick="loginFast('admin')" class="w-full p-3 rounded-2xl border border-purple-200 dark:border-purple-900/60 hover:border-purple-500 bg-purple-50/40 dark:bg-purple-950/30 flex items-center justify-between text-left transition group">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold">
+              <i data-lucide="shield-check" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-bold text-slate-900 dark:text-white">Master Admin</span>
+                <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-purple-200 dark:bg-purple-800 text-purple-800 dark:text-purple-200">ADMIN</span>
+              </div>
+              <span class="text-[11px] text-slate-500 font-mono">admin@yamaha-studio.com</span>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-purple-600 transition"></i>
+        </button>
+
+        <!-- Sound Designer -->
+        <button onclick="loginFast('artist')" class="w-full p-3 rounded-2xl border border-brand-200 dark:border-brand-900/60 hover:border-brand-500 bg-brand-50/40 dark:bg-brand-950/30 flex items-center justify-between text-left transition group">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold">
+              <i data-lucide="music" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-bold text-slate-900 dark:text-white">Alex Thorne (Sound Designer)</span>
+                <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">USER</span>
+              </div>
+              <span class="text-[11px] text-slate-500 font-mono">artist@yamaha-studio.com</span>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-brand-600 transition"></i>
+        </button>
+
+        <!-- Telegram Mini App User -->
+        <button onclick="loginFast('telegram')" class="w-full p-3 rounded-2xl border border-sky-200 dark:border-sky-900/60 hover:border-sky-500 bg-sky-50/40 dark:bg-sky-950/30 flex items-center justify-between text-left transition group">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center font-bold">
+              <i data-lucide="send" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-bold text-slate-900 dark:text-white">Yamaha Keyboardist</span>
+                <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-sky-100 dark:bg-sky-900 text-sky-800 dark:text-sky-200">TELEGRAM</span>
+              </div>
+              <span class="text-[11px] text-slate-500 font-mono">@yamaha_synth_pro</span>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-sky-600 transition"></i>
+        </button>
+      </div>
+
+      <!-- Tab 2: OAuth & Telegram -->
+      <div id="authtab-content-oauth" class="hidden space-y-3">
+        <p class="text-[11px] text-slate-500">Sign in with federated enterprise identity:</p>
+        
+        <button onclick="loginOAuth('google')" class="w-full py-2.5 px-4 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/60 flex items-center justify-center gap-3 text-xs font-semibold text-slate-700 dark:text-slate-200 transition shadow-sm">
+          <svg class="w-4 h-4" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+        <button onclick="loginOAuth('telegram')" class="w-full py-2.5 px-4 rounded-xl bg-sky-500 hover:bg-sky-600 text-white flex items-center justify-center gap-3 text-xs font-semibold transition shadow-sm">
+          <i data-lucide="send" class="w-4 h-4"></i>
+          <span>Continue with Telegram</span>
+        </button>
+      </div>
+
+      <!-- Tab 3: Credentials -->
+      <div id="authtab-content-credentials" class="hidden space-y-3">
+        <div>
+          <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Email or Username</label>
+          <input type="text" id="auth-input-email" placeholder="producer@yamaha-synth.com" class="w-full mt-1 px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none">
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Password</label>
+          <input type="password" id="auth-input-password" placeholder="••••••••" class="w-full mt-1 px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none">
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Account Role</label>
+          <select id="auth-input-role" class="w-full mt-1 px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none">
+            <option value="USER">Standard User (Expansion Designer)</option>
+            <option value="ADMIN">Master Administrator (System &amp; Users)</option>
+          </select>
+        </div>
+        <button onclick="loginWithCredentials()" class="w-full py-2.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-sm transition">
+          Sign In / Create Account
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Toast Container -->
   <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
@@ -1040,7 +1565,14 @@ bot.launch();</code></pre>
       },
       activeView: 'dashboard',
       inspectorFileId: null,
-      darkMode: false
+      darkMode: false,
+      user: null,        // Logged-in user session or null for guest
+      adminScope: 'user',// 'user' or 'all' for history filtering
+      usersList: [       // Directory of users for admin management
+        { id: 'usr_admin', name: 'Master Admin (Yamaha R&D)', email: 'admin@yamaha-studio.com', role: 'ADMIN', status: 'ACTIVE', joined: '2025-01-15' },
+        { id: 'usr_artist', name: 'Alex Thorne', email: 'artist@yamaha-studio.com', role: 'USER', status: 'ACTIVE', joined: '2025-02-01' },
+        { id: 'usr_telegram', name: 'Yamaha Keyboardist', email: '@yamaha_synth_pro', role: 'USER', status: 'ACTIVE', joined: '2025-02-14' }
+      ]
     };
 
     /**
@@ -1558,8 +2090,18 @@ bot.launch();</code></pre>
         inspector: { title: 'File & Hex Inspector', sub: 'Inspect binary headers, chunk tables, waveforms, and XML structures' },
         history: { title: 'Conversion History', sub: 'Audit records and download links for completed file conversions' },
         ai: { title: 'Gemini AI Sound Design Studio', sub: 'Deep technical analysis of Yamaha AWM2 voice parameters, wave samples, and legacy compatibility' },
-        architecture: { title: 'System Architecture & Tech Specs', sub: 'Production full-stack blueprint: Next.js, Node.js, BullMQ, Redis, PostgreSQL' }
+        architecture: { title: 'System Architecture & Tech Specs', sub: 'Production full-stack blueprint: Next.js, Node.js, BullMQ, Redis, PostgreSQL' },
+        settings: { title: 'Settings & API Key Management', sub: 'Configure your Gemini AI Studio credentials, conversion engine preferences, and profile' },
+        admin: { title: 'Admin Management Console', sub: 'Centralized administrative controls, user roles, system metrics, and audit telemetry' }
       };
+
+      if (viewName === 'settings') {
+        renderSettingsUI();
+      } else if (viewName === 'admin') {
+        renderAdminUI();
+      } else if (viewName === 'history') {
+        renderHistoryTable();
+      }
 
       if (titles[viewName]) {
         document.getElementById('page-title').textContent = titles[viewName].title;
@@ -2158,6 +2700,7 @@ bot.launch();</code></pre>
      * ============================================================================
      */
     function recordHistory(item, status, notes = '') {
+      const u = state.user || { id: 'usr_guest', name: 'Guest User', email: 'guest@local', role: 'USER' };
       const historyEntry = {
         id: 'hist_' + Math.random().toString(36).substring(2, 9),
         name: item.name,
@@ -2166,21 +2709,57 @@ bot.launch();</code></pre>
         status: status,
         date: new Date(),
         notes: notes,
-        output: item.output ? { ...item.output } : null
+        output: item.output ? { ...item.output } : null,
+        userId: u.id,
+        userName: u.name,
+        userEmail: u.email
       };
 
       state.history.unshift(historyEntry);
       renderHistoryTable();
       renderRecentDashboardTable();
+      if (state.activeView === 'admin') renderAdminJobsTable();
     }
 
     function renderHistoryTable() {
       const tbody = document.getElementById('history-table-tbody');
+      if (!tbody) return;
       const searchTerm = (document.getElementById('history-search')?.value || '').toLowerCase();
       const statusFilter = document.getElementById('history-filter-status')?.value || 'ALL';
+      const scopeFilter = document.getElementById('history-scope-select')?.value || 'user';
+
+      // Update banner and scope visibility
+      const guestBanner = document.getElementById('history-guest-banner');
+      if (guestBanner) {
+        if (!state.user) {
+          guestBanner.classList.remove('hidden');
+        } else {
+          guestBanner.classList.add('hidden');
+        }
+      }
+
+      const scopeContainer = document.getElementById('history-scope-container');
+      if (scopeContainer) {
+        if (state.user && state.user.role === 'ADMIN') {
+          scopeContainer.classList.remove('hidden');
+        } else {
+          scopeContainer.classList.add('hidden');
+        }
+      }
 
       const filtered = state.history.filter(entry => {
-        const matchesSearch = entry.name.toLowerCase().includes(searchTerm);
+        // Scope filtering: non-admins or user scope only see their conversions
+        if (state.user && state.user.role === 'ADMIN') {
+          if (scopeFilter === 'user' && entry.userId && entry.userId !== state.user.id) {
+            return false;
+          }
+        } else if (state.user) {
+          if (entry.userId && entry.userId !== state.user.id) {
+            return false;
+          }
+        }
+
+        const matchesSearch = entry.name.toLowerCase().includes(searchTerm) || (entry.userName && entry.userName.toLowerCase().includes(searchTerm));
         const matchesStatus = (statusFilter === 'ALL' || entry.status === statusFilter);
         return matchesSearch && matchesStatus;
       });
@@ -2188,7 +2767,7 @@ bot.launch();</code></pre>
       if (filtered.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="6" class="py-12 text-center text-slate-500">
+            <td colspan="7" class="py-12 text-center text-slate-500">
               <p class="text-sm font-medium">No conversion history found matching criteria.</p>
               <div class="pt-3 flex justify-center gap-2">
                 <button onclick="navigate('converter')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow transition">
@@ -2212,6 +2791,12 @@ bot.launch();</code></pre>
           <td class="py-3 px-4 font-medium text-slate-900 dark:text-white flex items-center gap-2">
             <i data-lucide="file" class="w-4 h-4 text-slate-400"></i>
             <span>${entry.name}</span>
+          </td>
+          <td class="py-3 px-4 text-slate-600 dark:text-slate-300 text-[11px]">
+            <span class="inline-flex items-center gap-1">
+              <i data-lucide="user" class="w-3 h-3 text-slate-400"></i>
+              <span>${entry.userName || 'Guest'}</span>
+            </span>
           </td>
           <td class="py-3 px-4 text-slate-500 font-mono text-[11px]">${formatBytes(entry.size)}</td>
           <td class="py-3 px-4">
@@ -2572,9 +3157,605 @@ bot.launch();</code></pre>
       return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
     }
 
+    /**
+     * ============================================================================
+     * USER AUTHENTICATION & SESSION MANAGEMENT
+     * ============================================================================
+     */
+    function initUserSession() {
+      try {
+        const stored = localStorage.getItem('user_session');
+        if (stored) {
+          state.user = JSON.parse(stored);
+        }
+      } catch (e) {
+        console.error('Session restore failed:', e);
+      }
+      renderAuthUI();
+      updateSettingsKeyStatus();
+    }
+
+    function openAuthModal() {
+      openModal('modal-auth');
+      setAuthTab('fast');
+    }
+
+    function setAuthTab(tab) {
+      ['fast', 'oauth', 'credentials'].forEach(t => {
+        const btn = document.getElementById(`authtab-btn-${t}`);
+        const pane = document.getElementById(`authtab-content-${t}`);
+        if (t === tab) {
+          btn.className = 'pb-2 border-b-2 border-brand-600 text-brand-600 dark:text-brand-400 transition';
+          pane.classList.remove('hidden');
+        } else {
+          btn.className = 'pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-white transition';
+          pane.classList.add('hidden');
+        }
+      });
+      lucide.createIcons();
+    }
+
+    function loginFast(accountType) {
+      if (accountType === 'admin') {
+        state.user = {
+          id: 'usr_admin',
+          name: 'Master Admin (Yamaha R&D)',
+          email: 'admin@yamaha-studio.com',
+          role: 'ADMIN',
+          avatar: 'shield-check',
+          joined: '2025-01-15'
+        };
+      } else if (accountType === 'artist') {
+        state.user = {
+          id: 'usr_artist',
+          name: 'Alex Thorne',
+          email: 'artist@yamaha-studio.com',
+          role: 'USER',
+          avatar: 'music',
+          joined: '2025-02-01'
+        };
+      } else {
+        state.user = {
+          id: 'usr_telegram',
+          name: 'Yamaha Keyboardist',
+          email: '@yamaha_synth_pro',
+          role: 'USER',
+          avatar: 'send',
+          joined: '2025-02-14'
+        };
+      }
+      saveUserSession();
+      closeModal('modal-auth');
+      showToast('success', `Signed in as ${state.user.name} (${state.user.role})`);
+    }
+
+    function loginOAuth(provider) {
+      if (provider === 'google') {
+        state.user = {
+          id: 'usr_google_' + Math.random().toString(36).substring(2, 7),
+          name: 'Yamaha Studio Producer',
+          email: 'producer@yamaha-cloud.net',
+          role: 'USER',
+          avatar: 'user',
+          joined: new Date().toISOString().split('T')[0]
+        };
+      } else {
+        state.user = {
+          id: 'usr_tg_' + Math.random().toString(36).substring(2, 7),
+          name: 'Telegram Performer',
+          email: '@telegram_synthesizer',
+          role: 'USER',
+          avatar: 'send',
+          joined: new Date().toISOString().split('T')[0]
+        };
+      }
+      saveUserSession();
+      closeModal('modal-auth');
+      showToast('success', `Signed in via ${provider.toUpperCase()}`);
+    }
+
+    function loginWithCredentials() {
+      const email = document.getElementById('auth-input-email').value.trim();
+      const pass = document.getElementById('auth-input-password').value.trim();
+      const role = document.getElementById('auth-input-role').value;
+
+      if (!email) {
+        showToast('warning', 'Please enter your email or username.');
+        return;
+      }
+
+      state.user = {
+        id: 'usr_' + Math.random().toString(36).substring(2, 8),
+        name: email.includes('@') ? email.split('@')[0] : email,
+        email: email,
+        role: role,
+        avatar: role === 'ADMIN' ? 'shield-check' : 'user',
+        joined: new Date().toISOString().split('T')[0]
+      };
+
+      // Add to users directory if new
+      if (!state.usersList.some(u => u.email === email)) {
+        state.usersList.push({
+          id: state.user.id,
+          name: state.user.name,
+          email: state.user.email,
+          role: state.user.role,
+          status: 'ACTIVE',
+          joined: state.user.joined
+        });
+      }
+
+      saveUserSession();
+      closeModal('modal-auth');
+      showToast('success', `Welcome back, ${state.user.name}!`);
+    }
+
+    function saveUserSession() {
+      try {
+        localStorage.setItem('user_session', JSON.stringify(state.user));
+      } catch (e) {}
+      renderAuthUI();
+      if (state.activeView === 'settings') renderSettingsUI();
+      if (state.activeView === 'admin') renderAdminUI();
+      if (state.activeView === 'history') renderHistoryTable();
+    }
+
+    function logoutUser() {
+      state.user = null;
+      try {
+        localStorage.removeItem('user_session');
+      } catch (e) {}
+      renderAuthUI();
+      if (state.activeView === 'settings') renderSettingsUI();
+      if (state.activeView === 'admin') renderAdminUI();
+      if (state.activeView === 'history') renderHistoryTable();
+      showToast('info', 'You have been signed out.');
+    }
+
+    function toggleUserRole() {
+      if (!state.user) {
+        loginFast('admin');
+        return;
+      }
+      state.user.role = state.user.role === 'ADMIN' ? 'USER' : 'ADMIN';
+      saveUserSession();
+      showToast('info', `Switched role to ${state.user.role}`);
+    }
+
+    function promoteToAdmin() {
+      if (!state.user) {
+        loginFast('admin');
+        return;
+      }
+      state.user.role = 'ADMIN';
+      saveUserSession();
+      showToast('success', 'Promoted session to Master Admin');
+    }
+
+    function renderAuthUI() {
+      const headerContainer = document.getElementById('header-user-container');
+      const sidebarContainer = document.getElementById('sidebar-user-container');
+
+      if (!state.user) {
+        // Header Guest View
+        if (headerContainer) {
+          headerContainer.innerHTML = `
+            <button onclick="openAuthModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-sm transition">
+              <i data-lucide="log-in" class="w-3.5 h-3.5"></i>
+              <span>Sign In / Login</span>
+            </button>
+          `;
+        }
+        // Sidebar Guest View
+        if (sidebarContainer) {
+          sidebarContainer.innerHTML = `
+            <div onclick="openAuthModal()" class="cursor-pointer flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-brand-600 transition">
+              <div class="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-slate-500">
+                <i data-lucide="user" class="w-3.5 h-3.5"></i>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-xs">Guest User</span>
+                <span class="text-[10px] text-brand-600 dark:text-brand-400 font-normal">Click to sign in</span>
+              </div>
+            </div>
+          `;
+        }
+      } else {
+        // Header Logged-In User
+        const isAdmin = state.user.role === 'ADMIN';
+        if (headerContainer) {
+          headerContainer.innerHTML = `
+            <div class="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800">
+              <button onclick="navigate('settings')" class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs text-slate-800 dark:text-slate-200 font-medium transition">
+                <div class="w-6 h-6 rounded-full ${isAdmin ? 'bg-purple-600' : 'bg-brand-600'} text-white flex items-center justify-center text-[10px] font-bold">
+                  <i data-lucide="${isAdmin ? 'shield-check' : 'user'}" class="w-3.5 h-3.5 text-white"></i>
+                </div>
+                <span class="max-w-[120px] truncate hidden sm:inline">${state.user.name}</span>
+                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${isAdmin ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300' : 'bg-brand-100 text-brand-700 dark:bg-brand-900/50 dark:text-brand-300'} font-mono">${state.user.role}</span>
+              </button>
+              <button onclick="logoutUser()" title="Sign Out" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition">
+                <i data-lucide="log-out" class="w-4 h-4"></i>
+              </button>
+            </div>
+          `;
+        }
+        // Sidebar Logged-In User
+        if (sidebarContainer) {
+          sidebarContainer.innerHTML = `
+            <div onclick="navigate('settings')" class="cursor-pointer flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:opacity-80 transition">
+              <div class="w-7 h-7 rounded-full ${isAdmin ? 'bg-purple-100 text-purple-600 dark:bg-purple-950 dark:text-purple-400' : 'bg-brand-100 text-brand-600 dark:bg-brand-950 dark:text-brand-400'} flex items-center justify-center">
+                <i data-lucide="${isAdmin ? 'shield-check' : 'user'}" class="w-3.5 h-3.5"></i>
+              </div>
+              <div class="flex flex-col truncate">
+                <span class="truncate">${state.user.name}</span>
+                <span class="text-[10px] text-slate-400 font-mono">${state.user.role}</span>
+              </div>
+            </div>
+          `;
+        }
+      }
+      lucide.createIcons();
+    }
+
+    /**
+     * ============================================================================
+     * SETTINGS & GEMINI API KEY MANAGEMENT
+     * ============================================================================
+     */
+    function renderSettingsUI() {
+      const u = state.user || { name: 'Guest User', email: 'Not logged in', role: 'GUEST' };
+      
+      const nameEl = document.getElementById('settings-user-name');
+      const emailEl = document.getElementById('settings-user-email');
+      const roleTag = document.getElementById('settings-user-role-tag');
+      const roleBadge = document.getElementById('settings-role-badge');
+      const btnToggleRoleText = document.getElementById('btn-toggle-role-text');
+      const btnSignout = document.getElementById('btn-settings-signout');
+
+      if (nameEl) nameEl.textContent = u.name;
+      if (emailEl) emailEl.textContent = u.email;
+      if (roleTag) {
+        roleTag.textContent = u.role;
+        roleTag.className = `font-bold font-mono px-2 py-0.5 rounded text-[10px] ${u.role === 'ADMIN' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200'}`;
+      }
+      if (roleBadge) {
+        roleBadge.innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-bold font-mono ${u.role === 'ADMIN' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 border border-purple-200 dark:border-purple-800' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}">${u.role}</span>`;
+      }
+      if (btnToggleRoleText) {
+        btnToggleRoleText.textContent = u.role === 'ADMIN' ? 'Switch to Standard User' : 'Switch to Master Admin';
+      }
+      if (btnSignout) {
+        if (state.user) btnSignout.classList.remove('hidden');
+        else btnSignout.classList.add('hidden');
+      }
+
+      // Populate current key
+      const keyInput = document.getElementById('settings-gemini-key-input');
+      if (keyInput) {
+        keyInput.value = localStorage.getItem('gemini_api_key') || '';
+      }
+
+      updateSettingsKeyStatus();
+      lucide.createIcons();
+    }
+
+    function updateSettingsKeyStatus() {
+      const savedKey = localStorage.getItem('gemini_api_key');
+      const pill = document.getElementById('gemini-key-status-pill');
+      if (pill) {
+        if (savedKey) {
+          pill.className = 'px-2.5 py-1 rounded-full text-[10px] font-bold font-mono bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800';
+          pill.textContent = 'Active Key Configured';
+        } else {
+          pill.className = 'px-2.5 py-1 rounded-full text-[10px] font-bold font-mono bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border border-amber-200 dark:border-amber-800';
+          pill.textContent = 'API Key Not Set';
+        }
+      }
+    }
+
+    function toggleApiKeyVisibility() {
+      const input = document.getElementById('settings-gemini-key-input');
+      const icon = document.getElementById('eye-icon-apikey');
+      if (!input) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        input.type = 'password';
+        icon.setAttribute('data-lucide', 'eye');
+      }
+      lucide.createIcons();
+    }
+
+    function saveSettingsGeminiKey() {
+      const input = document.getElementById('settings-gemini-key-input');
+      const val = (input?.value || '').trim();
+      if (val) {
+        localStorage.setItem('gemini_api_key', val);
+        updateSettingsKeyStatus();
+        showToast('success', 'Gemini API Key saved securely in browser localStorage.');
+      } else {
+        localStorage.removeItem('gemini_api_key');
+        updateSettingsKeyStatus();
+        showToast('info', 'Gemini API key removed.');
+      }
+    }
+
+    function clearSettingsGeminiKey() {
+      const input = document.getElementById('settings-gemini-key-input');
+      if (input) input.value = '';
+      localStorage.removeItem('gemini_api_key');
+      updateSettingsKeyStatus();
+      const feedback = document.getElementById('api-test-feedback');
+      if (feedback) feedback.classList.add('hidden');
+      showToast('info', 'Gemini API Key cleared.');
+    }
+
+    async function testGeminiKeyConnection() {
+      const input = document.getElementById('settings-gemini-key-input');
+      const key = (input?.value || '').trim() || localStorage.getItem('gemini_api_key');
+      const feedback = document.getElementById('api-test-feedback');
+      const btn = document.getElementById('btn-test-apikey');
+
+      if (!key) {
+        showToast('warning', 'Please enter a Gemini API Key to test.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i data-lucide="refresh-cw" class="w-3.5 h-3.5 animate-spin"></i><span>Testing Connection...</span>';
+      lucide.createIcons();
+
+      const startTime = Date.now();
+      try {
+        // Try Next.js proxy first, fallback to direct Google endpoint
+        let ok = false;
+        let latency = 0;
+
+        try {
+          const res = await fetch('/api/ai/test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ apiKey: key })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            ok = data.status === 'ok';
+            latency = data.latencyMs || (Date.now() - startTime);
+          }
+        } catch (proxyErr) {
+          // Fallback to direct client ping
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(key)}`;
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: "Ping test" }] }]
+            })
+          });
+          ok = res.ok;
+          latency = Date.now() - startTime;
+        }
+
+        if (ok) {
+          feedback.className = 'p-3 rounded-xl text-xs flex items-center gap-2.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800';
+          feedback.innerHTML = `
+            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+            <div>
+              <p class="font-bold">Live Connection Verified</p>
+              <p class="text-[11px] opacity-90">Model gemini-2.5-flash answered in ${latency}ms. Real-time voice parameter inspection is ready.</p>
+            </div>
+          `;
+          showToast('success', `API Key Valid! Latency: ${latency}ms`);
+        } else {
+          feedback.className = 'p-3 rounded-xl text-xs flex items-center gap-2.5 bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-200 border border-rose-200 dark:border-rose-800';
+          feedback.innerHTML = `
+            <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600 shrink-0"></i>
+            <div>
+              <p class="font-bold">Connection Refused</p>
+              <p class="text-[11px] opacity-90">Google AI Studio returned an authorization error. Please verify the key has not expired.</p>
+            </div>
+          `;
+          showToast('error', 'API Key verification failed.');
+        }
+      } catch (err) {
+        feedback.className = 'p-3 rounded-xl text-xs flex items-center gap-2.5 bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-200 border border-rose-200 dark:border-rose-800';
+        feedback.innerHTML = `
+          <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600 shrink-0"></i>
+          <div>
+            <p class="font-bold">Network Connection Error</p>
+            <p class="text-[11px] opacity-90">${err.message}</p>
+          </div>
+        `;
+        showToast('error', 'Network error testing API Key.');
+      } finally {
+        feedback.classList.remove('hidden');
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="activity" class="w-3.5 h-3.5 text-brand-600"></i><span>Test Connection</span>';
+        lucide.createIcons();
+      }
+    }
+
+    function saveEnginePreferences() {
+      showToast('info', 'Engine preferences updated.');
+    }
+
+    /**
+     * ============================================================================
+     * ADMIN MANAGEMENT CONSOLE
+     * ============================================================================
+     */
+    function renderAdminUI() {
+      const banner = document.getElementById('admin-restricted-banner');
+      if (banner) {
+        if (!state.user || state.user.role !== 'ADMIN') {
+          banner.classList.remove('hidden');
+        } else {
+          banner.classList.add('hidden');
+        }
+      }
+
+      const usersCountEl = document.getElementById('admin-stat-users');
+      if (usersCountEl) usersCountEl.textContent = state.usersList.length;
+
+      const jobsCountEl = document.getElementById('admin-stat-jobs');
+      if (jobsCountEl) jobsCountEl.textContent = state.history.length;
+
+      renderAdminUsersTable();
+      renderAdminJobsTable();
+      lucide.createIcons();
+    }
+
+    function renderAdminUsersTable() {
+      const tbody = document.getElementById('admin-users-table-tbody');
+      if (!tbody) return;
+
+      tbody.innerHTML = state.usersList.map(u => {
+        const isAdmin = u.role === 'ADMIN';
+        const isActive = u.status === 'ACTIVE';
+
+        return `
+          <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
+            <td class="py-3 px-4 flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-full ${isAdmin ? 'bg-purple-100 text-purple-600 dark:bg-purple-950 dark:text-purple-400' : 'bg-slate-200 dark:bg-slate-800 text-slate-600'} flex items-center justify-center font-bold text-xs">
+                <i data-lucide="${isAdmin ? 'shield-check' : 'user'}" class="w-3.5 h-3.5"></i>
+              </div>
+              <span class="font-semibold text-slate-900 dark:text-white">${u.name}</span>
+            </td>
+            <td class="py-3 px-4 font-mono text-slate-500 text-[11px]">${u.email}</td>
+            <td class="py-3 px-4">
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold ${isAdmin ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'}">
+                ${u.role}
+              </span>
+            </td>
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-semibold ${isActive ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400' : 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400'}">
+                <span class="w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-rose-500'}"></span>
+                <span>${u.status}</span>
+              </span>
+            </td>
+            <td class="py-3 px-4 text-slate-500 text-[11px] font-mono">${u.joined}</td>
+            <td class="py-3 px-4 text-right space-x-1">
+              <button onclick="toggleUserRoleInAdmin('${u.id}')" class="px-2 py-1 rounded text-[10px] font-medium border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition" title="Toggle Admin/User Role">
+                ${isAdmin ? 'Demote' : 'Promote'}
+              </button>
+              <button onclick="toggleUserStatusInAdmin('${u.id}')" class="px-2 py-1 rounded text-[10px] font-medium border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition" title="Suspend or Activate">
+                ${isActive ? 'Suspend' : 'Activate'}
+              </button>
+              <button onclick="deleteUserInAdmin('${u.id}')" class="px-2 py-1 rounded text-[10px] font-medium border border-rose-300 dark:border-rose-800 hover:bg-rose-50 dark:hover:bg-rose-950/50 text-rose-600 transition" title="Delete User">
+                Delete
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderAdminJobsTable() {
+      const tbody = document.getElementById('admin-jobs-table-tbody');
+      if (!tbody) return;
+
+      if (state.history.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="py-8 text-center text-slate-400 text-xs">
+              No conversion jobs recorded across the system yet.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = state.history.map(entry => `
+        <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
+          <td class="py-3 px-4 font-medium text-slate-900 dark:text-white flex items-center gap-2">
+            <i data-lucide="file" class="w-4 h-4 text-slate-400"></i>
+            <span>${entry.name}</span>
+          </td>
+          <td class="py-3 px-4 text-slate-600 dark:text-slate-300 text-[11px]">
+            ${entry.userName || 'Guest User'}
+          </td>
+          <td class="py-3 px-4 font-mono text-[10px]">${entry.type}</td>
+          <td class="py-3 px-4">${renderStatusBadge(entry.status)}</td>
+          <td class="py-3 px-4 text-slate-500 text-[11px] font-mono">
+            ${entry.date.toLocaleDateString()} ${entry.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </td>
+          <td class="py-3 px-4 text-right">
+            ${entry.output ? `
+              <button onclick="downloadHistoryFile('${entry.id}')" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-brand-50 hover:bg-brand-100 text-brand-600 dark:bg-brand-950 dark:text-brand-300 transition">
+                <i data-lucide="download" class="w-3 h-3"></i>
+                <span>Download</span>
+              </button>
+            ` : `<span class="text-slate-400 text-[11px]">—</span>`}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function promptCreateUser() {
+      const name = prompt("Enter new user's display name:");
+      if (!name) return;
+      const email = prompt("Enter user's email or username:") || `${name.toLowerCase().replace(/\s+/g, '_')}@yamaha-synth.com`;
+      const role = confirm("Should this user have Master Administrator rights? Click OK for ADMIN, Cancel for USER.") ? 'ADMIN' : 'USER';
+
+      state.usersList.push({
+        id: 'usr_' + Math.random().toString(36).substring(2, 8),
+        name: name,
+        email: email,
+        role: role,
+        status: 'ACTIVE',
+        joined: new Date().toISOString().split('T')[0]
+      });
+
+      renderAdminUI();
+      showToast('success', `Created user account for ${name} (${role})`);
+    }
+
+    function toggleUserRoleInAdmin(userId) {
+      const u = state.usersList.find(x => x.id === userId);
+      if (!u) return;
+      u.role = u.role === 'ADMIN' ? 'USER' : 'ADMIN';
+      renderAdminUI();
+      showToast('info', `Updated ${u.name} to ${u.role}`);
+    }
+
+    function toggleUserStatusInAdmin(userId) {
+      const u = state.usersList.find(x => x.id === userId);
+      if (!u) return;
+      u.status = u.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
+      renderAdminUI();
+      showToast('info', `${u.name} is now ${u.status}`);
+    }
+
+    function deleteUserInAdmin(userId) {
+      if (!confirm("Are you sure you want to permanently delete this user account?")) return;
+      state.usersList = state.usersList.filter(x => x.id !== userId);
+      renderAdminUI();
+      showToast('success', 'User account deleted.');
+    }
+
+    function exportAdminAuditJSON() {
+      const data = {
+        exportedAt: new Date().toISOString(),
+        systemStats: { ...state.stats },
+        users: state.usersList,
+        jobsAudit: state.history
+      };
+
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `yamaha-system-audit-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('success', 'System audit JSON log exported.');
+    }
+
     // Initialize application on load
     window.addEventListener('DOMContentLoaded', () => {
       initTheme();
+      initUserSession();
       updateStatsUI();
       renderQueueUI();
       renderRecentDashboardTable();

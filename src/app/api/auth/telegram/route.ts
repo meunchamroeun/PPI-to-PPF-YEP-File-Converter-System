@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyTelegramInitData } from "@/lib/telegram/verify";
+import { saveUserRecord, getUserByEmailOrUsername } from "@/lib/db/pg";
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "yamaha-converter-dev-secret-key-2026";
@@ -13,48 +14,61 @@ const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
  */
 export async function POST(req: NextRequest) {
   try {
-    const { initData, widgetData } = await req.json();
+    const { initData, widgetData, role } = await req.json();
 
-    let user: any = null;
+    let tgUser: any = null;
 
     if (initData) {
-      // Validate TMA initData if BOT_TOKEN is configured
       if (BOT_TOKEN) {
         const result = verifyTelegramInitData(initData, BOT_TOKEN);
         if (!result.valid) {
           return NextResponse.json({ error: "Invalid Telegram signature" }, { status: 401 });
         }
-        user = result.user;
+        tgUser = result.user;
       } else {
-        // Fallback for development without live bot token
         const params = new URLSearchParams(initData);
         const userJson = params.get("user");
-        user = userJson ? JSON.parse(userJson) : { id: 12345678, first_name: "Telegram User" };
+        tgUser = userJson ? JSON.parse(userJson) : { id: 88776655, first_name: "Yamaha Keyboardist", username: "yamaha_synth_pro" };
       }
     } else if (widgetData) {
-      user = widgetData;
+      tgUser = widgetData;
     } else {
-      user = {
-        id: 99887766,
-        first_name: "Telegram Musician",
-        username: "yamaha_creator",
+      tgUser = {
+        id: 88776655,
+        first_name: "Yamaha Keyboardist",
+        username: "yamaha_synth_pro",
       };
     }
 
-    const payload = {
-      id: "usr_tg_" + (user.id || "guest"),
-      name: user.first_name || user.username || "Telegram Musician",
-      username: user.username,
-      avatar: user.photo_url || null,
-      provider: "TELEGRAM",
-    };
+    const userId = "usr_tg_" + (tgUser.id || "guest");
+    const existing = await getUserByEmailOrUsername(tgUser.username || userId);
 
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+    const savedUser = await saveUserRecord({
+      id: existing ? existing.id : userId,
+      name: (tgUser.first_name || "") + (tgUser.last_name ? ` ${tgUser.last_name}` : "") || "Yamaha Keyboardist",
+      username: tgUser.username || "yamaha_synth_pro",
+      avatar: tgUser.photo_url || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
+      provider: "TELEGRAM",
+      role: existing ? existing.role : role === "ADMIN" ? "ADMIN" : "USER",
+      status: "ACTIVE",
+    });
+
+    const token = jwt.sign(
+      {
+        id: savedUser.id,
+        username: savedUser.username,
+        name: savedUser.name,
+        role: savedUser.role,
+        provider: savedUser.provider,
+      },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    );
 
     return NextResponse.json({
       success: true,
       token,
-      user: payload,
+      user: savedUser,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 });
