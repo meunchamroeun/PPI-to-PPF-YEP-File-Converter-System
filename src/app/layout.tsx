@@ -49,14 +49,22 @@ export default function RootLayout({
         <script src="https://accounts.google.com/gsi/client" async defer />
         {/* Telegram WebApp script for Mini App support */}
         <script src="https://telegram.org/js/telegram-web-app.js" async />
-        {/* Immediate Theme Initializer to prevent light/dark flash */}
+        {/* Immediate Theme Initializer to prevent light/dark flash and sync with OS */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
                 try {
                   var saved = localStorage.getItem('theme');
-                  var isDark = saved !== null ? saved === 'dark' : true;
+                  var isDark;
+                  if (saved === 'dark') {
+                    isDark = true;
+                  } else if (saved === 'light') {
+                    isDark = false;
+                  } else {
+                    // 'system' or not saved yet: follow system OS preference
+                    isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  }
                   if (isDark) {
                     document.documentElement.classList.add('dark');
                   } else {

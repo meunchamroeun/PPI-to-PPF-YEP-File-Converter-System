@@ -92,12 +92,28 @@ export const translations: TranslationDictionary = {
     en: "Guest User",
   },
   theme_light: {
-    kh: "ប្តូរទៅពន្លឺថ្ងៃ",
-    en: "Switch to Light Mode",
+    kh: "ពន្លឺថ្ងៃ",
+    en: "Light Mode",
   },
   theme_dark: {
-    kh: "ប្តូរទៅពន្លឺយប់",
-    en: "Switch to Night Mode",
+    kh: "ពន្លឺយប់",
+    en: "Night Mode",
+  },
+  theme_system: {
+    kh: "តាមប្រព័ន្ធ",
+    en: "System Mode",
+  },
+  theme_system_desc: {
+    kh: "ស្វ័យប្រវត្តិតាមការកំណត់ពន្លឺរបស់ឧបករណ៍",
+    en: "Match device OS light/dark preference automatically",
+  },
+  theme_light_desc: {
+    kh: "ផ្ទៃពណ៌សភ្លឺច្បាស់ ងាយស្រួលមើលពេលថ្ងៃ",
+    en: "Crisp light workspace for daytime work",
+  },
+  theme_dark_desc: {
+    kh: "ផ្ទៃពណ៌ខ្មៅស្ទូឌីយោ ការពារភ្នែកពេលយប់",
+    en: "Immersive dark studio theme for night sessions",
   },
 
   // Dashboard Overview

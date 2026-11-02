@@ -17,6 +17,7 @@ import {
   FileCheck,
   Sun,
   Moon,
+  Monitor,
   Sparkles,
   Lock,
   User,
@@ -34,7 +35,9 @@ interface SettingsPanelProps {
   onOpenAuth: () => void;
   onUpdateUserRole: (newRole: "ADMIN" | "USER") => void;
   darkMode: boolean;
+  themeMode?: "system" | "light" | "dark";
   onToggleDarkMode: () => void;
+  onSelectThemeMode?: (mode: "system" | "light" | "dark") => void;
   enableToneVisualizer: boolean;
   onToggleToneVisualizer: (val: boolean) => void;
   strictDRMMode: boolean;
@@ -46,7 +49,9 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onOpenAuth,
   onUpdateUserRole,
   darkMode,
+  themeMode = "system",
   onToggleDarkMode,
+  onSelectThemeMode,
   enableToneVisualizer,
   onToggleToneVisualizer,
   strictDRMMode,
@@ -261,27 +266,65 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
           {/* Theme & Display Quick Settings */}
           <Card className="p-5 space-y-4">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              {t("cmd_group_theme")}
-            </CardTitle>
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-xs font-semibold text-slate-900 dark:text-white block">
-                  {language === "kh" ? "ផ្ទៃពណ៌ស្ទូឌីយោ" : "Studio Theme"}
-                </span>
-                <span className="text-[11px] text-slate-500">
-                  {darkMode ? (language === "kh" ? "ពន្លឺយប់ (Night Mode)" : "Dark Mode (Night Studio)") : (language === "kh" ? "ពន្លឺថ្ងៃ (Daylight)" : "Light Mode (Daylight)")}
-                </span>
+                <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  {t("cmd_group_theme")}
+                </CardTitle>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  {themeMode === "system"
+                    ? (language === "kh" 
+                        ? `កំពុងតាមប្រព័ន្ធ (${darkMode ? "ពន្លឺយប់" : "ពន្លឺថ្ងៃ"})`
+                        : `Following system (${darkMode ? "Dark" : "Light"})`)
+                    : themeMode === "light"
+                    ? (language === "kh" ? "ពន្លឺថ្ងៃពេញលេញ" : "Light mode active")
+                    : (language === "kh" ? "ពន្លឺយប់ស្ទូឌីយោ" : "Dark mode active")}
+                </p>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onToggleDarkMode}
-                className="gap-2"
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 p-1 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800">
+              <button
+                type="button"
+                onClick={() => onSelectThemeMode ? onSelectThemeMode("system") : onToggleDarkMode()}
+                className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-medium transition-all duration-150 active:scale-[0.97] ${
+                  themeMode === "system"
+                    ? "bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm border border-slate-200/60 dark:border-slate-700 font-semibold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                }`}
+                title={t("theme_system_desc")}
               >
-                {darkMode ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-slate-600" />}
-                <span>{darkMode ? t("theme_light") : t("theme_dark")}</span>
-              </Button>
+                <Monitor className="w-3.5 h-3.5 shrink-0" />
+                <span>{t("theme_system")}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onSelectThemeMode ? onSelectThemeMode("light") : onToggleDarkMode()}
+                className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-medium transition-all duration-150 active:scale-[0.97] ${
+                  themeMode === "light"
+                    ? "bg-white dark:bg-slate-800 text-amber-600 dark:text-amber-400 shadow-sm border border-slate-200/60 dark:border-slate-700 font-semibold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                }`}
+                title={t("theme_light_desc")}
+              >
+                <Sun className="w-3.5 h-3.5 shrink-0" />
+                <span>{t("theme_light")}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onSelectThemeMode ? onSelectThemeMode("dark") : onToggleDarkMode()}
+                className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-medium transition-all duration-150 active:scale-[0.97] ${
+                  themeMode === "dark"
+                    ? "bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm border border-slate-200/60 dark:border-slate-700 font-semibold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                }`}
+                title={t("theme_dark_desc")}
+              >
+                <Moon className="w-3.5 h-3.5 shrink-0" />
+                <span>{t("theme_dark")}</span>
+              </button>
             </div>
           </Card>
         </div>

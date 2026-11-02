@@ -21,6 +21,7 @@ import {
   ShieldAlert,
   Moon,
   Sun,
+  Monitor,
   Menu,
   X,
   FileSpreadsheet,
@@ -111,6 +112,8 @@ export default function YamahaConverterApp() {
 
   // Navigation & View state
   const [activeTab, setActiveTab] = useState<string>("dashboard");
+  type ThemeMode = "system" | "light" | "dark";
+  const [themeMode, setThemeMode] = useState<ThemeMode>("system");
   const [darkMode, setDarkMode] = useState<boolean>(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
@@ -205,32 +208,70 @@ export default function YamahaConverterApp() {
     fetchHistoryFromDb();
   }, [currentUser, historyScope]);
 
-  // Synchronize Light / Night Theme directly on <html> root element
+  // Synchronize Light / Night / System Theme directly on <html> root element
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("theme");
-      const isDark = saved !== null ? saved === "dark" : document.documentElement.classList.contains("dark");
-      setDarkMode(isDark);
-      if (isDark) {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
+      const saved = localStorage.getItem("theme") as ThemeMode | null;
+      const initialMode: ThemeMode =
+        saved === "light" || saved === "dark" || saved === "system" ? saved : "system";
+      setThemeMode(initialMode);
+
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+      const applyResolvedTheme = (mode: ThemeMode) => {
+        const isDark = mode === "dark" ? true : mode === "light" ? false : mediaQuery.matches;
+        setDarkMode(isDark);
+        if (isDark) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+      };
+
+      applyResolvedTheme(initialMode);
+
+      // Listen for system OS theme changes dynamically
+      const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+        const currentSaved = localStorage.getItem("theme");
+        if (!currentSaved || currentSaved === "system") {
+          setDarkMode(e.matches);
+          if (e.matches) {
+            document.documentElement.classList.add("dark");
+          } else {
+            document.documentElement.classList.remove("dark");
+          }
+        }
+      };
+
+      mediaQuery.addEventListener("change", handleSystemThemeChange);
+      return () => mediaQuery.removeEventListener("change", handleSystemThemeChange);
     } catch {
       // safe fallback
     }
   }, []);
 
-  const toggleDarkMode = () => {
-    const next = !darkMode;
-    setDarkMode(next);
-    if (next) {
+  const setThemeExplicitly = (mode: ThemeMode) => {
+    setThemeMode(mode);
+    localStorage.setItem("theme", mode);
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const isDark = mode === "dark" ? true : mode === "light" ? false : mediaQuery.matches;
+    setDarkMode(isDark);
+    if (isDark) {
       document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
     } else {
       document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
     }
+  };
+
+  const cycleThemeMode = () => {
+    // Cycle: system -> light -> dark -> system
+    const nextMode: ThemeMode =
+      themeMode === "system"
+        ? (darkMode ? "light" : "dark")
+        : themeMode === "light"
+        ? "dark"
+        : "system";
+    setThemeExplicitly(nextMode);
   };
 
   // Global Keyboard Shortcuts (Cmd+K / Ctrl+K, Alt+T)
@@ -241,13 +282,13 @@ export default function YamahaConverterApp() {
         setCommandPaletteOpen((prev) => !prev);
       } else if (e.altKey && e.key.toLowerCase() === "t") {
         e.preventDefault();
-        toggleDarkMode();
+        cycleThemeMode();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [darkMode]);
+  }, [themeMode, darkMode]);
 
   // Sync Telegram User on load
   useEffect(() => {
@@ -596,7 +637,8 @@ export default function YamahaConverterApp() {
           notifyHaptic("success");
         }}
         darkMode={darkMode}
-        onToggleTheme={toggleDarkMode}
+        themeMode={themeMode}
+        onToggleTheme={cycleThemeMode}
       />
     );
   }
@@ -822,11 +864,23 @@ export default function YamahaConverterApp() {
             <div className="flex items-center gap-1.5 shrink-0">
               <LanguageSwitcher compact />
               <button
-                onClick={toggleDarkMode}
-                className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-                title={darkMode ? t("theme_light") : t("theme_dark")}
+                onClick={cycleThemeMode}
+                className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition active:scale-[0.97]"
+                title={
+                  themeMode === "system"
+                    ? (language === "kh" ? "ទម្រង់តាមប្រព័ន្ធ (ចុចដើម្បីប្តូរ)" : "Following System (Click to toggle)")
+                    : themeMode === "light"
+                    ? (language === "kh" ? "ទម្រង់ពន្លឺថ្ងៃ (ចុចដើម្បីប្តូរ)" : "Light Mode (Click to toggle)")
+                    : (language === "kh" ? "ទម្រង់ពន្លឺយប់ (ចុចដើម្បីប្តូរ)" : "Night Mode (Click to toggle)")
+                }
               >
-                {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                {themeMode === "system" ? (
+                  <Monitor className="w-4 h-4 text-brand-600 dark:text-brand-400" />
+                ) : darkMode ? (
+                  <Sun className="w-4 h-4 text-amber-500" />
+                ) : (
+                  <Moon className="w-4 h-4 text-slate-600" />
+                )}
               </button>
             </div>
           </div>
@@ -896,15 +950,27 @@ export default function YamahaConverterApp() {
               <span>{t("hdr_ai_assistant")}</span>
             </Button>
 
-            {/* Night / Light Mode Toggle Button */}
+            {/* Night / Light / System Mode Toggle Button */}
             <Button
               variant="outline"
               size="icon"
-              onClick={toggleDarkMode}
-              title={darkMode ? "Switch to Light Mode" : "Switch to Night Mode"}
-              className="rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 shrink-0"
+              onClick={cycleThemeMode}
+              title={
+                themeMode === "system"
+                  ? (language === "kh" ? "ទម្រង់តាមប្រព័ន្ធ (ចុចដើម្បីប្តូរ)" : "Following System (Click to toggle)")
+                  : themeMode === "light"
+                  ? (language === "kh" ? "ទម្រង់ពន្លឺថ្ងៃ (ចុចដើម្បីប្តូរ)" : "Light Mode (Click to toggle)")
+                  : (language === "kh" ? "ទម្រង់ពន្លឺយប់ (ចុចដើម្បីប្តូរ)" : "Night Mode (Click to toggle)")
+              }
+              className="rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 shrink-0 active:scale-[0.97]"
             >
-              {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {themeMode === "system" ? (
+                <Monitor className="w-4 h-4 text-brand-600 dark:text-brand-400" />
+              ) : darkMode ? (
+                <Sun className="w-4 h-4 text-amber-500" />
+              ) : (
+                <Moon className="w-4 h-4" />
+              )}
             </Button>
 
             {/* User Account & Sign Out */}
@@ -1914,7 +1980,9 @@ CREATE TABLE public.conversion_jobs (
                 }
               }}
               darkMode={darkMode}
-              onToggleDarkMode={toggleDarkMode}
+              themeMode={themeMode}
+              onToggleDarkMode={cycleThemeMode}
+              onSelectThemeMode={setThemeExplicitly}
               enableToneVisualizer={enableToneVisualizer}
               onToggleToneVisualizer={setEnableToneVisualizer}
               strictDRMMode={strictDRMMode}
@@ -1989,9 +2057,11 @@ CREATE TABLE public.conversion_jobs (
           triggerHaptic("light");
         }}
         onConvertAll={handleConvertAll}
-        onToggleTheme={toggleDarkMode}
+        onToggleTheme={cycleThemeMode}
+        onSelectThemeMode={setThemeExplicitly}
         onOpenTelegramSimulator={() => setTelegramSimulatorOpen(true)}
         darkMode={darkMode}
+        themeMode={themeMode}
       />
 
       {/* ===================================================================== */}

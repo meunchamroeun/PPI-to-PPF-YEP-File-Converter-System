@@ -15,6 +15,7 @@ import {
   ShieldAlert,
   Moon,
   Sun,
+  Monitor,
   Download,
   FileSpreadsheet,
   X,
@@ -39,8 +40,10 @@ interface CommandPaletteProps {
   onNavigate: (tab: string) => void;
   onConvertAll: () => void;
   onToggleTheme: () => void;
+  onSelectThemeMode?: (mode: "system" | "light" | "dark") => void;
   onOpenTelegramSimulator: () => void;
   darkMode: boolean;
+  themeMode?: "system" | "light" | "dark";
 }
 
 export const CommandPalette: React.FC<CommandPaletteProps> = ({
@@ -49,8 +52,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   onNavigate,
   onConvertAll,
   onToggleTheme,
+  onSelectThemeMode,
   onOpenTelegramSimulator,
   darkMode,
+  themeMode = "system",
 }) => {
   const { t, language } = useTranslation();
   const [query, setQuery] = useState<string>("");
@@ -161,16 +166,66 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       },
     },
 
-    // System
+    // System & Theme
     {
-      id: "sys-theme",
-      title: darkMode ? t("theme_light") : t("theme_dark"),
+      id: "sys-theme-system",
+      title: language === "kh" ? "ទម្រង់តាមប្រព័ន្ធ (Follow System)" : "Follow System Theme",
       category: "System",
-      icon: darkMode ? (
-        <Sun className="w-4 h-4 text-amber-400" />
-      ) : (
-        <Moon className="w-4 h-4 text-slate-600" />
-      ),
+      icon: <Monitor className="w-4 h-4 text-brand-500" />,
+      action: () => {
+        if (onSelectThemeMode) {
+          onSelectThemeMode("system");
+        } else {
+          onToggleTheme();
+        }
+        onClose();
+      },
+    },
+    {
+      id: "sys-theme-light",
+      title: language === "kh" ? "ទម្រង់ពន្លឺថ្ងៃ (Light Mode)" : "Switch to Light Mode",
+      category: "System",
+      icon: <Sun className="w-4 h-4 text-amber-500" />,
+      action: () => {
+        if (onSelectThemeMode) {
+          onSelectThemeMode("light");
+        } else {
+          onToggleTheme();
+        }
+        onClose();
+      },
+    },
+    {
+      id: "sys-theme-dark",
+      title: language === "kh" ? "ទម្រង់ពន្លឺយប់ (Night Mode)" : "Switch to Night Mode",
+      category: "System",
+      icon: <Moon className="w-4 h-4 text-indigo-400" />,
+      action: () => {
+        if (onSelectThemeMode) {
+          onSelectThemeMode("dark");
+        } else {
+          onToggleTheme();
+        }
+        onClose();
+      },
+    },
+    {
+      id: "sys-theme-cycle",
+      title:
+        themeMode === "system"
+          ? (language === "kh" ? "ប្តូរពន្លឺ (កំពុងតាមប្រព័ន្ធ)" : "Cycle Theme (Current: System)")
+          : themeMode === "light"
+          ? (language === "kh" ? "ប្តូរពន្លឺ (កំពុងពន្លឺថ្ងៃ)" : "Cycle Theme (Current: Light)")
+          : (language === "kh" ? "ប្តូរពន្លឺ (កំពុងពន្លឺយប់)" : "Cycle Theme (Current: Night)"),
+      category: "System",
+      icon:
+        themeMode === "system" ? (
+          <Monitor className="w-4 h-4 text-brand-500" />
+        ) : darkMode ? (
+          <Sun className="w-4 h-4 text-amber-400" />
+        ) : (
+          <Moon className="w-4 h-4 text-slate-600" />
+        ),
       shortcut: "Alt+T",
       action: () => {
         onToggleTheme();

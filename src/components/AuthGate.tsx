@@ -17,6 +17,7 @@ import {
   Brain,
   Moon,
   Sun,
+  Monitor,
   AlertCircle,
   Send,
   Database,
@@ -28,12 +29,14 @@ import {
 interface AuthGateProps {
   onLogin: (user: UserSession) => void;
   darkMode: boolean;
+  themeMode?: "system" | "light" | "dark";
   onToggleTheme: () => void;
 }
 
 export const AuthGate: React.FC<AuthGateProps> = ({
   onLogin,
   darkMode,
+  themeMode = "system",
   onToggleTheme,
 }) => {
   const { t, language } = useTranslation();
@@ -270,10 +273,23 @@ export const AuthGate: React.FC<AuthGateProps> = ({
           <button
             type="button"
             onClick={onToggleTheme}
-            className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+            className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition active:scale-[0.97]"
             aria-label="Toggle Theme"
+            title={
+              themeMode === "system"
+                ? (language === "kh" ? "ទម្រង់តាមប្រព័ន្ធ (ចុចដើម្បីប្តូរ)" : "Following System (Click to toggle)")
+                : themeMode === "light"
+                ? (language === "kh" ? "ទម្រង់ពន្លឺថ្ងៃ (ចុចដើម្បីប្តូរ)" : "Light Mode (Click to toggle)")
+                : (language === "kh" ? "ទម្រង់ពន្លឺយប់ (ចុចដើម្បីប្តូរ)" : "Night Mode (Click to toggle)")
+            }
           >
-            {darkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
+            {themeMode === "system" ? (
+              <Monitor className="w-4 h-4 text-brand-600 dark:text-brand-400" />
+            ) : darkMode ? (
+              <Sun className="w-4 h-4 text-amber-400" />
+            ) : (
+              <Moon className="w-4 h-4" />
+            )}
           </button>
         </div>
       </header>
