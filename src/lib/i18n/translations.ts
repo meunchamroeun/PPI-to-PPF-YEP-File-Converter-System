@@ -767,6 +767,36 @@ export const translations: TranslationDictionary = {
     kh: "បានរក្សាទុកសោរក្នុងម៉ាស៊ីន",
     en: "Key saved in local storage",
   },
+
+  // PWA & Offline
+  pwa_install_title: {
+    kh: "ដំឡើងកម្មវិធី ExpVoice Studio",
+    en: "Install ExpVoice Studio App",
+  },
+  pwa_install_desc: {
+    kh: "ប្រើប្រាស់នៅលើ Home Screen ឬ Desktop ដោយមិនបាច់បើក Browser និងដំណើរការបានទោះគ្មានអ៊ីនធឺណិត",
+    en: "Access from your home screen or desktop with instant launch and offline support",
+  },
+  pwa_btn_install: {
+    kh: "ដំឡើងកម្មវិធី",
+    en: "Install App",
+  },
+  pwa_btn_dismiss: {
+    kh: "ពេលក្រោយ",
+    en: "Later",
+  },
+  pwa_offline_title: {
+    kh: "របៀប Offline កំពុងដំណើរការ",
+    en: "Offline Mode Active",
+  },
+  pwa_offline_desc: {
+    kh: "អ្នកអាចបន្តបំលែងឯកសារ និងប្រើ Tone Generator បានជាធម្មតា",
+    en: "Container conversion and tone generator remain fully operational offline",
+  },
+  pwa_online_title: {
+    kh: "បានភ្ជាប់អ៊ីនធឺណិតឡើងវិញ",
+    en: "Connection Restored",
+  },
 };
 
 export function getTranslation(key: string, lang: Language): string {

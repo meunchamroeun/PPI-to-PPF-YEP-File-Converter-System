@@ -59,6 +59,7 @@ import { YamahaVoicePlayer } from "@/components/YamahaVoicePlayer";
 import { CommandPalette } from "@/components/CommandPalette";
 import { TelegramSimulatorModal } from "@/components/TelegramSimulatorModal";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
 import { useTelegramWebApp } from "@/hooks/useTelegramWebApp";
 import { YamahaPPIParser, ParsedPPIData } from "@/lib/yamaha/ppi-parser";
@@ -569,6 +570,8 @@ export default function YamahaConverterApp() {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 transition-colors duration-200">
+      {/* PWA Install Prompt & Offline Awareness Banner */}
+      <PWAInstallBanner />
       {/* ===================================================================== */}
       {/* SIDEBAR NAVIGATION                                                    */}
       {/* ===================================================================== */}
@@ -787,7 +790,7 @@ export default function YamahaConverterApp() {
       {/* ===================================================================== */}
       {/* MAIN CONTENT AREA                                                     */}
       {/* ===================================================================== */}
-      <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
+      <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-24 lg:pb-8">
         {/* Top Header Bar */}
         <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-3">
@@ -841,7 +844,7 @@ export default function YamahaConverterApp() {
               variant="outline"
               size="sm"
               onClick={() => setActiveTab("ai")}
-              className="gap-1.5 bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border-brand-200 dark:border-brand-800 whitespace-nowrap shrink-0"
+              className="hidden md:inline-flex gap-1.5 bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border-brand-200 dark:border-brand-800 whitespace-nowrap shrink-0"
             >
               <Brain className="w-3.5 h-3.5 text-brand-600" />
               <span>{t("hdr_ai_assistant")}</span>
@@ -852,7 +855,7 @@ export default function YamahaConverterApp() {
               variant="outline"
               size="sm"
               onClick={() => handleLoadSample(false)}
-              className="gap-2 bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border-brand-200 dark:border-brand-800 whitespace-nowrap shrink-0"
+              className="hidden sm:inline-flex gap-2 bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border-brand-200 dark:border-brand-800 whitespace-nowrap shrink-0"
             >
               <Sparkles className="w-3.5 h-3.5 text-brand-600" />
               <span>{t("hdr_load_sample")}</span>
@@ -863,7 +866,7 @@ export default function YamahaConverterApp() {
               variant="secondary"
               size="sm"
               onClick={() => handleLoadSample(true)}
-              className="gap-1.5 text-slate-700 dark:text-slate-300 whitespace-nowrap shrink-0"
+              className="hidden sm:inline-flex gap-1.5 text-slate-700 dark:text-slate-300 whitespace-nowrap shrink-0"
             >
               <ShieldAlert className="w-3.5 h-3.5 text-amber-500" />
               <span>{t("hdr_test_cpi")}</span>
@@ -1997,6 +2000,121 @@ CREATE TABLE public.conversion_jobs (
         onClose={() => setTelegramSimulatorOpen(false)}
         onLoadSample={() => handleLoadSample(false)}
       />
+
+      {/* ===================================================================== */}
+      {/* MOBILE BOTTOM NAVIGATION BAR (FIXED FOR PWA & MOBILE RESPONSIVENESS) */}
+      {/* ===================================================================== */}
+      <nav
+        aria-label="Mobile Navigation"
+        className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 shadow-lg pb-[calc(env(safe-area-inset-bottom,0px)+0.35rem)] pt-1 px-1"
+      >
+        <div className="grid grid-cols-5 items-center">
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab("dashboard");
+              triggerHaptic("light");
+            }}
+            className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-colors ${
+              activeTab === "dashboard"
+                ? "text-brand-600 dark:text-brand-400 font-semibold"
+                : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+            }`}
+          >
+            <div className={`p-1 rounded-lg ${activeTab === "dashboard" ? "bg-brand-50 dark:bg-brand-950/60" : ""}`}>
+              <LayoutDashboard className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] leading-tight truncate max-w-full mt-0.5">
+              {t("nav_dashboard")}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab("converter");
+              triggerHaptic("light");
+            }}
+            className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-colors relative ${
+              activeTab === "converter"
+                ? "text-brand-600 dark:text-brand-400 font-semibold"
+                : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+            }`}
+          >
+            <div className={`p-1 rounded-lg relative ${activeTab === "converter" ? "bg-brand-50 dark:bg-brand-950/60" : ""}`}>
+              <Repeat className="w-5 h-5" />
+              {queue.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-brand-600 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                  {queue.length}
+                </span>
+              )}
+            </div>
+            <span className="text-[10px] leading-tight truncate max-w-full mt-0.5">
+              {t("nav_converter")}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab("inspector");
+              triggerHaptic("light");
+            }}
+            className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-colors ${
+              activeTab === "inspector"
+                ? "text-brand-600 dark:text-brand-400 font-semibold"
+                : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+            }`}
+          >
+            <div className={`p-1 rounded-lg ${activeTab === "inspector" ? "bg-brand-50 dark:bg-brand-950/60" : ""}`}>
+              <Binary className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] leading-tight truncate max-w-full mt-0.5">
+              {t("nav_inspector")}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab("history");
+              triggerHaptic("light");
+            }}
+            className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-colors ${
+              activeTab === "history"
+                ? "text-brand-600 dark:text-brand-400 font-semibold"
+                : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+            }`}
+          >
+            <div className={`p-1 rounded-lg ${activeTab === "history" ? "bg-brand-50 dark:bg-brand-950/60" : ""}`}>
+              <History className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] leading-tight truncate max-w-full mt-0.5">
+              {t("nav_history")}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab("ai");
+              triggerHaptic("light");
+            }}
+            className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-colors ${
+              activeTab === "ai"
+                ? "text-brand-600 dark:text-brand-400 font-semibold"
+                : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+            }`}
+          >
+            <div className={`p-1 rounded-lg ${activeTab === "ai" ? "bg-brand-50 dark:bg-brand-950/60" : ""}`}>
+              <Brain className="w-5 h-5 text-brand-500" />
+            </div>
+            <span className="text-[10px] leading-tight truncate max-w-full mt-0.5">
+              {t("nav_ai")}
+            </span>
+          </button>
+        </div>
+      </nav>
     </div>
   );
 }
