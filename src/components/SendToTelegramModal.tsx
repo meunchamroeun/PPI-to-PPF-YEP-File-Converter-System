@@ -36,8 +36,11 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
 }) => {
   const { t, language } = useTranslation();
   const TELEGRAM_MAX_BYTES = 50 * 1024 * 1024; // 50 MB Telegram Bot API limit
+  const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || "PPI_PPF_ConvertBot";
 
   const [chatId, setChatId] = useState<string>("");
+  const [hasOpenedBot, setHasOpenedBot] = useState<boolean>(false);
+  const [showManualInput, setShowManualInput] = useState<boolean>(false);
   const [botToken, setBotToken] = useState<string>("");
   const [showTokenInput, setShowTokenInput] = useState<boolean>(false);
   const [isSending, setIsSending] = useState<boolean>(false);
@@ -67,6 +70,18 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
 
   if (!isOpen) return null;
 
+  const handleOpenBot = () => {
+    window.open(`https://t.me/${botUsername}?start=auto`, "_blank", "noopener,noreferrer");
+    setHasOpenedBot(true);
+    setStatusMessage({
+      type: "info",
+      text:
+        language === "kh"
+          ? "បានបើក Bot ក្នុង Telegram រួចរាល់! សូមចុច 'Start' ក្នុង Telegram រួចត្រឡប់មកចុចប៊ូតុង 'ផ្ញើទៅ Telegram' ខាងក្រោម។"
+          : "Bot opened in Telegram! Press 'Start' in Telegram, then come back and click 'Send to Telegram' below.",
+    });
+  };
+
   const handleDirectDownload = () => {
     if (!fileBlob) return;
     const url = URL.createObjectURL(fileBlob);
@@ -81,9 +96,18 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
 
   const handleSend = async () => {
     if (!chatId.trim()) {
+      if (!hasOpenedBot) {
+        // Automatically open the bot as requested by user
+        handleOpenBot();
+        return;
+      }
+      setShowManualInput(true);
       setStatusMessage({
         type: "error",
-        text: language === "kh" ? "សូមបញ្ចូល Telegram Chat ID ឬ Username (@username)!" : "Please enter a Telegram Chat ID or Username (@username)!",
+        text:
+          language === "kh"
+            ? "សូមបញ្ចូល Telegram Chat ID (ដែល Bot បានផ្ញើជូន) ឬកំណត់ក្នុងការកំណត់ Settings។"
+            : "Please enter your Telegram Chat ID (shown in bot response) or configure it in Settings.",
       });
       return;
     }
@@ -249,24 +273,101 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
             </Badge>
           </div>
 
-          {/* Form: Chat ID / Username */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-              <MessageSquare className="w-3.5 h-3.5 text-[#229ED9]" />
-              <span>{language === "kh" ? "Telegram Chat ID ឬ Username:" : "Telegram Chat ID or Username:"}</span>
-            </label>
-            <input
-              type="text"
-              placeholder={language === "kh" ? "ឧ. @username ឬ 123456789" : "e.g. @your_username or 123456789"}
-              value={chatId}
-              onChange={(e) => setChatId(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-background border border-border text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#229ED9]/20 focus:border-[#229ED9] transition"
-            />
-            <p className="text-[10px] text-muted-foreground leading-relaxed">
-              {language === "kh"
-                ? "ចំណាំ៖ សូមចុច /start ជាមួយ Bot ជាមុនសិន ដើម្បីឱ្យ Bot មានសិទ្ធិផ្ញើសារជូនលោកអ្នក។"
-                : "Note: You must click /start on the bot first so it has permission to message you."}
-            </p>
+          {/* Telegram Bot Connection Status Card */}
+          <div className="p-4 rounded-2xl bg-muted/60 border border-border space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-[#229ED9]/15 text-[#229ED9] flex items-center justify-center shrink-0">
+                  <Bot className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                    <span>@{botUsername}</span>
+                    <a
+                      href={`https://t.me/${botUsername}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#229ED9] hover:opacity-80"
+                      title="Open Telegram Bot"
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                  <span className="text-[10px] text-muted-foreground">
+                    {language === "kh" ? "Bot ផ្លូវការរបស់ប្រព័ន្ធ" : "Official System Bot"}
+                  </span>
+                </div>
+              </div>
+
+              <Badge
+                variant="outline"
+                className={`text-[10px] font-mono ${
+                  chatId
+                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+                    : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30"
+                }`}
+              >
+                {chatId
+                  ? (language === "kh" ? "ភ្ជាប់រួចរាល់" : "READY")
+                  : (language === "kh" ? "ត្រូវការបើក BOT" : "NEEDS BOT START")}
+              </Badge>
+            </div>
+
+            {chatId ? (
+              <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1 border-t border-border/50">
+                <span className="font-mono">
+                  {language === "kh" ? `Chat ID: ${chatId}` : `Target Chat ID: ${chatId}`}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowManualInput(!showManualInput)}
+                  className="text-[10px] text-[#229ED9] hover:underline cursor-pointer"
+                >
+                  {showManualInput
+                    ? (language === "kh" ? "លាក់" : "Hide")
+                    : (language === "kh" ? "ប្តូរ Chat ID" : "Change")}
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-2 pt-1 border-t border-border/50">
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  {language === "kh"
+                    ? "ចុចប៊ូតុងខាងក្រោមដើម្បីបើក Bot និងចុច Start រួចត្រឡប់មកចុច Send ម្ដងទៀត។"
+                    : "Tap below to launch the bot and press Start, then click Send again."}
+                </p>
+
+                <Button
+                  type="button"
+                  onClick={handleOpenBot}
+                  className="w-full h-9.5 rounded-xl bg-[#229ED9] hover:bg-[#1E8BC0] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition active:scale-[0.98] cursor-pointer"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>
+                    {language === "kh" ? "បើក Telegram Bot & ចុច Start" : "Open Bot & Start in Telegram"}
+                  </span>
+                  <ExternalLink className="w-3 h-3 opacity-70" />
+                </Button>
+              </div>
+            )}
+
+            {/* Optional Manual Input (Only shown if toggled or needed) */}
+            {showManualInput && (
+              <div className="pt-2 space-y-1.5 border-t border-border/60">
+                <label className="text-[11px] font-semibold text-foreground flex items-center justify-between">
+                  <span>{language === "kh" ? "Telegram Chat ID:" : "Telegram Chat ID:"}</span>
+                  <span className="text-[10px] text-muted-foreground font-normal">
+                    {language === "kh" ? "ចម្លងពី /id ក្នុង Bot" : "From /id in bot"}
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. 123456789"
+                  value={chatId}
+                  onChange={(e) => setChatId(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-background border border-border text-xs font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#229ED9]/20 focus:border-[#229ED9] transition"
+                />
+              </div>
+            )}
           </div>
 
           {/* Custom Bot Token Toggle */}
@@ -361,7 +462,11 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
                 <>
                   <Send className="w-4 h-4" />
                   <span>
-                    {fileTooLarge
+                    {!chatId && !hasOpenedBot
+                      ? language === "kh"
+                        ? "បើក Bot & ចុច Start ក្នុង Telegram"
+                        : "Open Bot & Start in Telegram"
+                      : fileTooLarge
                       ? language === "kh"
                         ? "ផ្ញើព័ត៌មានកញ្ចប់សំឡេងទៅ Telegram"
                         : "Send Pack Details to Telegram"

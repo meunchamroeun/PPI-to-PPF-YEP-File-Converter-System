@@ -23,6 +23,9 @@ import {
   User,
   Crown,
   Download,
+  Send,
+  Bot,
+  MessageSquare,
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -73,6 +76,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   const [autoDownload, setAutoDownload] = useState<boolean>(false);
   const [soundFeedback, setSoundFeedback] = useState<boolean>(true);
 
+  // Telegram Integration State
+  const [telegramChatId, setTelegramChatId] = useState<string>("");
+  const [isTelegramSaved, setIsTelegramSaved] = useState<boolean>(false);
+
   // Load from localStorage on mount
   useEffect(() => {
     const savedKey = localStorage.getItem("gemini_api_key") || "";
@@ -89,7 +96,32 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
     const savedSound = localStorage.getItem("pref_sound_feedback");
     if (savedSound !== null) setSoundFeedback(savedSound === "true");
-  }, []);
+
+    const savedTgId = localStorage.getItem("saved_tg_chat_id") || "";
+    if (savedTgId) {
+      setTelegramChatId(savedTgId);
+    } else if (currentUser?.provider === "TELEGRAM") {
+      setTelegramChatId(currentUser.username || currentUser.id);
+    }
+  }, [currentUser]);
+
+  const handleSaveTelegram = (idToSave?: string) => {
+    const val = (idToSave !== undefined ? idToSave : telegramChatId).trim();
+    if (val) {
+      localStorage.setItem("saved_tg_chat_id", val);
+      setTelegramChatId(val);
+      setIsTelegramSaved(true);
+      setTimeout(() => setIsTelegramSaved(false), 2500);
+    } else {
+      localStorage.removeItem("saved_tg_chat_id");
+      setTelegramChatId("");
+    }
+  };
+
+  const handleConnectTelegramBot = () => {
+    const botUser = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || "PPI_PPF_ConvertBot";
+    window.open(`https://t.me/${botUser}?start=connect`, "_blank", "noopener,noreferrer");
+  };
 
   const handleSaveApiKey = () => {
     const cleanKey = apiKey.trim();
@@ -258,6 +290,89 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 </Button>
               </div>
             )}
+          </Card>
+
+          {/* Telegram Bot Integration Card */}
+          <Card className="p-5 space-y-4 border-[#229ED9]/30">
+            <div className="flex items-center justify-between pb-2 border-b border-border">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-[#229ED9]/15 text-[#229ED9] flex items-center justify-center">
+                  <Send className="w-4 h-4" />
+                </div>
+                <div>
+                  <CardTitle className="text-xs font-bold uppercase tracking-wider text-foreground">
+                    {language === "kh" ? "ការភ្ជាប់ Telegram Bot" : "Telegram Bot Integration"}
+                  </CardTitle>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    @PPI_PPF_ConvertBot
+                  </p>
+                </div>
+              </div>
+              <Badge
+                variant="outline"
+                className={`text-[10px] font-mono ${
+                  telegramChatId
+                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+                    : "bg-muted text-muted-foreground border-border"
+                }`}
+              >
+                {telegramChatId
+                  ? (language === "kh" ? "ភ្ជាប់រួចរាល់" : "CONNECTED")
+                  : (language === "kh" ? "មិនទាន់ភ្ជាប់" : "NOT LINKED")}
+              </Badge>
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {language === "kh"
+                  ? "ភ្ជាប់ជាមួយ Telegram Bot ដើម្បីទទួលឯកសារបម្លែង PPF/YEP និងការជូនដំណឹងដោយស្វ័យប្រវត្តិ។"
+                  : "Connect with our Telegram bot to receive converted PPF/YEP files and instant conversion alerts."}
+              </p>
+
+              <div className="flex flex-col gap-2">
+                <Button
+                  type="button"
+                  onClick={handleConnectTelegramBot}
+                  className="w-full h-10 rounded-xl bg-[#229ED9] hover:bg-[#1E8BC0] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition active:scale-[0.98] cursor-pointer"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>
+                    {language === "kh" ? "បើក Bot ក្នុង Telegram & ចុច Start" : "Open Bot & Start in Telegram"}
+                  </span>
+                  <ExternalLink className="w-3 h-3 opacity-70" />
+                </Button>
+
+                <div className="pt-2 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-semibold text-foreground">
+                      {language === "kh" ? "Telegram Chat ID របស់អ្នក:" : "Your Telegram Chat ID:"}
+                    </label>
+                    {telegramChatId && (
+                      <span className="text-[10px] text-muted-foreground font-mono">
+                        ID: {telegramChatId}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder={language === "kh" ? "ឧ. 123456789 (បានពី /id ក្នុង Bot)" : "e.g. 123456789 (from /id in bot)"}
+                      value={telegramChatId}
+                      onChange={(e) => setTelegramChatId(e.target.value)}
+                      className="flex-1 px-3 py-2 rounded-xl bg-background border border-border text-xs text-foreground placeholder:text-muted-foreground font-mono focus:outline-none focus:ring-2 focus:ring-[#229ED9]/20 focus:border-[#229ED9]"
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => handleSaveTelegram()}
+                      className="px-4 rounded-xl text-xs font-semibold bg-foreground text-background hover:opacity-90"
+                    >
+                      {isTelegramSaved ? (language === "kh" ? "បានរក្សាទុក" : "Saved!") : (language === "kh" ? "រក្សាទុក" : "Save")}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </Card>
 
           {/* Theme & Display Quick Settings */}
