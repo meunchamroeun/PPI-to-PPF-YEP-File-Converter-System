@@ -995,7 +995,7 @@ export default function YamahaConverterApp() {
                     className="gap-2 bg-white/10 hover:bg-white/15 border-white/20 text-white"
                   >
                     <FolderSearch className="w-4 h-4" />
-                    <span>{t("dash_btn_demo")}</span>
+                    <span>{t("dash_btn_browse")}</span>
                   </Button>
                 </div>
               </div>

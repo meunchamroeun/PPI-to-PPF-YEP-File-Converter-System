@@ -57,51 +57,22 @@ export interface DbJobRecord {
 const memoryJobs: Map<string, DbJobRecord> = new Map();
 const memoryUsers: Map<string, DbUserRecord> = new Map();
 
-// Pre-seed default system accounts
-const defaultAdmin: DbUserRecord = {
-  id: "usr_admin_01",
-  name: "Yamaha Master Admin",
-  email: "admin@yamaha-studio.com",
-  username: "yamaha_admin",
-  avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop",
-  provider: "CREDENTIALS",
-  role: "ADMIN",
-  status: "ACTIVE",
-  created_at: new Date("2026-01-01T00:00:00Z"),
-  last_login_at: new Date(),
-  conversions_count: 42,
-};
-
-const defaultArtist: DbUserRecord = {
-  id: "usr_artist_02",
-  name: "Alex Thorne (Expansion Designer)",
-  email: "artist@yamaha-studio.com",
-  username: "alex_thorne",
+// Verified Master Administrator Account
+const masterAdmin: DbUserRecord = {
+  id: "usr_admin_meunchamroeun",
+  name: "Meun Chamroeun",
+  email: "meunchamroeun09@gmail.com",
+  username: "meunchamroeun09",
   avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop",
   provider: "GOOGLE",
-  role: "USER",
+  role: "ADMIN",
   status: "ACTIVE",
-  created_at: new Date("2026-01-15T00:00:00Z"),
+  created_at: new Date(),
   last_login_at: new Date(),
-  conversions_count: 18,
+  conversions_count: 0,
 };
 
-const defaultTelegramUser: DbUserRecord = {
-  id: "usr_tg_88776655",
-  name: "Yamaha Keyboardist",
-  username: "yamaha_synth_pro",
-  avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
-  provider: "TELEGRAM",
-  role: "USER",
-  status: "ACTIVE",
-  created_at: new Date("2026-02-01T00:00:00Z"),
-  last_login_at: new Date(),
-  conversions_count: 7,
-};
-
-memoryUsers.set(defaultAdmin.id, defaultAdmin);
-memoryUsers.set(defaultArtist.id, defaultArtist);
-memoryUsers.set(defaultTelegramUser.id, defaultTelegramUser);
+memoryUsers.set(masterAdmin.id, masterAdmin);
 
 let pool: Pool | null = null;
 const dbUrl =
@@ -132,7 +103,6 @@ if (dbUrl) {
 
 export const ADMIN_EMAILS = [
   "meunchamroeun09@gmail.com",
-  "admin@yamaha-studio.com",
 ];
 
 export function isUserAdmin(identifier?: string): boolean {
@@ -224,9 +194,15 @@ export async function getUserByEmailOrUsername(identifier: string): Promise<DbUs
 }
 
 export async function getAllUserRecords(): Promise<DbUserRecord[]> {
+  const isRealUser = (u: DbUserRecord) =>
+    !u.email?.includes("yamaha-studio.com") &&
+    !["usr_admin_01", "usr_artist_02", "usr_tg_88776655"].includes(u.id);
+
   if (pool) {
     try {
-      const res = await pool.query("SELECT * FROM users ORDER BY last_login_at DESC");
+      const res = await pool.query(
+        "SELECT * FROM users WHERE email NOT LIKE '%yamaha-studio.com%' AND id NOT IN ('usr_admin_01', 'usr_artist_02', 'usr_tg_88776655') ORDER BY last_login_at DESC"
+      );
       if (res.rows.length > 0) {
         res.rows.forEach((u) => memoryUsers.set(u.id, u));
         return res.rows;
@@ -241,7 +217,9 @@ export async function getAllUserRecords(): Promise<DbUserRecord[]> {
       supabaseUsers.forEach((u) => memoryUsers.set(u.id, u));
     }
   } catch {}
-  return Array.from(memoryUsers.values()).sort((a, b) => b.last_login_at.getTime() - a.last_login_at.getTime());
+  return Array.from(memoryUsers.values())
+    .filter(isRealUser)
+    .sort((a, b) => b.last_login_at.getTime() - a.last_login_at.getTime());
 }
 
 export async function updateUserRole(userId: string, role: "ADMIN" | "USER"): Promise<DbUserRecord | null> {

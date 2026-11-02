@@ -121,7 +121,7 @@ export const translations: TranslationDictionary = {
     kh: "ផ្ទុកឡើង និងបំលែងឯកសារ",
     en: "Upload & Convert Files",
   },
-  dash_btn_demo: {
+  dash_btn_browse: {
     kh: "ជ្រើសរើសឯកសារ PPI ផ្ទាល់",
     en: "Browse Real PPI Files",
   },
@@ -377,7 +377,7 @@ export const translations: TranslationDictionary = {
   },
   player_btn_stop: {
     kh: "បញ្ឈប់",
-    en: "Stop Demo",
+    en: "Stop Audio",
   },
   player_voice_models: {
     kh: "គំរូសំឡេង AWM2",
@@ -601,15 +601,15 @@ export const translations: TranslationDictionary = {
     kh: "អ៊ីមែល & ពាក្យសម្ងាត់",
     en: "Email & Password",
   },
-  auth_btn_admin_demo: {
+  auth_btn_admin_login: {
     kh: "ចូលជា Admin",
     en: "Sign In as Admin",
   },
-  auth_btn_artist_demo: {
+  auth_btn_artist_login: {
     kh: "ចូលជាអ្នកប្រើប្រាស់",
     en: "Sign In as Musician",
   },
-  auth_btn_tg_demo: {
+  auth_btn_tg_login: {
     kh: "ចូលតាម Telegram",
     en: "Sign In via Telegram",
   },

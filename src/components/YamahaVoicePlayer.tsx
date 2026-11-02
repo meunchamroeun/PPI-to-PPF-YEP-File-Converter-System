@@ -374,7 +374,7 @@ export const YamahaVoicePlayer: React.FC<YamahaVoicePlayerProps> = ({
             />
           </div>
 
-          {/* Audition Demo Phrase Button */}
+          {/* Audition Audio Phrase Button */}
           {isAuditioning ? (
             <Button
               size="sm"

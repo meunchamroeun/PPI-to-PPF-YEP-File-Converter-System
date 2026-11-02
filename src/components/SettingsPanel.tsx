@@ -207,41 +207,30 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   </div>
                 </div>
 
-                {/* Role Switcher Demo */}
-                <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+                {/* Verified Account Status */}
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-semibold text-slate-700 dark:text-slate-300">
-                      {language === "kh" ? "សិទ្ធិតួនាទី" : "Role Privilege"}
+                      {language === "kh" ? "សិទ្ធិតួនាទីប្រព័ន្ធ" : "System Privilege Level"}
                     </span>
-                    <Badge variant="outline" className="text-[10px] font-mono">
+                    <Badge
+                      variant="outline"
+                      className={`text-[10px] font-mono ${
+                        currentUser.role === "ADMIN" ? "bg-purple-600 text-white border-transparent" : ""
+                      }`}
+                    >
                       {currentUser.role}
                     </Badge>
                   </div>
-                  <p className="text-[11px] text-slate-500">
-                    {language === "kh" ? "ប្តូររវាង Admin និង User ដើម្បីសាកល្បងសិទ្ធិគ្រប់គ្រង។" : "Switch between Admin and User role to test administrative access."}
+                  <p className="text-[11px] text-slate-500 leading-relaxed">
+                    {currentUser.role === "ADMIN"
+                      ? (language === "kh"
+                          ? "គណនី Master Admin (Meun Chamroeun) មានសិទ្ធិពេញលេញលើ Admin Console និងការគ្រប់គ្រងប្រព័ន្ធ។"
+                          : "Master Admin account (Meun Chamroeun) with full governance and console access.")
+                      : (language === "kh"
+                          ? "គណនីអ្នកប្រើប្រាស់ពិតប្រាកដសម្រាប់បំប្លែងឯកសារ PPI/PPF និងដំណើរការ Sound AI Studio។"
+                          : "Verified active user account for PPI/PPF conversions and Sound AI Studio.")}
                   </p>
-                  <div className="flex gap-2 pt-1">
-                    <Button
-                      size="sm"
-                      variant={currentUser.role === "ADMIN" ? "default" : "outline"}
-                      onClick={() => onUpdateUserRole("ADMIN")}
-                      className={`flex-1 text-xs gap-1.5 ${
-                        currentUser.role === "ADMIN" ? "bg-purple-600 hover:bg-purple-500 text-white" : ""
-                      }`}
-                    >
-                      <Crown className="w-3.5 h-3.5" />
-                      <span>Admin</span>
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant={currentUser.role === "USER" ? "default" : "outline"}
-                      onClick={() => onUpdateUserRole("USER")}
-                      className="flex-1 text-xs gap-1.5"
-                    >
-                      <User className="w-3.5 h-3.5" />
-                      <span>User</span>
-                    </Button>
-                  </div>
                 </div>
 
                 <Button variant="outline" size="sm" onClick={onOpenAuth} className="w-full text-xs gap-2">
