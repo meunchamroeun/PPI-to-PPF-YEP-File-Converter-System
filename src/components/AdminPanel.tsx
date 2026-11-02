@@ -266,12 +266,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateT
             <Database className="w-4 h-4 text-emerald-500" />
           </div>
           <div className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <span>Supabase / PG Engine</span>
+            <span>Neon PostgreSQL Cloud</span>
             <Badge variant="outline" className="text-[9px] text-emerald-500 border-emerald-500/40">
               HEALTHY
             </Badge>
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Supabase Pooler &amp; PostgREST verified</p>
+          <p className="text-[11px] text-slate-500 mt-1">Neon Serverless Pooler verified</p>
         </Card>
 
         <Card className="p-4">
@@ -605,24 +605,24 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateT
           <Card className="p-5 space-y-3">
             <CardTitle className="text-sm font-bold flex items-center gap-2">
               <Database className="w-4 h-4 text-brand-600" />
-              <span>PostgreSQL Cluster Details</span>
+              <span>Neon PostgreSQL Cloud Details</span>
             </CardTitle>
             <div className="space-y-2 text-xs divide-y divide-slate-100 dark:divide-slate-800">
               <div className="flex justify-between py-1.5">
-                <span className="text-slate-500">Engine Type</span>
-                <span className="font-semibold text-slate-900 dark:text-white">PostgreSQL 16 Relational DB</span>
+                <span className="text-slate-500">Database Engine</span>
+                <span className="font-semibold text-slate-900 dark:text-white">Neon PostgreSQL 16 (AWS us-east-1)</span>
               </div>
               <div className="flex justify-between py-1.5">
                 <span className="text-slate-500">Connection Pooling</span>
-                <span className="font-mono text-emerald-500">Max 20 Connections</span>
+                <span className="font-mono text-emerald-500">Neon Serverless Pooler Active</span>
               </div>
               <div className="flex justify-between py-1.5">
-                <span className="text-slate-500">Tables Managed</span>
-                <span className="font-mono">users, conversion_jobs, audit_events</span>
+                <span className="text-slate-500">Tables Live</span>
+                <span className="font-mono">users, conversion_jobs</span>
               </div>
               <div className="flex justify-between py-1.5">
-                <span className="text-slate-500">In-Memory Fallback</span>
-                <Badge variant="success" className="text-[10px]">ENABLED (0 Downtime)</Badge>
+                <span className="text-slate-500">Failover Mode</span>
+                <Badge variant="success" className="text-[10px]">IN-MEMORY FALLBACK (0 Downtime)</Badge>
               </div>
             </div>
           </Card>
@@ -630,24 +630,24 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateT
           <Card className="p-5 space-y-3">
             <CardTitle className="text-sm font-bold flex items-center gap-2">
               <Server className="w-4 h-4 text-purple-600" />
-              <span>Redis Queue &amp; Worker Telemetry</span>
+              <span>Conversion Engine Telemetry</span>
             </CardTitle>
             <div className="space-y-2 text-xs divide-y divide-slate-100 dark:divide-slate-800">
               <div className="flex justify-between py-1.5">
-                <span className="text-slate-500">Queue Engine</span>
-                <span className="font-semibold text-slate-900 dark:text-white">BullMQ Redis Stream</span>
+                <span className="text-slate-500">Execution Runtime</span>
+                <span className="font-semibold text-slate-900 dark:text-white">Next.js Edge / Serverless API</span>
               </div>
               <div className="flex justify-between py-1.5">
-                <span className="text-slate-500">Concurrency Limit</span>
-                <span className="font-mono text-indigo-500">4 Parallel Jobs / Node</span>
+                <span className="text-slate-500">Parser Architecture</span>
+                <span className="font-mono text-indigo-500">AWM2 Binary Stream / XPIH Extractor</span>
               </div>
               <div className="flex justify-between py-1.5">
-                <span className="text-slate-500">PAC Binary Stream Parser</span>
-                <span className="font-mono text-emerald-500">Active (44.1 kHz PCM)</span>
+                <span className="text-slate-500">Audio Synthesis Engine</span>
+                <span className="font-mono text-emerald-500">44.1 kHz PCM Wave Generator</span>
               </div>
               <div className="flex justify-between py-1.5">
-                <span className="text-slate-500">Telegram Webhook Node</span>
-                <Badge variant="default" className="text-[10px] bg-[#229ED9]">DISPATCHER LIVE</Badge>
+                <span className="text-slate-500">Telegram Bot Webhook</span>
+                <Badge variant="default" className="text-[10px] bg-[#229ED9]">ACTIVE (@PPI_PPF_ConvertBot)</Badge>
               </div>
             </div>
           </Card>
