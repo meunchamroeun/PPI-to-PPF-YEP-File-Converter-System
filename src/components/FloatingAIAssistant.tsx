@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import {
@@ -13,12 +13,7 @@ import {
   Square,
   Copy,
   Check,
-  RefreshCw,
-  AlertCircle,
-  HelpCircle,
-  Cpu,
-  Sliders,
-  FileText,
+  GripHorizontal,
 } from "lucide-react";
 import { ParsedPPIData } from "@/lib/yamaha/ppi-parser";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
@@ -100,15 +95,45 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
   const [inputPrompt, setInputPrompt] = useState<string>("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  // Drag tracking to prevent click trigger when dragging
+  // Drag tracking
   const dragDistanceRef = useRef<number>(0);
+  const buttonRef = useRef<HTMLDivElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const dragControls = useDragControls();
 
   // Load custom API key from local storage
   useEffect(() => {
     const saved = localStorage.getItem("gemini_api_key");
     if (saved) setApiKey(saved);
   }, []);
+
+  // Close on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
+  // Close when clicking outside of the popup
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        isOpen &&
+        popupRef.current &&
+        !popupRef.current.contains(e.target as Node) &&
+        !buttonRef.current?.contains(e.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
 
   // Vercel AI SDK Transport
   const transport = useMemo(
@@ -167,6 +192,7 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
       {/* FLOATING DRAGGABLE ACTION BUTTON (BOTTOM RIGHT)                     */}
       {/* =================================================================== */}
       <motion.div
+        ref={buttonRef}
         drag
         dragMomentum={false}
         onDragStart={() => {
@@ -211,19 +237,28 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
       </motion.div>
 
       {/* =================================================================== */}
-      {/* FLOATING CONVERSATION WINDOW                                        */}
+      {/* FLOATING DRAGGABLE CONVERSATION WINDOW                              */}
       {/* =================================================================== */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.92, y: 20 }}
+            ref={popupRef}
+            drag
+            dragListener={false}
+            dragControls={dragControls}
+            dragMomentum={false}
+            initial={{ opacity: 0, scale: 0.94, y: 15 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.92, y: 20 }}
-            transition={{ type: "spring", stiffness: 320, damping: 28 }}
-            className="fixed bottom-36 right-4 sm:bottom-22 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[420px] h-[520px] max-h-[75vh] flex flex-col rounded-3xl bg-card/95 backdrop-blur-xl border border-border/80 shadow-2xl overflow-hidden ring-1 ring-border/50 specular-card"
+            exit={{ opacity: 0, scale: 0.94, y: 15 }}
+            transition={{ type: "spring", stiffness: 340, damping: 28 }}
+            className="fixed bottom-[5.5rem] right-3 sm:bottom-[5.5rem] sm:right-6 lg:bottom-22 lg:right-6 inset-x-3 sm:inset-x-auto sm:w-[400px] md:w-[420px] h-[min(480px,calc(100dvh-7rem))] max-h-[calc(100dvh-7rem)] z-50 flex flex-col rounded-3xl bg-card/95 backdrop-blur-xl border border-border/80 shadow-2xl overflow-hidden ring-1 ring-border/50 specular-card"
           >
-            {/* Header */}
-            <div className="px-4 py-3 border-b border-border/80 bg-background/80 backdrop-blur-md flex items-center justify-between gap-2">
+            {/* Header (Draggable by Header Handle) */}
+            <div
+              onPointerDown={(e) => dragControls.start(e)}
+              className="px-4 py-3 border-b border-border/80 bg-background/90 backdrop-blur-md flex items-center justify-between gap-2 shrink-0 cursor-grab active:cursor-grabbing select-none"
+              title={language === "kh" ? "ចុចសង្កត់ត្រង់នេះដើម្បីទាញផ្លាស់ទីផ្ទាំង" : "Click and drag here to move window"}
+            >
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="size-8 rounded-full bg-gradient-to-tr from-brand-600 to-purple-600 text-white flex items-center justify-center shadow-xs shrink-0">
                   <Brain className="size-4" />
@@ -247,8 +282,19 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
                 </div>
               </div>
 
-              {/* Window Controls */}
-              <div className="flex items-center gap-1 shrink-0">
+              {/* Drag Handle & Window Controls */}
+              <div
+                className="flex items-center gap-1 shrink-0"
+                onPointerDown={(e) => e.stopPropagation()}
+              >
+                <div
+                  onPointerDown={(e) => dragControls.start(e)}
+                  className="p-1 rounded-md text-muted-foreground/40 hover:text-muted-foreground transition cursor-grab active:cursor-grabbing mr-0.5"
+                  title="Drag to move"
+                >
+                  <GripHorizontal className="size-3.5" />
+                </div>
+
                 {onNavigateFullTab && (
                   <button
                     type="button"
@@ -274,7 +320,7 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
             </div>
 
             {/* Quick Action Chips */}
-            <div className="px-3.5 py-2 border-b border-border/60 bg-muted/40 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+            <div className="px-3.5 py-2 border-b border-border/60 bg-muted/40 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
               <button
                 type="button"
                 onClick={() =>
@@ -314,16 +360,16 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
             </div>
 
             {/* Conversation Messages Viewport */}
-            <div className="flex-1 p-3.5 overflow-y-auto space-y-3 text-xs">
+            <div className="flex-1 min-h-0 p-3.5 overflow-y-auto space-y-3 text-xs">
               {messages.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center p-4 text-muted-foreground">
-                  <div className="size-10 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-300 flex items-center justify-center mb-2">
+                <div className="h-full min-h-[160px] flex flex-col items-center justify-center text-center p-4 text-muted-foreground">
+                  <div className="size-10 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-300 flex items-center justify-center mb-2 shrink-0">
                     <Sparkles className="size-5" />
                   </div>
                   <h5 className="font-bold text-xs text-foreground mb-1">
                     {language === "kh" ? "តើខ្ញុំអាចជួយអ្វីបានខ្លះ?" : "How can I help with your Yamaha sounds?"}
                   </h5>
-                  <p className="text-[11px] max-w-xs text-muted-foreground">
+                  <p className="text-[11px] max-w-xs text-muted-foreground leading-relaxed">
                     {language === "kh"
                       ? "សួរអំពីក្បួនបំប្លែងឯកសារ PPI, ទាញស្រង់រលកសំឡេង ឬកែសម្រួល Voice Filters។"
                       : "Ask questions about pack structures, UVF voice scripts, PCM waveforms, or MIDI mapping."}
@@ -383,7 +429,7 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
 
             {/* Error Notice */}
             {error && (
-              <div className="p-2.5 bg-rose-500/10 border-t border-rose-500/20 text-rose-600 dark:text-rose-400 text-[11px] flex items-center justify-between gap-2">
+              <div className="p-2.5 bg-rose-500/10 border-t border-rose-500/20 text-rose-600 dark:text-rose-400 text-[11px] flex items-center justify-between gap-2 shrink-0">
                 <span className="truncate">{error.message || "Error generating response"}</span>
                 <button
                   type="button"
@@ -396,7 +442,7 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
             )}
 
             {/* Input Bar */}
-            <div className="p-2.5 border-t border-border/80 bg-background/80 backdrop-blur-md flex items-center gap-2">
+            <div className="p-2.5 border-t border-border/80 bg-background/80 backdrop-blur-md flex items-center gap-2 shrink-0">
               <input
                 type="text"
                 placeholder={
