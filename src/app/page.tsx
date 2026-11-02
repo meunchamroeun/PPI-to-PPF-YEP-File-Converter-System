@@ -774,21 +774,6 @@ export default function YamahaConverterApp() {
 
             <button
               onClick={() => {
-                setActiveTab("architecture");
-                setMobileMenuOpen(false);
-              }}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-150 active:scale-[0.98] ${
-                activeTab === "architecture"
-                  ? "bg-brand-500/10 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300 font-semibold border border-brand-500/20 shadow-2xs"
-                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/70 border border-transparent"
-              }`}
-            >
-              <Cpu className="w-4 h-4 shrink-0" />
-              <span className="truncate min-w-0 flex-1 text-left">{t("nav_architecture")}</span>
-            </button>
-
-            <button
-              onClick={() => {
                 setActiveTab("settings");
                 setMobileMenuOpen(false);
               }}
@@ -922,7 +907,6 @@ export default function YamahaConverterApp() {
                 {activeTab === "ai" && t("nav_ai")}
                 {activeTab === "settings" && t("nav_settings")}
                 {activeTab === "admin" && t("nav_admin")}
-                {activeTab === "architecture" && t("nav_architecture")}
               </h1>
 
               {/* Engine Status Dot */}
@@ -1942,71 +1926,7 @@ export default function YamahaConverterApp() {
         )}
 
         {/* =================================================================== */}
-        {/* TAB 6: BACKEND & TECH SPECS                                         */}
-        {/* =================================================================== */}
-        {activeTab === "architecture" && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-            <Card className="p-6 space-y-4">
-              <CardTitle className="text-sm font-bold flex items-center gap-2">
-                <Cpu className="w-4 h-4 text-brand-600" />
-                <span>Production Technology Stack Integration</span>
-              </CardTitle>
-
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
-                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-                  <span className="text-brand-600 font-bold uppercase text-[10px]">Frontend UI</span>
-                  <h5 className="font-bold mt-1 text-slate-900 dark:text-white">Next.js 16 + React 19</h5>
-                  <p className="text-slate-500 mt-1">Radix UI, shadcn/ui, Base UI, Tailwind CSS, Motion, GSAP.</p>
-                </div>
-
-                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-                  <span className="text-brand-600 font-bold uppercase text-[10px]">Queue &amp; Cache</span>
-                  <h5 className="font-bold mt-1 text-slate-900 dark:text-white">BullMQ + Redis</h5>
-                  <p className="text-slate-500 mt-1">Asynchronous chunk de-encapsulation worker pool.</p>
-                </div>
-
-                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-                  <span className="text-brand-600 font-bold uppercase text-[10px]">Database</span>
-                  <h5 className="font-bold mt-1 text-slate-900 dark:text-white">Supabase (PostgreSQL)</h5>
-                  <p className="text-slate-500 mt-1">Managed PG pooler, PostgREST API, RLS security, audit telemetry.</p>
-                </div>
-
-                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-                  <span className="text-brand-600 font-bold uppercase text-[10px]">Cloud &amp; Mini App</span>
-                  <h5 className="font-bold mt-1 text-slate-900 dark:text-white">Vercel + Telegram PWA</h5>
-                  <p className="text-slate-500 mt-1">Serverless edge, Telegraf webhook, installable PWA manifest.</p>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6">
-              <CardTitle className="text-xs uppercase tracking-wider text-slate-500 font-bold mb-3">
-                Supabase Schema Reference (supabase_schema.sql)
-              </CardTitle>
-              <div className="p-4 bg-slate-950 text-slate-300 font-mono text-xs rounded-xl overflow-x-auto max-h-56">
-                <pre>{`-- Supabase PostgreSQL Table Definition
-CREATE TABLE public.conversion_jobs (
-    id TEXT PRIMARY KEY,
-    user_id TEXT REFERENCES public.users(id) ON DELETE SET NULL,
-    original_filename VARCHAR(255) NOT NULL,
-    original_size_bytes BIGINT NOT NULL DEFAULT 0,
-    target_format VARCHAR(20) NOT NULL DEFAULT 'PPF',
-    output_filename VARCHAR(255),
-    download_url TEXT,
-    status VARCHAR(50) NOT NULL DEFAULT 'QUEUED',
-    progress_percent INT DEFAULT 0,
-    pack_name VARCHAR(255),
-    voices_count INT DEFAULT 0,
-    styles_count INT DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);`}</pre>
-              </div>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* =================================================================== */}
-        {/* TAB 7: USER SETTINGS & GEMINI API KEY                               */}
+        {/* TAB 6: USER SETTINGS & GEMINI API KEY                               */}
         {/* =================================================================== */}
         {activeTab === "settings" && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">

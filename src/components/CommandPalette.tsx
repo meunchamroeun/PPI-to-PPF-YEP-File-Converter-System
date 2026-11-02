@@ -133,16 +133,6 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         onClose();
       },
     },
-    {
-      id: "nav-arch",
-      title: `${language === "kh" ? "ទៅកាន់ " : "Go to "}${t("nav_architecture")}`,
-      category: "Navigation",
-      icon: <Cpu className="w-4 h-4 text-slate-500" />,
-      action: () => {
-        onNavigate("architecture");
-        onClose();
-      },
-    },
 
     // Quick Actions
     {

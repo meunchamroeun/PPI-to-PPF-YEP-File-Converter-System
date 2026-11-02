@@ -182,13 +182,8 @@
           </button>
 
           <div class="pt-4 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
-            System & Architecture
+            System & Settings
           </div>
-
-          <button onclick="navigate('architecture')" id="nav-architecture" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all">
-            <i data-lucide="cpu" class="w-4 h-4"></i>
-            <span>Backend & Tech Specs</span>
-          </button>
 
           <button onclick="navigate('settings')" id="nav-settings" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all">
             <i data-lucide="sliders" class="w-4 h-4 text-brand-500"></i>
@@ -972,144 +967,6 @@
               <!-- AI generated markdown text -->
             </div>
           </div>
-        </section>
-
-        <!-- ===================================================================== -->
-        <!-- VIEW 6: BACKEND ARCHITECTURE & TECH SPECS                             -->
-        <!-- ===================================================================== -->
-        <section id="view-architecture" class="view-section view-hidden space-y-6 max-w-7xl mx-auto">
-          
-          <div>
-            <h3 class="font-extrabold text-xl text-slate-900 dark:text-white">Production System Architecture &amp; Technology Stack</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Blueprint for scaling from browser prototype to high-throughput cloud infrastructure.</p>
-          </div>
-
-          <!-- Architecture Visual Map -->
-          <div class="glass-card p-6 rounded-2xl border shadow-sm space-y-6">
-            <h4 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-              <i data-lucide="network" class="w-4 h-4 text-brand-600"></i>
-              <span>High-Level Full-Stack Pipeline</span>
-            </h4>
-
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
-              <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-                <span class="text-brand-600 dark:text-brand-400 font-bold uppercase text-[10px]">1. Client Tier</span>
-                <h5 class="font-bold text-slate-900 dark:text-white mt-1 mb-2">Next.js + React 19 + PWA</h5>
-                <ul class="text-slate-500 dark:text-slate-400 space-y-1 text-[11px]">
-                  <li>• Radix UI &amp; Shadcn/ui primitives</li>
-                  <li>• Motion.dev &amp; GSAP animations</li>
-                  <li>• Telegram Mini App WebApp SDK</li>
-                  <li>• Client-side ArrayBuffer validation</li>
-                </ul>
-              </div>
-
-              <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-                <span class="text-brand-600 dark:text-brand-400 font-bold uppercase text-[10px]">2. API &amp; Auth</span>
-                <h5 class="font-bold text-slate-900 dark:text-white mt-1 mb-2">Node.js / Express Gateway</h5>
-                <ul class="text-slate-500 dark:text-slate-400 space-y-1 text-[11px]">
-                  <li>• Google OAuth 2.0 / OpenID Connect</li>
-                  <li>• Telegram Bot WebApp hash verification</li>
-                  <li>• Chunked multipart/form-data upload</li>
-                  <li>• Rate limiting &amp; signature validation</li>
-                </ul>
-              </div>
-
-              <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-                <span class="text-brand-600 dark:text-brand-400 font-bold uppercase text-[10px]">3. Queue &amp; Engine</span>
-                <h5 class="font-bold text-slate-900 dark:text-white mt-1 mb-2">Redis + BullMQ Workers</h5>
-                <ul class="text-slate-500 dark:text-slate-400 space-y-1 text-[11px]">
-                  <li>• Asynchronous conversion worker pool</li>
-                  <li>• Memory-mapped binary parsing</li>
-                  <li>• WAV PCM transcoding &amp; packaging</li>
-                  <li>• DRM .n27 key management</li>
-                </ul>
-              </div>
-
-              <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-                <span class="text-brand-600 dark:text-brand-400 font-bold uppercase text-[10px]">4. Persistence</span>
-                <h5 class="font-bold text-slate-900 dark:text-white mt-1 mb-2">PostgreSQL + S3 Storage</h5>
-                <ul class="text-slate-500 dark:text-slate-400 space-y-1 text-[11px]">
-                  <li>• Relational audit &amp; user profiles</li>
-                  <li>• Conversion job status &amp; metrics</li>
-                  <li>• Presigned S3 URLs for fast download</li>
-                  <li>• TTL automatic artifact cleanup</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <!-- Code Blueprint Carousel / Tabs -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Node.js Worker Sample -->
-            <div class="glass-card rounded-2xl border shadow-sm overflow-hidden">
-              <div class="px-5 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <i data-lucide="server" class="w-4 h-4 text-brand-600"></i>
-                  <span class="font-bold text-xs text-slate-900 dark:text-white">Node.js Server-Side Worker Logic</span>
-                </div>
-                <span class="text-[10px] font-mono text-slate-600 dark:text-slate-300">worker.js</span>
-              </div>
-              <div class="p-4 bg-slate-950 text-slate-300 font-mono text-[11px] overflow-x-auto max-h-[300px]">
-<pre><code>import { Worker } from 'bullmq';
-import { parsePPIBinary } from './engine/ppi-parser.js';
-import { generatePPFArchive } from './engine/ppf-builder.js';
-import { db } from './db/postgres.js';
-
-const conversionWorker = new Worker('ppi-conversions', async job => {
-  const { fileBuffer, targetFormat, userId } = job.data;
-  
-  // 1. Parse PPI Chunk Table & Verify DRM
-  const packData = parsePPIBinary(fileBuffer);
-  if (packData.isProtected) {
-    throw new Error('CPI Encryption: Instrument .n27 Key Required');
-  }
-
-  // 2. Synthesize output format (PPF Zip or YEP Binary)
-  const resultBlob = await generatePPFArchive(packData);
-  
-  // 3. Save to storage & notify Telegram
-  await db.query('UPDATE conversion_jobs SET status = $1 WHERE id = $2', ['COMPLETED', job.id]);
-  return { success: true, downloadUrl: `/api/download/${job.id}` };
-}, { connection: { host: 'redis', port: 6379 } });</code></pre>
-              </div>
-            </div>
-
-            <!-- Telegram Bot WebApp Integration -->
-            <div class="glass-card rounded-2xl border shadow-sm overflow-hidden">
-              <div class="px-5 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <i data-lucide="bot" class="w-4 h-4 text-sky-500"></i>
-                  <span class="font-bold text-xs text-slate-900 dark:text-white">Telegram Bot &amp; Mini App Integration</span>
-                </div>
-                <span class="text-[10px] font-mono text-slate-600 dark:text-slate-300">telegramBot.js</span>
-              </div>
-              <div class="p-4 bg-slate-950 text-slate-300 font-mono text-[11px] overflow-x-auto max-h-[300px]">
-<pre><code>import { Telegraf } from 'telegraf';
-
-const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
-
-bot.command('convert', (ctx) => {
-  ctx.reply('Open the Yamaha Expansion Converter Mini App below:', {
-    reply_markup: {
-      inline_keyboard: [[
-        { text: 'Launch ExpVoice Studio', web_app: { url: 'https://app.yamaha-converter.io' } }
-      ]]
-    }
-  });
-});
-
-bot.on('document', async (ctx) => {
-  const doc = ctx.message.document;
-  if (doc.file_name.endsWith('.ppi')) {
-    ctx.reply(`Received Yamaha pack: ${doc.file_name}. Processing conversion...`);
-  }
-});
-
-bot.launch();</code></pre>
-              </div>
-            </div>
-          </div>
-
         </section>
 
         <!-- ===================================================================== -->
@@ -1962,7 +1819,6 @@ bot.launch();</code></pre>
         { id: 'nav-inspector', key: 'nav_inspector' },
         { id: 'nav-history', key: 'nav_history' },
         { id: 'nav-ai', key: 'nav_ai' },
-        { id: 'nav-architecture', key: 'nav_architecture' },
         { id: 'nav-settings', key: 'nav_settings' },
         { id: 'nav-admin', key: 'nav_admin' }
       ];
