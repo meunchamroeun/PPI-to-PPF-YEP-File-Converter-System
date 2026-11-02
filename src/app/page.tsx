@@ -611,8 +611,8 @@ export default function YamahaConverterApp() {
                   : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
               }`}
             >
-              <LayoutDashboard className="w-4 h-4" />
-              <span>{t("nav_dashboard")}</span>
+              <LayoutDashboard className="w-4 h-4 shrink-0" />
+              <span className="truncate min-w-0 flex-1 text-left">{t("nav_dashboard")}</span>
             </button>
 
             <button
@@ -626,10 +626,10 @@ export default function YamahaConverterApp() {
                   : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
               }`}
             >
-              <Repeat className="w-4 h-4" />
-              <span>{t("nav_converter")}</span>
+              <Repeat className="w-4 h-4 shrink-0" />
+              <span className="truncate min-w-0 flex-1 text-left">{t("nav_converter")}</span>
               {queue.length > 0 && (
-                <Badge variant="secondary" className="ml-auto text-xs px-2 py-0.2">
+                <Badge variant="secondary" className="ml-auto text-xs px-2 py-0.2 shrink-0">
                   {queue.length}
                 </Badge>
               )}
@@ -646,8 +646,8 @@ export default function YamahaConverterApp() {
                   : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
               }`}
             >
-              <Binary className="w-4 h-4" />
-              <span>{t("nav_inspector")}</span>
+              <Binary className="w-4 h-4 shrink-0" />
+              <span className="truncate min-w-0 flex-1 text-left">{t("nav_inspector")}</span>
             </button>
 
             <button
@@ -661,8 +661,8 @@ export default function YamahaConverterApp() {
                   : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
               }`}
             >
-              <History className="w-4 h-4" />
-              <span>{t("nav_history")}</span>
+              <History className="w-4 h-4 shrink-0" />
+              <span className="truncate min-w-0 flex-1 text-left">{t("nav_history")}</span>
             </button>
 
             <button
@@ -676,9 +676,9 @@ export default function YamahaConverterApp() {
                   : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
               }`}
             >
-              <Brain className="w-4 h-4 text-brand-500" />
-              <span>{t("nav_ai")}</span>
-              <Badge variant="default" className="ml-auto text-[9px] px-1.5 py-0 bg-brand-600 text-white">
+              <Brain className="w-4 h-4 text-brand-500 shrink-0" />
+              <span className="truncate min-w-0 flex-1 text-left">{t("nav_ai")}</span>
+              <Badge variant="default" className="ml-auto text-[9px] px-1.5 py-0 bg-brand-600 text-white shrink-0">
                 Gemini
               </Badge>
             </button>
@@ -700,8 +700,8 @@ export default function YamahaConverterApp() {
                   : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
               }`}
             >
-              <Cpu className="w-4 h-4" />
-              <span>{t("nav_architecture")}</span>
+              <Cpu className="w-4 h-4 shrink-0" />
+              <span className="truncate min-w-0 flex-1 text-left">{t("nav_architecture")}</span>
             </button>
 
             <button
@@ -715,8 +715,8 @@ export default function YamahaConverterApp() {
                   : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
               }`}
             >
-              <Sliders className="w-4 h-4 text-brand-500" />
-              <span>{t("nav_settings")}</span>
+              <Sliders className="w-4 h-4 text-brand-500 shrink-0" />
+              <span className="truncate min-w-0 flex-1 text-left">{t("nav_settings")}</span>
             </button>
 
             <button
@@ -730,9 +730,9 @@ export default function YamahaConverterApp() {
                   : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
               }`}
             >
-              <ShieldCheck className="w-4 h-4 text-purple-600" />
-              <span>{t("nav_admin")}</span>
-              <Badge variant="default" className="ml-auto text-[9px] px-1.5 py-0 bg-purple-600 text-white">
+              <ShieldCheck className="w-4 h-4 text-purple-600 shrink-0" />
+              <span className="truncate min-w-0 flex-1 text-left">{t("nav_admin")}</span>
+              <Badge variant="default" className="ml-auto text-[9px] px-1.5 py-0 bg-purple-600 text-white shrink-0">
                 {t("nav_admin_badge")}
               </Badge>
             </button>
@@ -758,19 +758,19 @@ export default function YamahaConverterApp() {
           <div className="flex items-center justify-between pt-1">
             <button
               onClick={() => setAuthModalOpen(true)}
-              className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400"
+              className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 min-w-0"
             >
-              <div className="w-7 h-7 rounded-full bg-brand-100 dark:bg-brand-950 flex items-center justify-center text-brand-600">
+              <div className="w-7 h-7 rounded-full bg-brand-100 dark:bg-brand-950 flex items-center justify-center text-brand-600 shrink-0">
                 {currentUser?.avatar ? (
                   <img src={currentUser.avatar} alt="user" className="w-full h-full rounded-full object-cover" />
                 ) : (
                   <UserIcon className="w-3.5 h-3.5" />
                 )}
               </div>
-              <span className="truncate max-w-[85px]">{currentUser ? currentUser.name : t("hdr_sign_in")}</span>
+              <span className="truncate max-w-[130px] whitespace-nowrap">{currentUser ? currentUser.name : t("hdr_sign_in")}</span>
             </button>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 shrink-0">
               <LanguageSwitcher compact />
               <button
                 onClick={toggleDarkMode}
@@ -817,14 +817,16 @@ export default function YamahaConverterApp() {
 
           <div className="flex items-center gap-2 flex-wrap">
             {/* Language Switcher (Default: Khmer) */}
-            <LanguageSwitcher />
+            <div className="shrink-0">
+              <LanguageSwitcher />
+            </div>
 
             {/* Command Palette Trigger */}
             <Button
               variant="outline"
               size="sm"
               onClick={() => setCommandPaletteOpen(true)}
-              className="gap-1.5 text-xs text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="gap-1.5 text-xs text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 whitespace-nowrap shrink-0"
               title="Open Command Palette (Cmd+K)"
             >
               <Search className="w-3.5 h-3.5 text-slate-400" />
@@ -839,7 +841,7 @@ export default function YamahaConverterApp() {
               variant="outline"
               size="sm"
               onClick={() => setActiveTab("ai")}
-              className="gap-1.5 bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border-brand-200 dark:border-brand-800"
+              className="gap-1.5 bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border-brand-200 dark:border-brand-800 whitespace-nowrap shrink-0"
             >
               <Brain className="w-3.5 h-3.5 text-brand-600" />
               <span>{t("hdr_ai_assistant")}</span>
@@ -850,7 +852,7 @@ export default function YamahaConverterApp() {
               variant="outline"
               size="sm"
               onClick={() => handleLoadSample(false)}
-              className="gap-2 bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border-brand-200 dark:border-brand-800"
+              className="gap-2 bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border-brand-200 dark:border-brand-800 whitespace-nowrap shrink-0"
             >
               <Sparkles className="w-3.5 h-3.5 text-brand-600" />
               <span>{t("hdr_load_sample")}</span>
@@ -861,7 +863,7 @@ export default function YamahaConverterApp() {
               variant="secondary"
               size="sm"
               onClick={() => handleLoadSample(true)}
-              className="gap-1.5 text-slate-700 dark:text-slate-300"
+              className="gap-1.5 text-slate-700 dark:text-slate-300 whitespace-nowrap shrink-0"
             >
               <ShieldAlert className="w-3.5 h-3.5 text-amber-500" />
               <span>{t("hdr_test_cpi")}</span>
@@ -873,28 +875,28 @@ export default function YamahaConverterApp() {
               size="icon"
               onClick={toggleDarkMode}
               title={darkMode ? "Switch to Light Mode" : "Switch to Night Mode"}
-              className="rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"
+              className="rounded-xl border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 shrink-0"
             >
               {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </Button>
 
             {/* User Account / Prominent Login Button */}
             {currentUser ? (
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 shrink-0">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setAuthModalOpen(true)}
-                  className="gap-2 rounded-xl text-xs font-semibold border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  className="gap-2 rounded-xl text-xs font-semibold border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 whitespace-nowrap shrink-0"
                 >
-                  <div className="w-5 h-5 rounded-full bg-brand-100 dark:bg-brand-950 flex items-center justify-center text-brand-600 overflow-hidden">
+                  <div className="w-5 h-5 rounded-full bg-brand-100 dark:bg-brand-950 flex items-center justify-center text-brand-600 overflow-hidden shrink-0">
                     {currentUser.avatar ? (
                       <img src={currentUser.avatar} alt="user" className="w-full h-full object-cover" />
                     ) : (
                       <UserIcon className="w-3 h-3" />
                     )}
                   </div>
-                  <span className="truncate max-w-[85px]">{currentUser.name}</span>
+                  <span className="truncate max-w-[120px] sm:max-w-[160px]">{currentUser.name}</span>
                   <Badge
                     className={`text-[9px] px-1.5 py-0 ${
                       currentUser.role === "ADMIN" ? "bg-purple-600 text-white" : "bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-200"
@@ -909,7 +911,7 @@ export default function YamahaConverterApp() {
                   size="icon"
                   onClick={() => setActiveTab("settings")}
                   title="Settings & API Key"
-                  className="rounded-xl h-8 w-8"
+                  className="rounded-xl h-8 w-8 shrink-0"
                 >
                   <Sliders className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                 </Button>
@@ -918,7 +920,7 @@ export default function YamahaConverterApp() {
               <Button
                 size="sm"
                 onClick={() => setAuthModalOpen(true)}
-                className="gap-2 rounded-xl text-xs font-semibold bg-brand-600 hover:bg-brand-500 text-white shadow-md shadow-brand-600/25"
+                className="gap-2 rounded-xl text-xs font-semibold bg-brand-600 hover:bg-brand-500 text-white shadow-md shadow-brand-600/25 whitespace-nowrap shrink-0"
               >
                 <LogIn className="w-3.5 h-3.5" />
                 <span>{t("hdr_sign_in")}</span>
@@ -928,7 +930,7 @@ export default function YamahaConverterApp() {
             {/* Telegram Mini App indicator / Simulator Launcher */}
             <button
               onClick={() => setTelegramSimulatorOpen(true)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium border transition cursor-pointer shadow-sm hover:scale-105 active:scale-95 ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium border transition cursor-pointer shadow-sm hover:scale-105 active:scale-95 whitespace-nowrap shrink-0 ${
                 isInTelegram
                   ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300 border-sky-300"
                   : "bg-sky-50 hover:bg-sky-100 text-sky-700 dark:bg-sky-950/60 dark:hover:bg-sky-900/60 dark:text-sky-300 border-sky-200 dark:border-sky-800/60"

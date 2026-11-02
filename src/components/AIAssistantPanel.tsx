@@ -43,6 +43,130 @@ interface AIAssistantPanelProps {
   onLoadSample?: () => void;
 }
 
+// Helper to format bold **text** and inline `code`
+function formatInline(text: string): React.ReactNode {
+  const parts = text.split(/(\*\*.*?\*\*|`.*?`)/g);
+  return parts.map((part, idx) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return (
+        <strong key={idx} className="font-bold text-slate-900 dark:text-white">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    if (part.startsWith("`") && part.endsWith("`")) {
+      return (
+        <code
+          key={idx}
+          className="px-1.5 py-0.5 rounded-md font-mono text-[10px] bg-slate-200/70 dark:bg-slate-700/70 text-brand-700 dark:text-brand-300 font-semibold"
+        >
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    return part;
+  });
+}
+
+// Markdown-aware text formatter without awkward line breaking
+function FormattedText({ content }: { content: string }) {
+  const lines = content.split("\n");
+  const blocks: React.ReactNode[] = [];
+  let inCodeBlock = false;
+  let codeBuffer: string[] = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    if (line.trim().startsWith("```")) {
+      if (inCodeBlock) {
+        blocks.push(
+          <pre
+            key={`code-${i}`}
+            className="my-2 p-3 rounded-xl bg-slate-900 text-slate-100 dark:bg-slate-950 font-mono text-[11px] overflow-x-auto border border-slate-800"
+          >
+            <code>{codeBuffer.join("\n")}</code>
+          </pre>
+        );
+        codeBuffer = [];
+        inCodeBlock = false;
+      } else {
+        inCodeBlock = true;
+      }
+      continue;
+    }
+
+    if (inCodeBlock) {
+      codeBuffer.push(line);
+      continue;
+    }
+
+    if (line.startsWith("### ")) {
+      blocks.push(
+        <h4 key={`h3-${i}`} className="font-bold text-sm mt-3 mb-1 text-slate-900 dark:text-white break-words">
+          {formatInline(line.replace("### ", ""))}
+        </h4>
+      );
+      continue;
+    }
+
+    if (line.startsWith("## ")) {
+      blocks.push(
+        <h3 key={`h2-${i}`} className="font-bold text-base mt-4 mb-1.5 text-slate-900 dark:text-white break-words">
+          {formatInline(line.replace("## ", ""))}
+        </h3>
+      );
+      continue;
+    }
+
+    if (line.startsWith("# ")) {
+      blocks.push(
+        <h2 key={`h1-${i}`} className="font-bold text-lg mt-4 mb-2 text-slate-900 dark:text-white break-words">
+          {formatInline(line.replace("# ", ""))}
+        </h2>
+      );
+      continue;
+    }
+
+    if (line.trim().startsWith("- ") || line.trim().startsWith("* ")) {
+      const text = line.trim().replace(/^[-*]\s+/, "");
+      blocks.push(
+        <div key={`li-${i}`} className="flex items-start gap-2 my-1 pl-1 break-words leading-relaxed">
+          <span className="w-1.5 h-1.5 rounded-full bg-brand-500 mt-1.5 shrink-0" />
+          <span className="flex-1">{formatInline(text)}</span>
+        </div>
+      );
+      continue;
+    }
+
+    const numMatch = line.trim().match(/^(\d+)\.\s+(.*)$/);
+    if (numMatch) {
+      blocks.push(
+        <div key={`num-${i}`} className="flex items-start gap-2 my-1 pl-1 break-words leading-relaxed">
+          <span className="font-bold font-mono text-[10px] text-brand-600 dark:text-brand-400 mt-0.5 shrink-0">
+            {numMatch[1]}.
+          </span>
+          <span className="flex-1">{formatInline(numMatch[2])}</span>
+        </div>
+      );
+      continue;
+    }
+
+    if (!line.trim()) {
+      blocks.push(<div key={`sp-${i}`} className="h-1.5" />);
+      continue;
+    }
+
+    blocks.push(
+      <p key={`p-${i}`} className="my-1 break-words leading-relaxed">
+        {formatInline(line)}
+      </p>
+    );
+  }
+
+  return <div className="space-y-0.5">{blocks}</div>;
+}
+
 export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack, onLoadSample }) => {
   const { t, language } = useTranslation();
   const [apiKey, setApiKey] = useState<string>("");
@@ -325,7 +449,7 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack, 
       </div>
 
       {/* Preset Action Prompts Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
         <button
           onClick={() =>
             handleSendPrompt(
@@ -338,8 +462,8 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack, 
           <div className="w-8 h-8 rounded-xl bg-brand-50 dark:bg-brand-950 text-brand-600 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
             <Brain className="w-4 h-4" />
           </div>
-          <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-0.5">{t("ai_quick_audit")}</h4>
-          <p className="text-[10px] text-slate-500">Inspect chunks, voices &amp; wave tables.</p>
+          <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-0.5 break-words leading-snug">{t("ai_quick_audit")}</h4>
+          <p className="text-[10px] text-slate-500 break-words leading-tight">Inspect chunks, voices &amp; wave tables.</p>
         </button>
 
         <button
@@ -354,8 +478,8 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack, 
           <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
             <Sliders className="w-4 h-4" />
           </div>
-          <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-0.5">{t("ai_quick_filter")}</h4>
-          <p className="text-[10px] text-slate-500">Calculate Cutoff (Hz), Q factor &amp; AEG.</p>
+          <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-0.5 break-words leading-snug">{t("ai_quick_filter")}</h4>
+          <p className="text-[10px] text-slate-500 break-words leading-tight">Calculate Cutoff (Hz), Q factor &amp; AEG.</p>
         </button>
 
         <button
@@ -370,8 +494,8 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack, 
           <div className="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-600 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
             <Cpu className="w-4 h-4" />
           </div>
-          <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-0.5">{t("ai_quick_yep")}</h4>
-          <p className="text-[10px] text-slate-500">Assess 64MB memory limit &amp; voice slots.</p>
+          <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-0.5 break-words leading-snug">{t("ai_quick_yep")}</h4>
+          <p className="text-[10px] text-slate-500 break-words leading-tight">Assess 64MB memory limit &amp; voice slots.</p>
         </button>
 
         <button
@@ -386,8 +510,8 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack, 
           <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
             <FileText className="w-4 h-4" />
           </div>
-          <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-0.5">{t("ai_quick_midi")}</h4>
-          <p className="text-[10px] text-slate-500">Allocate CC#0, CC#32 and PC slots.</p>
+          <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-0.5 break-words leading-snug">{t("ai_quick_midi")}</h4>
+          <p className="text-[10px] text-slate-500 break-words leading-tight">Allocate CC#0, CC#32 and PC slots.</p>
         </button>
 
         <button
@@ -402,8 +526,8 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack, 
           <div className="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950 text-rose-600 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
             <Activity className="w-4 h-4" />
           </div>
-          <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-0.5">{t("ai_quick_diagnose")}</h4>
-          <p className="text-[10px] text-slate-500">Identify DRM locks &amp; endian faults.</p>
+          <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-0.5 break-words leading-snug">{t("ai_quick_diagnose")}</h4>
+          <p className="text-[10px] text-slate-500 break-words leading-tight">Identify DRM locks &amp; endian faults.</p>
         </button>
       </div>
 
@@ -491,14 +615,14 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack, 
                     {/* Render Message Parts */}
                     <div className="space-y-3">
                       {message.parts.map((part, pIdx) => {
-                        // Render standard text parts
+                        // Render standard text parts with clean markdown-aware formatting (no awkward breaks)
                         if (part.type === "text") {
                           return (
                             <div
                               key={pIdx}
-                              className="whitespace-pre-wrap font-sans selection:bg-brand-500 selection:text-white"
+                              className="font-sans selection:bg-brand-500 selection:text-white"
                             >
-                              {part.text}
+                              <FormattedText content={part.text} />
                             </div>
                           );
                         }

@@ -435,9 +435,9 @@
               <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
                 Compiled binary file exported by Yamaha Expansion Manager (YEM) for loading directly onto keyboards via USB flash drive. Contains flattened PAC chunks.
               </p>
-              <div class="text-[11px] font-mono text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
-                Magic: 0x50 41 43 20 ("PAC ")<br>
-                Target: Flash ROM Direct Ingestion
+              <div class="text-[11px] font-mono text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 space-y-1">
+                <div>Magic: 0x50 41 43 20 ("PAC ")</div>
+                <div>Target: Flash ROM Direct Ingestion</div>
               </div>
             </div>
 
@@ -449,9 +449,9 @@
               <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
                 YEM's editable, unencrypted project container. Formatted as an open ZIP archive containing <span class="font-mono">Pack.xml</span>, User Voice Format (<span class="font-mono">.uvf</span>), and WAV waveforms.
               </p>
-              <div class="text-[11px] font-mono text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
-                Magic: 0x50 4B 03 04 (PKZip)<br>
-                Structure: XML Manifest + Assets
+              <div class="text-[11px] font-mono text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 space-y-1">
+                <div>Magic: 0x50 4B 03 04 (PKZip)</div>
+                <div>Structure: XML Manifest + Assets</div>
               </div>
             </div>
 
@@ -463,9 +463,9 @@
               <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
                 Legacy pack format utilized by older generation Yamaha arranger keyboards (PSR-S650, PSR-S750, PSR-S950). Uses structured binary TOC records.
               </p>
-              <div class="text-[11px] font-mono text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
-                Magic: 0x59 45 50 30 ("YEP0")<br>
-                Compatibility: Legacy Flash Engine
+              <div class="text-[11px] font-mono text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 space-y-1">
+                <div>Magic: 0x59 45 50 30 ("YEP0")</div>
+                <div>Compatibility: Legacy Flash Engine</div>
               </div>
             </div>
           </div>
