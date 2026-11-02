@@ -1062,12 +1062,12 @@ export default function YamahaConverterApp() {
         {activeTab === "dashboard" && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             {/* Hero Welcome Banner */}
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-brand-950 text-white p-8 shadow-xl border border-indigo-900/40">
-              <div className="relative z-10 max-w-2xl space-y-4">
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-brand-950 text-white p-6 sm:p-8 shadow-xl border border-indigo-900/40">
+              <div className="relative z-10 max-w-5xl space-y-4">
                 <Badge className="bg-white/10 text-brand-300 hover:bg-white/15 border-none backdrop-blur">
                   {t("dash_hero_tag")}
                 </Badge>
-                <h3 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+                <h3 className="text-[17px] sm:text-2xl md:text-3xl lg:text-[32px] font-extrabold tracking-tight whitespace-nowrap leading-normal">
                   {t("dash_hero_title")}
                 </h3>
                 <p className="text-xs md:text-sm text-slate-300 leading-relaxed">

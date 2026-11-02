@@ -74,6 +74,8 @@ body {
 [data-lang="kh"],
 [data-lang="km"] {
   line-height: 1.55;
+  word-break: keep-all;
+  overflow-wrap: normal;
 }
 
 /* Khmer language font priority (Kantumruy Pro) */
