@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { LanguageProvider } from "@/lib/i18n/LanguageContext";
 
 export const metadata: Metadata = {
   title: "Yamaha ExpVoice Studio | PPI to PPF & YEP File Converter",
@@ -51,7 +52,9 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased min-h-screen">
-        {children}
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
         {/* PWA Service Worker Registration */}
         <script
           dangerouslySetInnerHTML={{

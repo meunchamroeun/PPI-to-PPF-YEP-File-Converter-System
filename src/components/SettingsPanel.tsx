@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BaseSwitch } from "@/components/ui/base-switch";
 import { UserSession } from "@/components/AuthModal";
+import { useTranslation } from "@/lib/i18n/LanguageContext";
 
 interface SettingsPanelProps {
   currentUser: UserSession | null;
@@ -51,6 +52,8 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   strictDRMMode,
   onToggleStrictDRM,
 }) => {
+  const { t, language } = useTranslation();
+
   // API Key State
   const [apiKey, setApiKey] = useState<string>("");
   const [showKey, setShowKey] = useState<boolean>(false);
@@ -154,10 +157,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
         <div>
           <h3 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
             <Sliders className="w-5 h-5 text-brand-600" />
-            <span>Studio Settings &amp; API Configuration</span>
+            <span>{t("set_title")}</span>
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Manage your personal profile, Google Gemini AI API key, and conversion engine preferences.
+            {t("set_subtitle")}
           </p>
         </div>
 
@@ -178,7 +181,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
         <div className="space-y-4">
           <Card className="p-5 space-y-4">
             <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              Account Profile
+              {t("set_profile_title")}
             </CardTitle>
 
             {currentUser ? (
@@ -207,13 +210,15 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 {/* Role Switcher Demo */}
                 <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-slate-700 dark:text-slate-300">Role Privilege</span>
+                    <span className="font-semibold text-slate-700 dark:text-slate-300">
+                      {language === "kh" ? "សិទ្ធិតួនាទី" : "Role Privilege"}
+                    </span>
                     <Badge variant="outline" className="text-[10px] font-mono">
                       {currentUser.role}
                     </Badge>
                   </div>
                   <p className="text-[11px] text-slate-500">
-                    Switch between Admin and User role to test administrative access.
+                    {language === "kh" ? "ប្តូររវាង Admin និង User ដើម្បីសាកល្បងសិទ្ធិគ្រប់គ្រង។" : "Switch between Admin and User role to test administrative access."}
                   </p>
                   <div className="flex gap-2 pt-1">
                     <Button
@@ -241,7 +246,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
                 <Button variant="outline" size="sm" onClick={onOpenAuth} className="w-full text-xs gap-2">
                   <User className="w-3.5 h-3.5" />
-                  <span>Manage Session / Switch Account</span>
+                  <span>{t("set_btn_switch_account")}</span>
                 </Button>
               </div>
             ) : (
@@ -250,14 +255,16 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <User className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm text-slate-900 dark:text-white">Browsing as Guest</h4>
+                  <h4 className="font-bold text-sm text-slate-900 dark:text-white">
+                    {t("hist_guest_banner_title")}
+                  </h4>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Sign in to persist your conversion history, manage API keys, and unlock Admin features.
+                    {t("hist_guest_banner_desc")}
                   </p>
                 </div>
                 <Button onClick={onOpenAuth} className="w-full gap-2">
                   <Key className="w-3.5 h-3.5" />
-                  <span>Sign In Now</span>
+                  <span>{t("hdr_sign_in")}</span>
                 </Button>
               </div>
             )}
@@ -266,15 +273,15 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           {/* Theme & Display Quick Settings */}
           <Card className="p-5 space-y-4">
             <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              Appearance
+              {t("cmd_group_theme")}
             </CardTitle>
             <div className="flex items-center justify-between">
               <div>
                 <span className="text-xs font-semibold text-slate-900 dark:text-white block">
-                  Studio Theme
+                  {language === "kh" ? "ផ្ទៃពណ៌ស្ទូឌីយោ" : "Studio Theme"}
                 </span>
                 <span className="text-[11px] text-slate-500">
-                  {darkMode ? "Dark Mode (Night Studio)" : "Light Mode (Daylight)"}
+                  {darkMode ? (language === "kh" ? "ពន្លឺយប់ (Night Mode)" : "Dark Mode (Night Studio)") : (language === "kh" ? "ពន្លឺថ្ងៃ (Daylight)" : "Light Mode (Daylight)")}
                 </span>
               </div>
               <Button
@@ -284,7 +291,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 className="gap-2"
               >
                 {darkMode ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-slate-600" />}
-                <span>{darkMode ? "Light" : "Dark"}</span>
+                <span>{darkMode ? t("theme_light") : t("theme_dark")}</span>
               </Button>
             </div>
           </Card>
@@ -301,10 +308,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 </div>
                 <div>
                   <h4 className="font-bold text-sm text-slate-900 dark:text-white">
-                    Google Gemini AI API Key
+                    {t("set_gemini_title")}
                   </h4>
                   <p className="text-[11px] text-slate-500">
-                    Powers AWM2 envelope suggestions, voice tuning, and legacy conversion audits.
+                    {t("set_gemini_desc")}
                   </p>
                 </div>
               </div>
@@ -315,7 +322,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 rel="noreferrer"
                 className="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1"
               >
-                <span>Get Free Key</span>
+                <span>{t("set_gemini_get_free")}</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
             </div>
@@ -323,7 +330,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             <div className="space-y-3">
               <div>
                 <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
-                  Gemini API Secret Key
+                  {t("set_gemini_input_label")}
                 </label>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
@@ -355,12 +362,12 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     className="gap-1.5 shrink-0"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${keyStatus === "testing" ? "animate-spin" : ""}`} />
-                    <span>Test Connection</span>
+                    <span>{t("set_btn_test_conn")}</span>
                   </Button>
 
                   <Button onClick={handleSaveApiKey} className="gap-1.5 shrink-0 shadow-sm">
                     {isSaved ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
-                    <span>{isSaved ? "Saved!" : "Save"}</span>
+                    <span>{isSaved ? "Saved!" : t("set_btn_save_key")}</span>
                   </Button>
                 </div>
               </div>
@@ -389,7 +396,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
               <div className="flex items-center justify-between pt-1">
                 <span className="text-[11px] text-slate-500">
-                  Key is saved in your browser's private local vault and passed via encrypted headers.
+                  {language === "kh" ? "សោរត្រូវបានរក្សាទុកក្នុងទូសម្ងាត់មូលដ្ឋាននៃកម្មវិធីរុករករបស់អ្នក។" : "Key is saved in your browser's private local vault and passed via encrypted headers."}
                 </span>
                 {apiKey && (
                   <button
@@ -397,7 +404,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     className="text-xs text-rose-500 hover:text-rose-700 flex items-center gap-1 font-semibold"
                   >
                     <Trash2 className="w-3 h-3" />
-                    <span>Remove Key</span>
+                    <span>{t("set_btn_clear_key")}</span>
                   </button>
                 )}
               </div>
@@ -409,10 +416,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             <div className="pb-2 border-b border-slate-100 dark:border-slate-800">
               <h4 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                 <FileCheck className="w-4 h-4 text-emerald-500" />
-                <span>Conversion Engine Preferences</span>
+                <span>{t("set_pref_title")}</span>
               </h4>
               <p className="text-[11px] text-slate-500">
-                Configure container format defaults, DRM rules, and automated workflow triggers.
+                {language === "kh" ? "កំណត់ទម្រង់ឯកសារលំនាំដើម ច្បាប់ DRM និងសកម្មភាពស្វ័យប្រវត្តិ។" : "Configure container format defaults, DRM rules, and automated workflow triggers."}
               </p>
             </div>
 
@@ -421,10 +428,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800">
                 <div>
                   <span className="text-xs font-semibold text-slate-900 dark:text-white block">
-                    Default Output Container
+                    {t("set_pref_default_container")}
                   </span>
                   <span className="text-[11px] text-slate-500">
-                    Format automatically selected when new .PPI packages are queued
+                    {language === "kh" ? "ទម្រង់ដែលត្រូវជ្រើសរើសដោយស្វ័យប្រវត្តិកាលណាមានឯកសារ .PPI ថ្មី" : "Format automatically selected when new .PPI packages are queued"}
                   </span>
                 </div>
                 <div className="flex rounded-lg bg-slate-200 dark:bg-slate-700 p-0.5 text-xs font-semibold shrink-0">
@@ -456,10 +463,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 <div className="pr-4">
                   <span className="text-xs font-semibold text-slate-900 dark:text-white flex items-center gap-1.5">
                     <Shield className="w-3.5 h-3.5 text-amber-500" />
-                    <span>Strict DRM / Encrypted .CPI Safeguard</span>
+                    <span>{t("set_pref_strict_drm")}</span>
                   </span>
                   <span className="text-[11px] text-slate-500 block mt-0.5">
-                    Safely rejects encrypted CPI files that lack hardware instrument encryption keys (.n27)
+                    {language === "kh" ? "បដិសេធដោយសុវត្ថិភាពនូវឯកសារ CPI ដែលគ្មានសោរម៉ាស៊ីន (.n27)" : "Safely rejects encrypted CPI files that lack hardware instrument encryption keys (.n27)"}
                   </span>
                 </div>
                 <BaseSwitch
@@ -473,10 +480,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 <div className="pr-4">
                   <span className="text-xs font-semibold text-slate-900 dark:text-white flex items-center gap-1.5">
                     <Volume2 className="w-3.5 h-3.5 text-brand-500" />
-                    <span>Realtime AWM2 Audio Spectrum Visualizer</span>
+                    <span>{t("set_pref_visualizer")}</span>
                   </span>
                   <span className="text-[11px] text-slate-500 block mt-0.5">
-                    Displays live 44.1 kHz animated frequency bars in the sidebar during conversions
+                    {language === "kh" ? "បង្ហាញបន្ទះរលកសំឡេងប្រេកង់ 44.1 kHz លើ Sidebar ពេលកំពុងបំលែង" : "Displays live 44.1 kHz animated frequency bars in the sidebar during conversions"}
                   </span>
                 </div>
                 <BaseSwitch
@@ -489,10 +496,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800">
                 <div className="pr-4">
                   <span className="text-xs font-semibold text-slate-900 dark:text-white">
-                    Auto-Download Converted Archives
+                    {t("set_pref_auto_download")}
                   </span>
                   <span className="text-[11px] text-slate-500 block mt-0.5">
-                    Triggers browser download automatically as soon as PPF Zip or YEP container finishes
+                    {language === "kh" ? "ទាញយកឯកសារ PPF ឬ YEP ទៅក្នុងកុំព្យូទ័រភ្លាមៗពេលដែលការបំលែងជោគជ័យ" : "Triggers browser download automatically as soon as PPF Zip or YEP container finishes"}
                   </span>
                 </div>
                 <BaseSwitch
@@ -505,10 +512,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800">
                 <div className="pr-4">
                   <span className="text-xs font-semibold text-slate-900 dark:text-white">
-                    Haptic &amp; Tactile Feedback
+                    {language === "kh" ? "រំញ័រ tactile / Haptic Feedback" : "Haptic & Tactile Feedback"}
                   </span>
                   <span className="text-[11px] text-slate-500 block mt-0.5">
-                    Provides vibration triggers on mobile / Telegram Mini App when actions complete
+                    {language === "kh" ? "ផ្តល់នូវសញ្ញារំញ័រនៅលើទូរស័ព្ទ ឬ Telegram Mini App ពេលដំណើរការចប់" : "Provides vibration triggers on mobile / Telegram Mini App when actions complete"}
                   </span>
                 </div>
                 <BaseSwitch

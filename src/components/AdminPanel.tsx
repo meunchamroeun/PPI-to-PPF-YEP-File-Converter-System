@@ -30,6 +30,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DbUserRecord, DbJobRecord } from "@/lib/db/pg";
 import { UserSession } from "@/components/AuthModal";
+import { useTranslation } from "@/lib/i18n/LanguageContext";
 
 interface AdminPanelProps {
   currentUser: UserSession | null;
@@ -37,6 +38,7 @@ interface AdminPanelProps {
 }
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateTab }) => {
+  const { t, language } = useTranslation();
   const [users, setUsers] = useState<DbUserRecord[]>([]);
   const [allJobs, setAllJobs] = useState<DbJobRecord[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -185,12 +187,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateT
           <div className="flex items-center gap-2">
             <h3 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-purple-600" />
-              <span>System Administration Console</span>
+              <span>{t("admin_title")}</span>
             </h3>
-            <Badge className="bg-purple-600 text-white font-bold text-[10px]">ADMIN PRIVILEGE</Badge>
+            <Badge className="bg-purple-600 text-white font-bold text-[10px]">{t("nav_admin_badge")}</Badge>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Manage registered expansion artists, audit global conversions, and monitor PostgreSQL &amp; Redis nodes.
+            {t("admin_subtitle")}
           </p>
         </div>
 
@@ -203,7 +205,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateT
             className="gap-1.5"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} />
-            <span>Refresh Telemetry</span>
+            <span>{t("admin_btn_refresh")}</span>
           </Button>
 
           <Button
@@ -212,7 +214,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateT
             className="gap-1.5 bg-purple-600 hover:bg-purple-500 text-white"
           >
             <Download className="w-3.5 h-3.5" />
-            <span>Export Audit Log</span>
+            <span>{t("admin_btn_export_audit")}</span>
           </Button>
         </div>
       </div>
@@ -229,7 +231,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateT
         <Card className="p-4">
           <div className="flex items-center justify-between pb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              Total Users
+              {t("admin_card_users")}
             </span>
             <Users className="w-4 h-4 text-brand-500" />
           </div>
@@ -243,7 +245,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateT
         <Card className="p-4">
           <div className="flex items-center justify-between pb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              Total Jobs Run
+              {t("admin_card_jobs")}
             </span>
             <Activity className="w-4 h-4 text-indigo-500" />
           </div>
@@ -259,7 +261,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateT
         <Card className="p-4">
           <div className="flex items-center justify-between pb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              Database Cluster
+              {t("admin_card_pg")}
             </span>
             <Database className="w-4 h-4 text-emerald-500" />
           </div>
@@ -275,7 +277,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateT
         <Card className="p-4">
           <div className="flex items-center justify-between pb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              BullMQ Redis Queue
+              {t("admin_card_redis")}
             </span>
             <Server className="w-4 h-4 text-rose-500" />
           </div>
@@ -300,7 +302,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateT
           }`}
         >
           <Users className="w-3.5 h-3.5" />
-          <span>User Management ({users.length})</span>
+          <span>{language === "kh" ? `គ្រប់គ្រងអ្នកប្រើ (${users.length})` : `User Management (${users.length})`}</span>
         </button>
 
         <button
@@ -312,7 +314,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateT
           }`}
         >
           <Layers className="w-3.5 h-3.5" />
-          <span>Global Jobs Audit ({allJobs.length})</span>
+          <span>{language === "kh" ? `សវនកម្មបំលែង (${allJobs.length})` : `Global Jobs Audit (${allJobs.length})`}</span>
         </button>
 
         <button
@@ -324,7 +326,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ currentUser, onNavigateT
           }`}
         >
           <Cpu className="w-3.5 h-3.5" />
-          <span>Nodes &amp; Specs</span>
+          <span>{language === "kh" ? "ប្រព័ន្ធ & ថ្នាំង" : "Nodes & Specs"}</span>
         </button>
       </div>
 

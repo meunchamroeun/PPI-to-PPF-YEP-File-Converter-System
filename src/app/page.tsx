@@ -58,6 +58,8 @@ import { AdminPanel } from "@/components/AdminPanel";
 import { YamahaVoicePlayer } from "@/components/YamahaVoicePlayer";
 import { CommandPalette } from "@/components/CommandPalette";
 import { TelegramSimulatorModal } from "@/components/TelegramSimulatorModal";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useTranslation } from "@/lib/i18n/LanguageContext";
 import { useTelegramWebApp } from "@/hooks/useTelegramWebApp";
 import { YamahaPPIParser, ParsedPPIData } from "@/lib/yamaha/ppi-parser";
 import { YamahaPPFGenerator } from "@/lib/yamaha/ppf-generator";
@@ -102,6 +104,9 @@ interface HistoryEntry {
 }
 
 export default function YamahaConverterApp() {
+  // Internationalization hook (Default: Khmer 'kh')
+  const { t, language, setLanguage } = useTranslation();
+
   // Navigation & View state
   const [activeTab, setActiveTab] = useState<string>("dashboard");
   const [darkMode, setDarkMode] = useState<boolean>(true);
@@ -607,7 +612,7 @@ export default function YamahaConverterApp() {
               }`}
             >
               <LayoutDashboard className="w-4 h-4" />
-              <span>Dashboard</span>
+              <span>{t("nav_dashboard")}</span>
             </button>
 
             <button
@@ -622,7 +627,7 @@ export default function YamahaConverterApp() {
               }`}
             >
               <Repeat className="w-4 h-4" />
-              <span>File Converter</span>
+              <span>{t("nav_converter")}</span>
               {queue.length > 0 && (
                 <Badge variant="secondary" className="ml-auto text-xs px-2 py-0.2">
                   {queue.length}
@@ -642,7 +647,7 @@ export default function YamahaConverterApp() {
               }`}
             >
               <Binary className="w-4 h-4" />
-              <span>File &amp; Hex Inspector</span>
+              <span>{t("nav_inspector")}</span>
             </button>
 
             <button
@@ -657,7 +662,7 @@ export default function YamahaConverterApp() {
               }`}
             >
               <History className="w-4 h-4" />
-              <span>Conversion History</span>
+              <span>{t("nav_history")}</span>
             </button>
 
             <button
@@ -672,7 +677,7 @@ export default function YamahaConverterApp() {
               }`}
             >
               <Brain className="w-4 h-4 text-brand-500" />
-              <span>AI Studio Assistant</span>
+              <span>{t("nav_ai")}</span>
               <Badge variant="default" className="ml-auto text-[9px] px-1.5 py-0 bg-brand-600 text-white">
                 Gemini
               </Badge>
@@ -680,7 +685,7 @@ export default function YamahaConverterApp() {
 
             <div className="pt-4">
               <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                Specifications
+                {t("nav_system_category")}
               </span>
             </div>
 
@@ -696,14 +701,8 @@ export default function YamahaConverterApp() {
               }`}
             >
               <Cpu className="w-4 h-4" />
-              <span>Tech Stack &amp; Specs</span>
+              <span>{t("nav_architecture")}</span>
             </button>
-
-            <div className="pt-4">
-              <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                Administration &amp; Tools
-              </span>
-            </div>
 
             <button
               onClick={() => {
@@ -717,7 +716,7 @@ export default function YamahaConverterApp() {
               }`}
             >
               <Sliders className="w-4 h-4 text-brand-500" />
-              <span>Settings &amp; API Key</span>
+              <span>{t("nav_settings")}</span>
             </button>
 
             <button
@@ -732,9 +731,9 @@ export default function YamahaConverterApp() {
               }`}
             >
               <ShieldCheck className="w-4 h-4 text-purple-600" />
-              <span>Admin Console</span>
+              <span>{t("nav_admin")}</span>
               <Badge variant="default" className="ml-auto text-[9px] px-1.5 py-0 bg-purple-600 text-white">
-                Admin
+                {t("nav_admin_badge")}
               </Badge>
             </button>
           </div>
@@ -768,16 +767,19 @@ export default function YamahaConverterApp() {
                   <UserIcon className="w-3.5 h-3.5" />
                 )}
               </div>
-              <span className="truncate max-w-[100px]">{currentUser ? currentUser.name : "Sign In"}</span>
+              <span className="truncate max-w-[85px]">{currentUser ? currentUser.name : t("hdr_sign_in")}</span>
             </button>
 
-            <button
-              onClick={toggleDarkMode}
-              className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-              title={darkMode ? "Switch to Light Mode" : "Switch to Night Mode"}
-            >
-              {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
+            <div className="flex items-center gap-1.5">
+              <LanguageSwitcher compact />
+              <button
+                onClick={toggleDarkMode}
+                className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                title={darkMode ? t("theme_light") : t("theme_dark")}
+              >
+                {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
         </div>
       </aside>
@@ -798,22 +800,25 @@ export default function YamahaConverterApp() {
             </button>
             <div>
               <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                {activeTab === "dashboard" && "Expansion Voice Dashboard"}
-                {activeTab === "converter" && "Yamaha File Conversion Queue"}
-                {activeTab === "inspector" && "File & Hex Binary Inspector"}
-                {activeTab === "history" && "Conversion History Archive"}
-                {activeTab === "ai" && "Gemini AI Sound Design Studio"}
-                {activeTab === "settings" && "Studio Settings & API Key"}
-                {activeTab === "admin" && "System Administration Console"}
-                {activeTab === "architecture" && "Production System Blueprint"}
+                {activeTab === "dashboard" && t("nav_dashboard")}
+                {activeTab === "converter" && t("nav_converter")}
+                {activeTab === "inspector" && t("nav_inspector")}
+                {activeTab === "history" && t("nav_history")}
+                {activeTab === "ai" && t("nav_ai")}
+                {activeTab === "settings" && t("nav_settings")}
+                {activeTab === "admin" && t("nav_admin")}
+                {activeTab === "architecture" && t("nav_architecture")}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Professional converter for Yamaha Expansion Voice Manager (.PPI → .PPF / .YEP)
+                {t("app_subtitle")}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
+            {/* Language Switcher (Default: Khmer) */}
+            <LanguageSwitcher />
+
             {/* Command Palette Trigger */}
             <Button
               variant="outline"
@@ -823,7 +828,7 @@ export default function YamahaConverterApp() {
               title="Open Command Palette (Cmd+K)"
             >
               <Search className="w-3.5 h-3.5 text-slate-400" />
-              <span className="hidden xl:inline">Commands</span>
+              <span className="hidden xl:inline">{t("hdr_commands")}</span>
               <kbd className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-500">
                 ⌘K
               </kbd>
@@ -837,7 +842,7 @@ export default function YamahaConverterApp() {
               className="gap-1.5 bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border-brand-200 dark:border-brand-800"
             >
               <Brain className="w-3.5 h-3.5 text-brand-600" />
-              <span>AI Assistant</span>
+              <span>{t("hdr_ai_assistant")}</span>
             </Button>
 
             {/* Quick Demo Sample Generator */}
@@ -848,7 +853,7 @@ export default function YamahaConverterApp() {
               className="gap-2 bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border-brand-200 dark:border-brand-800"
             >
               <Sparkles className="w-3.5 h-3.5 text-brand-600" />
-              <span>Load Sample PPI</span>
+              <span>{t("hdr_load_sample")}</span>
             </Button>
 
             {/* Test Encrypted CPI Button */}
@@ -859,7 +864,7 @@ export default function YamahaConverterApp() {
               className="gap-1.5 text-slate-700 dark:text-slate-300"
             >
               <ShieldAlert className="w-3.5 h-3.5 text-amber-500" />
-              <span>Test Protected CPI</span>
+              <span>{t("hdr_test_cpi")}</span>
             </Button>
 
             {/* Night / Light Mode Toggle Button */}
@@ -916,7 +921,7 @@ export default function YamahaConverterApp() {
                 className="gap-2 rounded-xl text-xs font-semibold bg-brand-600 hover:bg-brand-500 text-white shadow-md shadow-brand-600/25"
               >
                 <LogIn className="w-3.5 h-3.5" />
-                <span>Sign In / Login</span>
+                <span>{t("hdr_sign_in")}</span>
               </Button>
             )}
 
@@ -931,7 +936,7 @@ export default function YamahaConverterApp() {
               title="Click to preview Telegram Mini App"
             >
               <Send className="w-3 h-3 text-[#229ED9]" />
-              <span>{isInTelegram ? "Mini App Live" : "Telegram Ready"}</span>
+              <span>{isInTelegram ? t("hdr_telegram_live") : t("hdr_telegram_ready")}</span>
             </button>
           </div>
         </header>
@@ -945,15 +950,13 @@ export default function YamahaConverterApp() {
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-brand-950 text-white p-8 shadow-xl border border-indigo-900/40">
               <div className="relative z-10 max-w-2xl space-y-4">
                 <Badge className="bg-white/10 text-brand-300 hover:bg-white/15 border-none backdrop-blur">
-                  Yamaha Voice Expansion Manager Compatible
+                  {t("dash_hero_tag")}
                 </Badge>
                 <h3 className="text-2xl md:text-3xl font-extrabold tracking-tight">
-                  High-Fidelity PPI to PPF &amp; YEP File Conversion
+                  {t("dash_hero_title")}
                 </h3>
                 <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
-                  De-encapsulate compiled installation packs into editable Yamaha Expansion Manager project archives
-                  with genuine XML manifests, User Voice scripts (<span className="font-mono text-brand-300">.uvf</span>),
-                  and PCM waveforms.
+                  {t("dash_hero_desc")}
                 </p>
                 <div className="flex flex-wrap items-center gap-3 pt-2">
                   <Button
@@ -961,7 +964,7 @@ export default function YamahaConverterApp() {
                     className="gap-2 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-xl shadow-lg shadow-brand-600/30"
                   >
                     <UploadCloud className="w-4 h-4" />
-                    <span>Upload &amp; Convert Files</span>
+                    <span>{t("dash_btn_upload")}</span>
                   </Button>
                   <Button
                     variant="outline"
@@ -969,7 +972,7 @@ export default function YamahaConverterApp() {
                     className="gap-2 bg-white/10 hover:bg-white/15 border-white/20 text-white"
                   >
                     <PlayCircle className="w-4 h-4" />
-                    <span>Try In-Memory Demo</span>
+                    <span>{t("dash_btn_demo")}</span>
                   </Button>
                 </div>
               </div>
@@ -980,33 +983,33 @@ export default function YamahaConverterApp() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Total Files Uploaded
+                    {t("stat_total_uploaded")}
                   </CardTitle>
                   <UploadCloud className="w-4 h-4 text-blue-500" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-extrabold">{stats.uploaded}</div>
-                  <p className="text-[11px] text-slate-500 mt-1">Supported: .ppi, .cpi</p>
+                  <p className="text-[11px] text-slate-500 mt-1">{t("stat_uploaded_sub")}</p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Total Converted
+                    {t("stat_total_converted")}
                   </CardTitle>
                   <RefreshCw className="w-4 h-4 text-brand-500" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-extrabold">{stats.converted}</div>
-                  <p className="text-[11px] text-brand-500 mt-1">Processed packages</p>
+                  <p className="text-[11px] text-brand-500 mt-1">{t("stat_converted_sub")}</p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Successful Outputs
+                    {t("stat_successful")}
                   </CardTitle>
                   <FileCheck className="w-4 h-4 text-emerald-500" />
                 </CardHeader>
@@ -1014,20 +1017,20 @@ export default function YamahaConverterApp() {
                   <div className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">
                     {stats.success}
                   </div>
-                  <p className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-1">100% verified structures</p>
+                  <p className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-1">{t("stat_successful_sub")}</p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Failed / DRM Blocked
+                    {t("stat_failed")}
                   </CardTitle>
                   <AlertOctagon className="w-4 h-4 text-rose-500" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-extrabold text-rose-600 dark:text-rose-400">{stats.failed}</div>
-                  <p className="text-[11px] text-rose-600 dark:text-rose-400 mt-1">Protected .CPI packs</p>
+                  <p className="text-[11px] text-rose-600 dark:text-rose-400 mt-1">{t("stat_failed_sub")}</p>
                 </CardContent>
               </Card>
             </div>
@@ -1117,8 +1120,8 @@ export default function YamahaConverterApp() {
             {/* Actions Bar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="font-bold text-base text-slate-900 dark:text-white">Conversion Processing Queue</h3>
-                <p className="text-xs text-slate-500">Configure target formats and convert individually or in batch.</p>
+                <h3 className="font-bold text-base text-slate-900 dark:text-white">{t("queue_title")}</h3>
+                <p className="text-xs text-slate-500">{t("queue_subtitle")}</p>
               </div>
 
               <div className="flex items-center gap-2 flex-wrap">
@@ -1129,7 +1132,7 @@ export default function YamahaConverterApp() {
                   className="gap-2 shadow-md"
                 >
                   <Play className="w-3.5 h-3.5" />
-                  <span>Convert All</span>
+                  <span>{t("queue_btn_convert_all")}</span>
                 </Button>
                 <Button
                   variant="emerald"
@@ -1139,7 +1142,7 @@ export default function YamahaConverterApp() {
                   className="gap-2"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  <span>Download All (.zip)</span>
+                  <span>{t("queue_btn_download_all")}</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -1149,7 +1152,7 @@ export default function YamahaConverterApp() {
                   className="gap-1.5 text-slate-600 dark:text-slate-400"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  <span>Clear</span>
+                  <span>{t("queue_btn_clear")}</span>
                 </Button>
               </div>
             </div>
@@ -1174,26 +1177,25 @@ export default function YamahaConverterApp() {
                 <UploadCloud className="w-7 h-7" />
               </div>
               <h4 className="font-bold text-base text-slate-900 dark:text-white mb-1">
-                Drag &amp; drop your Yamaha .PPI expansion files here
+                {t("queue_dropzone_title")}
               </h4>
               <p className="text-xs text-slate-500 max-w-sm mx-auto mb-4">
-                Accepts Yamaha Pack Project Installation files (.ppi) and Protected Packs (.cpi). Multiple file upload
-                enabled.
+                {t("queue_dropzone_desc")}
               </p>
               <Button size="sm" variant="secondary" className="gap-2 pointer-events-none">
                 <FolderSearch className="w-4 h-4" />
-                <span>Select Files from Computer</span>
+                <span>{t("queue_dropzone_btn")}</span>
               </Button>
             </div>
 
             {/* Queue Items List */}
             <div className="space-y-3">
               <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
-                <span>Files in Queue ({queue.length})</span>
+                <span>{language === "kh" ? `ឯកសារក្នុងជួរ (${queue.length})` : `Files in Queue (${queue.length})`}</span>
                 <BaseSwitch
                   checked={strictDRMMode}
                   onCheckedChange={setStrictDRMMode}
-                  label="Strict DRM Safeguard"
+                  label={t("queue_drm_toggle")}
                   className="text-xs"
                 />
               </div>
@@ -1202,19 +1204,19 @@ export default function YamahaConverterApp() {
                 <div className="p-12 text-center rounded-3xl border border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/40 space-y-4">
                   <FileMusic className="w-12 h-12 mx-auto text-slate-400" />
                   <div>
-                    <h4 className="text-base font-bold text-slate-900 dark:text-white">Conversion Queue is Empty</h4>
+                    <h4 className="text-base font-bold text-slate-900 dark:text-white">{t("queue_empty_title")}</h4>
                     <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1">
-                      Add Yamaha PPI files via drag-and-drop above, or test right now using our built-in sample generators.
+                      {t("queue_empty_desc")}
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
                     <Button size="sm" onClick={() => handleLoadSample(false)} className="gap-2 shadow-sm">
                       <Sparkles className="w-3.5 h-3.5" />
-                      <span>Load Sample PPI</span>
+                      <span>{t("hdr_load_sample")}</span>
                     </Button>
                     <Button size="sm" variant="secondary" onClick={() => handleLoadSample(true)} className="gap-2">
                       <ShieldAlert className="w-3.5 h-3.5 text-amber-500" />
-                      <span>Test Protected CPI</span>
+                      <span>{t("hdr_test_cpi")}</span>
                     </Button>
                     <Button
                       size="sm"
@@ -1223,7 +1225,7 @@ export default function YamahaConverterApp() {
                       className="gap-2"
                     >
                       <FolderSearch className="w-3.5 h-3.5" />
-                      <span>Browse Files</span>
+                      <span>{t("queue_dropzone_btn")}</span>
                     </Button>
                   </div>
                 </div>
@@ -1335,7 +1337,7 @@ export default function YamahaConverterApp() {
                             {item.status === "PENDING" && (
                               <Button size="sm" onClick={() => handleConvertItem(item.id)} className="gap-1.5 shadow-sm">
                                 <Play className="w-3.5 h-3.5" />
-                                <span>Convert</span>
+                                <span>{t("btn_convert")}</span>
                               </Button>
                             )}
 
@@ -1343,7 +1345,7 @@ export default function YamahaConverterApp() {
                             {item.status === "CONVERTING" && (
                               <Button size="sm" variant="destructive" onClick={() => handleCancelItem(item.id)} className="gap-1.5">
                                 <X className="w-3.5 h-3.5" />
-                                <span>Cancel</span>
+                                <span>{t("btn_cancel")}</span>
                               </Button>
                             )}
 
@@ -1353,7 +1355,7 @@ export default function YamahaConverterApp() {
                                 <a href={item.output.downloadUrl} download={item.output.filename}>
                                   <Button size="sm" variant="emerald" className="gap-1.5 shadow-sm">
                                     <Download className="w-3.5 h-3.5" />
-                                    <span>Download</span>
+                                    <span>{t("btn_download")}</span>
                                   </Button>
                                 </a>
                                 <Button
@@ -1364,7 +1366,7 @@ export default function YamahaConverterApp() {
                                   className="gap-1.5 text-xs"
                                 >
                                   <RefreshCw className="w-3.5 h-3.5" />
-                                  <span className="hidden sm:inline">Re-run</span>
+                                  <span className="hidden sm:inline">{t("btn_rerun")}</span>
                                 </Button>
                               </div>
                             )}
@@ -1378,7 +1380,7 @@ export default function YamahaConverterApp() {
                                 className="gap-1.5"
                               >
                                 <RefreshCw className="w-3.5 h-3.5" />
-                                <span>Retry</span>
+                                <span>{t("btn_retry")}</span>
                               </Button>
                             )}
 
@@ -1391,7 +1393,7 @@ export default function YamahaConverterApp() {
                                 className="gap-1.5"
                               >
                                 <Play className="w-3.5 h-3.5" />
-                                <span>Start</span>
+                                <span>{t("btn_convert")}</span>
                               </Button>
                             )}
 
@@ -1456,13 +1458,13 @@ export default function YamahaConverterApp() {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="font-bold text-base text-slate-900 dark:text-white">Binary &amp; Chunk Inspector</h3>
-                <p className="text-xs text-slate-500">Examine raw PAC byte stream, chunk index, and generated PPF XML.</p>
+                <h3 className="font-bold text-base text-slate-900 dark:text-white">{t("insp_title")}</h3>
+                <p className="text-xs text-slate-500">{t("insp_subtitle")}</p>
               </div>
 
               {/* Selector */}
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-500">Inspecting:</span>
+                <span className="text-xs text-slate-500">{t("insp_inspecting")}</span>
                 <select
                   value={activeInspectorItem?.id || ""}
                   onChange={(e) => setInspectorFileId(e.target.value)}
@@ -1473,7 +1475,7 @@ export default function YamahaConverterApp() {
                       {q.name} ({formatBytes(q.size)})
                     </option>
                   ))}
-                  {queue.length === 0 && <option value="">No files uploaded</option>}
+                  {queue.length === 0 && <option value="">{t("insp_no_file")}</option>}
                 </select>
               </div>
             </div>
@@ -1484,34 +1486,34 @@ export default function YamahaConverterApp() {
                 <div className="space-y-4">
                   <Card className="p-4 space-y-3">
                     <CardTitle className="text-xs uppercase tracking-wider text-slate-500 font-bold">
-                      Header Descriptor
+                      {t("insp_header_card")}
                     </CardTitle>
                     <div className="space-y-2 text-xs divide-y divide-slate-100 dark:divide-slate-800">
                       <div className="flex justify-between py-1">
-                        <span className="text-slate-500">Signature</span>
+                        <span className="text-slate-500">{t("insp_signature")}</span>
                         <span className="font-mono font-semibold">{activeInspectorItem.parsedData.signature}</span>
                       </div>
                       <div className="flex justify-between py-1">
-                        <span className="text-slate-500">Version</span>
+                        <span className="text-slate-500">{t("insp_version")}</span>
                         <span className="font-mono font-semibold">{activeInspectorItem.parsedData.formatVersion}</span>
                       </div>
                       <div className="flex justify-between py-1">
-                        <span className="text-slate-500">Pack Name</span>
+                        <span className="text-slate-500">{t("insp_pack_name")}</span>
                         <span className="font-semibold text-slate-900 dark:text-white truncate max-w-[140px]">
                           {activeInspectorItem.parsedData.packName}
                         </span>
                       </div>
                       <div className="flex justify-between py-1">
-                        <span className="text-slate-500">Target Model</span>
+                        <span className="text-slate-500">{t("insp_target_model")}</span>
                         <span className="font-semibold text-brand-600 dark:text-brand-400">
                           {activeInspectorItem.parsedData.targetHardware}
                         </span>
                       </div>
                       <div className="flex justify-between py-1">
-                        <span className="text-slate-500">DRM Status</span>
+                        <span className="text-slate-500">{t("insp_drm_status")}</span>
                         {activeInspectorItem.parsedData.isProtected ? (
                           <Badge variant="destructive" className="text-[10px]">
-                            Protected CPI
+                            CPI Protected
                           </Badge>
                         ) : (
                           <Badge variant="success" className="text-[10px]">
@@ -1520,15 +1522,15 @@ export default function YamahaConverterApp() {
                         )}
                       </div>
                       <div className="flex justify-between py-1">
-                        <span className="text-slate-500">Voices Count</span>
+                        <span className="text-slate-500">{t("insp_voices_count")}</span>
                         <span className="font-mono font-semibold">{activeInspectorItem.parsedData.voicesCount}</span>
                       </div>
                       <div className="flex justify-between py-1">
-                        <span className="text-slate-500">Styles Count</span>
+                        <span className="text-slate-500">{t("insp_styles_count")}</span>
                         <span className="font-mono font-semibold">{activeInspectorItem.parsedData.stylesCount}</span>
                       </div>
                       <div className="flex justify-between py-1">
-                        <span className="text-slate-500">Wave Samples</span>
+                        <span className="text-slate-500">{t("insp_waves_count")}</span>
                         <span className="font-mono font-semibold">{activeInspectorItem.parsedData.waveCount}</span>
                       </div>
                     </div>
@@ -1537,7 +1539,7 @@ export default function YamahaConverterApp() {
                   {/* Chunks List */}
                   <Card className="p-4 space-y-2">
                     <CardTitle className="text-xs uppercase tracking-wider text-slate-500 font-bold">
-                      Parsed Chunks
+                      {t("insp_chunks_card")}
                     </CardTitle>
                     <div className="space-y-1.5 max-h-48 overflow-y-auto">
                       {activeInspectorItem.parsedData.chunks.map((ch, idx) => (
@@ -1558,8 +1560,8 @@ export default function YamahaConverterApp() {
                 <div className="lg:col-span-2 space-y-4">
                   <Card className="overflow-hidden">
                     <div className="px-4 py-2.5 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs">
-                      <span className="font-bold text-slate-700 dark:text-slate-300">Raw Byte Hex Dump</span>
-                      <span className="font-mono text-slate-500">First 512 Bytes</span>
+                      <span className="font-bold text-slate-700 dark:text-slate-300">{t("insp_hex_card")}</span>
+                      <span className="font-mono text-slate-500">512 Bytes</span>
                     </div>
                     <div className="p-3">
                       <HexViewer buffer={activeInspectorItem.buffer} maxBytes={512} />
@@ -1568,7 +1570,7 @@ export default function YamahaConverterApp() {
 
                   <Card className="overflow-hidden">
                     <div className="px-4 py-2.5 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs">
-                      <span className="font-bold text-slate-700 dark:text-slate-300">Generated Pack.xml Manifest</span>
+                      <span className="font-bold text-slate-700 dark:text-slate-300">{t("insp_xml_card")}</span>
                       <Badge variant="outline" className="text-[10px]">
                         PPF ZIP Schema
                       </Badge>
@@ -1597,15 +1599,15 @@ export default function YamahaConverterApp() {
               <div className="p-16 text-center rounded-3xl border border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/40 space-y-4">
                 <Binary className="w-12 h-12 mx-auto text-slate-400" />
                 <div>
-                  <h4 className="text-base font-bold text-slate-900 dark:text-white">No File Selected for Inspection</h4>
+                  <h4 className="text-base font-bold text-slate-900 dark:text-white">{t("insp_no_file")}</h4>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1">
-                    Examine raw 512-byte hex streams, PAC chunk tables, and generated Pack.xml manifests.
+                    {t("insp_subtitle")}
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                   <Button onClick={() => handleLoadSample(false)} className="gap-2 shadow-md">
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>Load Demo PPI to Inspect</span>
+                    <span>{t("hdr_load_sample")}</span>
                   </Button>
                   <Button
                     variant="outline"
@@ -1616,7 +1618,7 @@ export default function YamahaConverterApp() {
                     className="gap-2"
                   >
                     <FolderSearch className="w-3.5 h-3.5" />
-                    <span>Upload a File</span>
+                    <span>{t("queue_dropzone_btn")}</span>
                   </Button>
                 </div>
               </div>
@@ -1631,14 +1633,14 @@ export default function YamahaConverterApp() {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="font-bold text-base text-slate-900 dark:text-white">Conversion Audit History</h3>
-                <p className="text-xs text-slate-500">Track and download previously converted expansion packages.</p>
+                <h3 className="font-bold text-base text-slate-900 dark:text-white">{t("hist_title")}</h3>
+                <p className="text-xs text-slate-500">{t("hist_subtitle")}</p>
               </div>
 
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm" onClick={handleExportCSV} className="gap-2">
                   <FileSpreadsheet className="w-3.5 h-3.5" />
-                  <span>Export CSV</span>
+                  <span>{t("hist_export_csv")}</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -1648,7 +1650,7 @@ export default function YamahaConverterApp() {
                   className="gap-2 text-rose-600"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  <span>Clear History</span>
+                  <span>{t("hist_clear_all")}</span>
                 </Button>
               </div>
             </div>
@@ -1659,12 +1661,12 @@ export default function YamahaConverterApp() {
                 <div className="flex items-center gap-2.5">
                   <UserIcon className="w-4 h-4 text-brand-600 shrink-0" />
                   <span className="text-slate-700 dark:text-slate-300">
-                    You are browsing as <strong>Guest</strong>. Sign in to automatically persist and synchronize your expansion voice conversion history across devices.
+                    {t("hist_guest_banner_desc")}
                   </span>
                 </div>
                 <Button size="sm" onClick={() => setAuthModalOpen(true)} className="gap-1.5 shrink-0 bg-brand-600 text-white font-semibold">
                   <LogIn className="w-3.5 h-3.5" />
-                  <span>Sign In to Persist History</span>
+                  <span>{t("hdr_sign_in")}</span>
                 </Button>
               </div>
             )}
@@ -1677,7 +1679,8 @@ export default function YamahaConverterApp() {
                     {currentUser.role}
                   </Badge>
                   <span className="text-slate-600 dark:text-slate-400">
-                    Showing conversions for <strong className="text-slate-900 dark:text-white">{currentUser.name}</strong>
+                    {language === "kh" ? "បង្ហាញការបំលែងសម្រាប់ " : "Showing conversions for "}
+                    <strong className="text-slate-900 dark:text-white">{currentUser.name}</strong>
                   </span>
                 </div>
 
@@ -1691,7 +1694,7 @@ export default function YamahaConverterApp() {
                           : "text-slate-500"
                       }`}
                     >
-                      My History
+                      {t("hist_scope_my")}
                     </button>
                     <button
                       onClick={() => setHistoryScope("all")}
@@ -1701,7 +1704,7 @@ export default function YamahaConverterApp() {
                           : "text-slate-500"
                       }`}
                     >
-                      All Users (Admin)
+                      {t("hist_scope_all")}
                     </button>
                   </div>
                 )}
@@ -1712,7 +1715,7 @@ export default function YamahaConverterApp() {
             <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="text"
-                placeholder="Search by file name..."
+                placeholder={t("hist_search_placeholder")}
                 value={historySearch}
                 onChange={(e) => setHistorySearch(e.target.value)}
                 className="flex-1 px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500"
@@ -1722,10 +1725,10 @@ export default function YamahaConverterApp() {
                 onChange={(e) => setHistoryStatusFilter(e.target.value)}
                 className="px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs"
               >
-                <option value="ALL">All Statuses</option>
-                <option value="SUCCESS">Successful</option>
-                <option value="FAILED">Failed</option>
-                <option value="CANCELLED">Cancelled</option>
+                <option value="ALL">{t("hist_filter_all")}</option>
+                <option value="SUCCESS">{t("hist_filter_success")}</option>
+                <option value="FAILED">{t("hist_filter_failed")}</option>
+                <option value="CANCELLED">{t("btn_cancel")}</option>
               </select>
             </div>
 
@@ -1735,12 +1738,12 @@ export default function YamahaConverterApp() {
                 <table className="w-full text-left text-xs">
                   <thead>
                     <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 font-semibold text-slate-500 uppercase text-[10px]">
-                      <th className="py-3 px-4">Original File</th>
-                      <th className="py-3 px-4">Size</th>
-                      <th className="py-3 px-4">Conversion Type</th>
-                      <th className="py-3 px-4">Status</th>
-                      <th className="py-3 px-4">Date</th>
-                      <th className="py-3 px-4 text-right">Download</th>
+                      <th className="py-3 px-4">{t("hist_col_name")}</th>
+                      <th className="py-3 px-4">{t("hist_col_size")}</th>
+                      <th className="py-3 px-4">{t("hist_col_type")}</th>
+                      <th className="py-3 px-4">{t("hist_col_status")}</th>
+                      <th className="py-3 px-4">{t("hist_col_date")}</th>
+                      <th className="py-3 px-4 text-right">{t("hist_col_action")}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
@@ -1782,7 +1785,7 @@ export default function YamahaConverterApp() {
                               <a href={h.output.downloadUrl} download={h.output.filename}>
                                 <Button size="sm" variant="ghost" className="h-7 px-2 text-brand-600">
                                   <Download className="w-3.5 h-3.5 mr-1" />
-                                  <span>Download</span>
+                                  <span>{t("btn_download")}</span>
                                 </Button>
                               </a>
                             ) : (
@@ -1795,11 +1798,13 @@ export default function YamahaConverterApp() {
                     {history.length === 0 && (
                       <tr>
                         <td colSpan={6} className="py-12 text-center text-slate-500">
-                          <p className="text-sm font-medium">No conversion history records found.</p>
+                          <p className="text-sm font-medium">
+                            {language === "kh" ? "មិនទាន់មានកំណត់ត្រាប្រវត្តិការបំលែងនៅឡើយទេ។" : "No conversion history records found."}
+                          </p>
                           <div className="pt-3">
                             <Button size="sm" onClick={() => setActiveTab("converter")} className="gap-2 shadow-sm">
                               <Play className="w-3.5 h-3.5" />
-                              <span>Convert a File Now</span>
+                              <span>{t("queue_title")}</span>
                             </Button>
                           </div>
                         </td>
@@ -1925,24 +1930,20 @@ export default function YamahaConverterApp() {
             <div className="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-950 text-rose-600 flex items-center justify-center mb-2">
               <ShieldX className="w-6 h-6" />
             </div>
-            <DialogTitle className="text-base font-bold">Protected Yamaha Content Detected</DialogTitle>
+            <DialogTitle className="text-base font-bold">{t("drm_modal_title")}</DialogTitle>
             <DialogDescription className="text-xs">
-              This package is an encrypted commercial expansion (<span className="font-mono text-rose-500">.cpi</span>)
-              tied to an Instrument Info (<span className="font-mono">.n27</span>) hardware signature.
+              {t("drm_modal_desc")}
             </DialogDescription>
           </DialogHeader>
 
           <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-300 space-y-1">
             <p className="font-semibold text-slate-900 dark:text-white">Copyright Rule Enforced:</p>
-            <p>
-              In accordance with conversion rules, ExpVoice Studio will not generate corrupted or dummy output when valid
-              private decryption keys are absent.
-            </p>
+            <p>{t("drm_modal_rule")}</p>
           </div>
 
           <div className="flex justify-end pt-2">
             <Button size="sm" onClick={() => setDrmModalOpen(false)}>
-              Understood
+              {t("drm_modal_btn")}
             </Button>
           </div>
         </DialogContent>

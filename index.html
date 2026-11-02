@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yamaha PPI to PPF / YEP Expansion Converter Studio</title>
   
-  <!-- Modern Fonts -->
+  <!-- Modern Fonts (Khmer & English) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -43,7 +43,7 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            sans: ['"Kantumruy Pro"', '"Plus Jakarta Sans"', 'sans-serif'],
             mono: ['"JetBrains Mono"', 'monospace'],
           },
           colors: {
@@ -223,11 +223,17 @@
             <div class="w-7 h-7 rounded-full bg-brand-100 dark:bg-brand-950 flex items-center justify-center text-brand-600">
               <i data-lucide="user" class="w-3.5 h-3.5"></i>
             </div>
-            <span>Guest User</span>
+            <span id="sidebar-user-name">Guest User</span>
           </div>
-          <button onclick="toggleDarkMode()" id="sidebar-theme-toggle" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-slate-400 transition" title="Toggle Light/Dark Theme">
-            <span id="sidebar-theme-icon-slot"><i data-lucide="moon" class="w-4 h-4"></i></span>
-          </button>
+          <div class="flex items-center gap-1.5">
+            <button onclick="toggleLanguage()" id="sidebar-lang-btn" class="px-2 py-1 rounded-lg text-[11px] font-bold text-brand-600 dark:text-brand-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1" title="ប្តូរភាសា / Switch Language">
+              <i data-lucide="languages" class="w-3 h-3"></i>
+              <span id="sidebar-lang-label">ខ្មែរ</span>
+            </button>
+            <button onclick="toggleDarkMode()" id="sidebar-theme-toggle" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-slate-400 transition" title="Toggle Light/Dark Theme">
+              <span id="sidebar-theme-icon-slot"><i data-lucide="moon" class="w-4 h-4"></i></span>
+            </button>
+          </div>
         </div>
       </div>
     </aside>
@@ -280,6 +286,17 @@
             <span>Test Encrypted CPI</span>
           </button>
 
+          <!-- Language Switcher (Default: Khmer) -->
+          <div class="flex items-center rounded-xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 p-0.5 text-xs shadow-sm">
+            <button onclick="setLanguage('kh')" id="btn-lang-kh" class="px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 bg-brand-600 text-white shadow-sm" title="ភាសាខ្មែរ">
+              <i data-lucide="languages" class="w-3.5 h-3.5"></i>
+              <span>ខ្មែរ</span>
+            </button>
+            <button onclick="setLanguage('en')" id="btn-lang-en" class="px-2 py-1 rounded-lg font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition" title="English">
+              <span>EN</span>
+            </button>
+          </div>
+
           <!-- Dark / Light Theme Toggle -->
           <button onclick="toggleDarkMode()" id="header-theme-toggle" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-slate-400 transition" aria-label="Toggle Theme" title="Toggle Light/Dark Theme">
             <span id="header-theme-icon-slot"><i data-lucide="moon" class="w-5 h-5"></i></span>
@@ -312,22 +329,22 @@
             <div class="relative z-10 max-w-2xl">
               <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-brand-300 text-xs font-medium mb-4">
                 <i data-lucide="disc" class="w-3.5 h-3.5"></i>
-                Yamaha Arranger &amp; Workstation Expansion Ecosystem
+                <span id="hero-badge-text">Yamaha Arranger &amp; Workstation Expansion Ecosystem</span>
               </div>
-              <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-3">
+              <h2 id="hero-title" class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-3">
                 Professional PPI to PPF &amp; YEP Conversion
               </h2>
-              <p class="text-slate-300 text-sm leading-relaxed mb-6">
+              <p id="hero-desc" class="text-slate-300 text-sm leading-relaxed mb-6">
                 Transform compiled Yamaha installation packages (<span class="font-mono text-brand-300">.ppi</span>) into editable project archives (<span class="font-mono text-brand-300">.ppf</span>) or legacy instrument packs (<span class="font-mono text-brand-300">.yep</span>). Built with genuine binary chunk parsing, PCM waveform extraction, and DRM verification.
               </p>
               <div class="flex flex-wrap items-center gap-3">
                 <button onclick="navigate('converter')" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-sm shadow-lg shadow-brand-600/30 transition transform hover:-translate-y-0.5">
                   <i data-lucide="upload-cloud" class="w-4 h-4"></i>
-                  <span>Start Converting Files</span>
+                  <span id="hero-btn-start">Start Converting Files</span>
                 </button>
                 <button onclick="loadSamplePPI(false); navigate('converter');" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 backdrop-blur text-white font-semibold text-sm border border-white/20 transition">
                   <i data-lucide="play-circle" class="w-4 h-4"></i>
-                  <span>Try Demo Sample</span>
+                  <span id="hero-btn-demo">Try Demo Sample</span>
                 </button>
               </div>
             </div>
@@ -338,7 +355,7 @@
             <!-- Card 1: Total Uploaded -->
             <div class="glass-card p-6 rounded-2xl shadow-sm border transition hover:shadow-md">
               <div class="flex items-center justify-between mb-4">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">Total Uploaded</span>
+                <span id="stat-label-uploaded" class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">Total Uploaded</span>
                 <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                   <i data-lucide="upload" class="w-5 h-5"></i>
                 </div>
@@ -356,7 +373,7 @@
             <!-- Card 2: Total Converted -->
             <div class="glass-card p-6 rounded-2xl shadow-sm border transition hover:shadow-md">
               <div class="flex items-center justify-between mb-4">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">Total Converted</span>
+                <span id="stat-label-converted" class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">Total Converted</span>
                 <div class="w-10 h-10 rounded-xl bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-400 flex items-center justify-center">
                   <i data-lucide="refresh-cw" class="w-5 h-5"></i>
                 </div>
@@ -374,7 +391,7 @@
             <!-- Card 3: Successful Conversions -->
             <div class="glass-card p-6 rounded-2xl shadow-sm border transition hover:shadow-md">
               <div class="flex items-center justify-between mb-4">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">Successful</span>
+                <span id="stat-label-success" class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">Successful</span>
                 <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                   <i data-lucide="check-circle" class="w-5 h-5"></i>
                 </div>
@@ -392,7 +409,7 @@
             <!-- Card 4: Failed / Blocked -->
             <div class="glass-card p-6 rounded-2xl shadow-sm border transition hover:shadow-md">
               <div class="flex items-center justify-between mb-4">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">Failed / Blocked</span>
+                <span id="stat-label-failed" class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">Failed / Blocked</span>
                 <div class="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center">
                   <i data-lucide="alert-octagon" class="w-5 h-5"></i>
                 </div>
@@ -503,15 +520,15 @@
             <div class="flex items-center gap-2 flex-wrap">
               <button onclick="convertAllPending()" id="btn-convert-all" disabled class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 disabled:bg-slate-300 dark:disabled:bg-slate-800 disabled:cursor-not-allowed text-white font-semibold text-xs shadow-md transition">
                 <i data-lucide="play" class="w-3.5 h-3.5"></i>
-                <span>Convert All</span>
+                <span id="btn-convert-all-text">Convert All</span>
               </button>
               <button onclick="downloadAllZip()" id="btn-download-all" disabled class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-300 dark:disabled:bg-slate-800 disabled:cursor-not-allowed text-white font-semibold text-xs shadow-md transition">
                 <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                <span>Download All (.zip)</span>
+                <span id="btn-download-all-text">Download All (.zip)</span>
               </button>
               <button onclick="clearCompletedQueue()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium transition">
                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                <span>Clear List</span>
+                <span id="btn-clear-list-text">Clear List</span>
               </button>
             </div>
           </div>
@@ -525,16 +542,16 @@
               <i data-lucide="upload-cloud" class="w-8 h-8"></i>
             </div>
             
-            <h4 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-1">
+            <h4 id="dropzone-title" class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-1">
               Drag &amp; drop your Yamaha PPI files here
             </h4>
-            <p class="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-4">
+            <p id="dropzone-desc" class="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-4">
               Supports Yamaha Pack Project Installation files (<span class="font-mono font-semibold">.ppi</span>) and Protected Packs (<span class="font-mono font-semibold">.cpi</span>). Multiple file upload enabled.
             </p>
             
             <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-semibold shadow-sm group-hover:bg-brand-600 dark:group-hover:bg-brand-500 dark:group-hover:text-white transition">
               <i data-lucide="folder-search" class="w-4 h-4"></i>
-              <span>Browse Computer</span>
+              <span id="dropzone-btn-text">Browse Computer</span>
             </div>
 
             <!-- Quick helper chips -->
@@ -1714,6 +1731,7 @@ bot.launch();</code></pre>
       activeView: 'dashboard',
       inspectorFileId: null,
       darkMode: false,
+      lang: localStorage.getItem('app_lang') || 'kh', // Default: Khmer
       user: null,        // Logged-in user session or null for guest
       adminScope: 'user',// 'user' or 'all' for history filtering
       usersList: [       // Directory of users for admin management
@@ -1722,6 +1740,294 @@ bot.launch();</code></pre>
         { id: 'usr_telegram', name: 'Yamaha Keyboardist', email: '@yamaha_synth_pro', role: 'USER', status: 'ACTIVE', joined: '2025-02-14' }
       ]
     };
+
+    /**
+     * ============================================================================
+     * BILINGUAL INTERNATIONALIZATION (i18n) - DEFAULT: KHMER (KH)
+     * ============================================================================
+     */
+    const i18n = {
+      kh: {
+        app_name: "ExpVoice Studio",
+        app_badge: "ឧបករណ៍បំលែង PPI v2.4",
+        nav_main: "ការរុករក",
+        nav_dashboard: "ផ្ទាំងគ្រប់គ្រង",
+        nav_converter: "កម្មវិធីបំលែងឯកសារ",
+        nav_inspector: "ត្រួតពិនិត្យកូដ Hex & Binary",
+        nav_history: "ប្រវត្តិការបំលែង",
+        nav_ai: "ជំនួយការ AI (Gemini)",
+        nav_sys: "ប្រព័ន្ធ និងស្ថាបត្យកម្ម",
+        nav_architecture: "ប្លង់ស្ថាបត្យកម្ម & Tech Specs",
+        nav_settings: "ការកំណត់ & សោរ API",
+        nav_admin: "ផ្ទាំងគ្រប់គ្រងរដ្ឋបាល",
+        guest_user: "ភ្ញៀវ",
+        engine_title: "ម៉ាស៊ីនវិភាគ",
+        engine_desc: "ពន្លា និងស្រង់ទិន្នន័យ AWM2 / PAC ដោយផ្ទាល់ និងបង្កើតឯកសារ PPF Zip។",
+
+        title_dashboard: "ផ្ទាំងគ្រប់គ្រង",
+        sub_dashboard: "កម្មវិធីគ្រប់គ្រងសំឡេង និងបំលែងឯកសារ PPI ទៅ PPF / YEP",
+        title_converter: "ជួរដំណើរការបំលែងឯកសារ",
+        sub_converter: "កំណត់ទម្រង់ឯកសារលទ្ធផល និងបំលែងទៅជា PPF Zip ឬ YEP ចាស់ៗ",
+        title_inspector: "ឧបករណ៍ត្រួតពិនិត្យ Binary & Hex",
+        sub_inspector: "ពិនិត្យមើលក្បាល Binary, តារាង Chunk, រលកសំឡេង និងទម្រង់ Pack.xml",
+        title_history: "ប្រវត្តិការបំលែងឯកសារ",
+        sub_history: "កំណត់ត្រាសវនកម្ម និងតំណទាញយកសម្រាប់ការបំលែងទាំងអស់",
+        title_ai: "ស្ទូឌីយោរចនាសំឡេង Gemini AI",
+        sub_ai: "ការវិភាគបច្ចេកទេសស៊ីជម្រៅនៃប៉ារ៉ាម៉ែត្រសំឡេង Yamaha AWM2 និងភាពត្រូវគ្នា",
+        title_architecture: "ស្ថាបត្យកម្មប្រព័ន្ធ & Tech Specs",
+        sub_architecture: "ប្លង់ប្រព័ន្ធផលិតកម្ម: Next.js, Node.js, BullMQ, Redis, PostgreSQL",
+        title_settings: "ការកំណត់ប្រព័ន្ធ & សោរ API",
+        sub_settings: "គ្រប់គ្រងសោរ Google Gemini AI Studio, ចំណង់ចំណូលចិត្តការបំលែង និងគណនី",
+        title_admin: "ផ្ទាំងគ្រប់គ្រងរដ្ឋបាលប្រព័ន្ធ",
+        sub_admin: "គ្រប់គ្រងអ្នកប្រើប្រាស់ តាមដានសុខភាពម៉ាស៊ីនមេ និងត្រួតពិនិត្យការបំលែងសកល",
+
+        hdr_commands: "ពាក្យបញ្ជា",
+        hdr_ai: "ជំនួយការ AI",
+        hdr_load_sample: "ផ្ទុកគំរូ PPI",
+        hdr_test_cpi: "សាកល្បង CPI ការពារ",
+        hdr_tg_ready: "ត្រៀម Telegram",
+        hdr_sign_in: "ចូលគណនី",
+
+        hero_badge: "ប្រព័ន្ធកញ្ចប់សំឡេង Yamaha Arranger & Workstation",
+        hero_title: "ប្រព័ន្ធបំលែងឯកសារ PPI ទៅជា PPF & YEP កម្រិតស្តង់ដារខ្ពស់",
+        hero_desc: "ពន្លា និងស្រង់កញ្ចប់សំឡេងដំឡើង (.ppi) ទៅជាឯកសារគម្រោង Yamaha (.ppf) ឬកញ្ចប់ឧបករណ៍ចាស់ៗ (.yep) ដោយសុក្រឹត្យភាពខ្ពស់។ បង្កើតឡើងដោយការញែកប្លុកទិន្នន័យពិតប្រាកដ និងត្រួតពិនិត្យ DRM។",
+        hero_btn_start: "ចាប់ផ្តើមបំលែងឯកសារ",
+        hero_btn_demo: "សាកល្បងគំរូ",
+
+        stat_uploaded: "ឯកសារបានផ្ទុកឡើង",
+        stat_converted: "បានបំលែងសរុប",
+        stat_success: "លទ្ធផលជោគជ័យ",
+        stat_failed: "បរាជ័យ / ជាប់សោ DRM",
+        stat_uploaded_sub: "គាំទ្រ: .ppi, .cpi",
+        stat_converted_sub: "កញ្ចប់ដែលបានដំណើរការ",
+        stat_success_sub: "រចនាសម្ព័ន្ធត្រឹមត្រូវ ១០០%",
+        stat_failed_sub: "កញ្ចប់ជាប់សោការពារ .CPI",
+
+        dropzone_title: "អូស & ទម្លាក់ឯកសារសំឡេង Yamaha .PPI នៅទីនេះ",
+        dropzone_desc: "ទទួលយកឯកសារកញ្ចប់សំឡេងដំឡើង Yamaha (.ppi) និងឯកសារការពារ (.cpi)។ អាចផ្ទុកឯកសារច្រើនក្នុងពេលតែមួយ។",
+        dropzone_btn: "ជ្រើសរើសឯកសារពីកុំព្យូទ័រ",
+        btn_convert_all: "បំលែងទាំងអស់",
+        btn_download_all: "ទាញយកទាំងអស់ (.zip)",
+        btn_clear: "សម្អាតជួរ",
+        btn_convert: "បំលែង",
+        btn_cancel: "បោះបង់",
+        btn_download: "ទាញយក",
+        btn_rerun: "ដំណើរការឡើងវិញ",
+        btn_retry: "ព្យាយាមម្តងទៀត",
+        btn_inspect: "ត្រួតពិនិត្យ",
+
+        hist_search_placeholder: "ស្វែងរកតាមឈ្មោះឯកសារ...",
+        hist_col_name: "ឈ្មោះឯកសារដើម",
+        hist_col_size: "ទំហំ",
+        hist_col_type: "ប្រភេទបំលែង",
+        hist_col_status: "ស្ថានភាព",
+        hist_col_date: "កាលបរិច្ឆេទ",
+        hist_col_action: "ទាញយក",
+        hist_export_csv: "នាំចេញ CSV",
+        hist_clear: "លុបប្រវត្តិទាំងអស់",
+        hist_empty: "មិនទាន់មានកំណត់ត្រាប្រវត្តិការបំលែងនៅឡើយទេ។",
+
+        player_title: "ឧបករណ៍សាកល្បងសំឡេង Yamaha AWM2 Synthesizer",
+        player_subtitle: "ស្តាប់ និងលេងសំឡេងឧបករណ៍តន្ត្រី Yamaha ដោយផ្ទាល់នៅលើកម្មវិធីអ៊ីនធឺណិត។",
+        player_btn_audition: "ស្តាប់សំឡេងសាកល្បង",
+        player_btn_stop: "បញ្ឈប់",
+        player_keyboard: "ក្តារចុចព្យាណូ (ប៉ះ ឬចុចដើម្បីលេង)",
+        player_cutoff: "កម្រិត Filter Cutoff",
+        player_resonance: "កម្រិត Resonance (Q)",
+      },
+      en: {
+        app_name: "ExpVoice Studio",
+        app_badge: "PPI Converter v2.4",
+        nav_main: "Navigation",
+        nav_dashboard: "Dashboard",
+        nav_converter: "File Converter",
+        nav_inspector: "File & Hex Inspector",
+        nav_history: "Conversion History",
+        nav_ai: "AI Studio Assistant",
+        nav_sys: "System & Architecture",
+        nav_architecture: "Backend & Tech Specs",
+        nav_settings: "Settings & API Key",
+        nav_admin: "Admin Console",
+        guest_user: "Guest User",
+        engine_title: "Parser Engine",
+        engine_desc: "Direct Yamaha AWM2 / PAC chunk de-encapsulation & PPF Zip generation.",
+
+        title_dashboard: "Dashboard Overview",
+        sub_dashboard: "Yamaha Expansion Voice Manager & File Conversion Hub",
+        title_converter: "File Converter Queue",
+        sub_converter: "Transform PPI into editable PPF project archives or legacy YEP packs",
+        title_inspector: "File & Hex Inspector",
+        sub_inspector: "Inspect binary headers, chunk tables, waveforms, and XML structures",
+        title_history: "Conversion History",
+        sub_history: "Audit records and download links for completed file conversions",
+        title_ai: "Gemini AI Sound Design Studio",
+        sub_ai: "Deep technical analysis of Yamaha AWM2 voice parameters, wave samples, and legacy compatibility",
+        title_architecture: "System Architecture & Tech Specs",
+        sub_architecture: "Production full-stack blueprint: Next.js, Node.js, BullMQ, Redis, PostgreSQL",
+        title_settings: "Settings & API Key Management",
+        sub_settings: "Configure your Gemini AI Studio credentials, conversion engine preferences, and profile",
+        title_admin: "Admin Management Console",
+        sub_admin: "Centralized administrative controls, user roles, system metrics, and audit telemetry",
+
+        hdr_commands: "Commands",
+        hdr_ai: "AI Assistant",
+        hdr_load_sample: "Load Sample PPI",
+        hdr_test_cpi: "Test Encrypted CPI",
+        hdr_tg_ready: "Telegram Ready",
+        hdr_sign_in: "Sign In",
+
+        hero_badge: "Yamaha Arranger & Workstation Expansion Ecosystem",
+        hero_title: "Professional PPI to PPF & YEP Conversion",
+        hero_desc: "Transform compiled Yamaha installation packages (.ppi) into editable project archives (.ppf) or legacy instrument packs (.yep). Built with genuine binary chunk parsing, PCM waveform extraction, and DRM verification.",
+        hero_btn_start: "Start Converting Files",
+        hero_btn_demo: "Try Demo Sample",
+
+        stat_uploaded: "Total Uploaded",
+        stat_converted: "Total Converted",
+        stat_success: "Successful",
+        stat_failed: "Failed / DRM Blocked",
+        stat_uploaded_sub: "Supported: .ppi, .cpi",
+        stat_converted_sub: "Processed packages",
+        stat_success_sub: "100% verified structures",
+        stat_failed_sub: "Protected .CPI packs",
+
+        dropzone_title: "Drag & drop your Yamaha .PPI expansion files here",
+        dropzone_desc: "Accepts Yamaha Pack Project Installation files (.ppi) and Protected Packs (.cpi). Multiple file upload enabled.",
+        dropzone_btn: "Select Files from Computer",
+        btn_convert_all: "Convert All",
+        btn_download_all: "Download All (.zip)",
+        btn_clear: "Clear Queue",
+        btn_convert: "Convert",
+        btn_cancel: "Cancel",
+        btn_download: "Download",
+        btn_rerun: "Re-run",
+        btn_retry: "Retry",
+        btn_inspect: "Inspect",
+
+        hist_search_placeholder: "Search by file name...",
+        hist_col_name: "Original File",
+        hist_col_size: "File Size",
+        hist_col_type: "Conversion Type",
+        hist_col_status: "Status",
+        hist_col_date: "Conversion Date",
+        hist_col_action: "Download Action",
+        hist_export_csv: "Export CSV",
+        hist_clear: "Clear All History",
+        hist_empty: "No conversion history records found.",
+
+        player_title: "Yamaha AWM2 Voice Audition Player",
+        player_subtitle: "Play simulated Yamaha voice textures & test tone frequencies directly in your browser.",
+        player_btn_audition: "Audition Phrase",
+        player_btn_stop: "Stop Demo",
+        player_keyboard: "Virtual Keyboard (Touch or Click to Play)",
+        player_cutoff: "AWM2 Filter Cutoff",
+        player_resonance: "Filter Resonance (Q)",
+      }
+    };
+
+    function t(key) {
+      const lang = state.lang || 'kh';
+      const dict = i18n[lang] || i18n['kh'];
+      return dict[key] || key;
+    }
+
+    function setLanguage(lang) {
+      state.lang = lang === 'en' ? 'en' : 'kh';
+      localStorage.setItem('app_lang', state.lang);
+
+      const dict = i18n[state.lang];
+
+      // Update button active pills
+      const btnKh = document.getElementById('btn-lang-kh');
+      const btnEn = document.getElementById('btn-lang-en');
+      if (btnKh && btnEn) {
+        if (state.lang === 'kh') {
+          btnKh.className = "px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 bg-brand-600 text-white shadow-sm";
+          btnEn.className = "px-2 py-1 rounded-lg font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition";
+        } else {
+          btnEn.className = "px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 bg-brand-600 text-white shadow-sm";
+          btnKh.className = "px-2 py-1 rounded-lg font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition";
+        }
+      }
+
+      const sidebarLangLabel = document.getElementById('sidebar-lang-label');
+      if (sidebarLangLabel) {
+        sidebarLangLabel.textContent = state.lang === 'kh' ? 'ខ្មែរ' : 'EN';
+      }
+
+      // Update Navigation links
+      const navMapping = [
+        { id: 'nav-dashboard', key: 'nav_dashboard' },
+        { id: 'nav-converter', key: 'nav_converter' },
+        { id: 'nav-inspector', key: 'nav_inspector' },
+        { id: 'nav-history', key: 'nav_history' },
+        { id: 'nav-ai', key: 'nav_ai' },
+        { id: 'nav-architecture', key: 'nav_architecture' },
+        { id: 'nav-settings', key: 'nav_settings' },
+        { id: 'nav-admin', key: 'nav_admin' }
+      ];
+      navMapping.forEach(n => {
+        const el = document.querySelector(`#${n.id} span`);
+        if (el) el.textContent = dict[n.key];
+      });
+
+      // Update Header title & subtitle
+      const titleKey = `title_${state.activeView}`;
+      const subKey = `sub_${state.activeView}`;
+      const pageTitle = document.getElementById('page-title');
+      const pageSub = document.getElementById('page-subtitle');
+      if (pageTitle && dict[titleKey]) pageTitle.textContent = dict[titleKey];
+      if (pageSub && dict[subKey]) pageSub.textContent = dict[subKey];
+
+      // Update Hero
+      const heroBadge = document.getElementById('hero-badge-text');
+      if (heroBadge) heroBadge.textContent = dict.hero_badge;
+      const heroTitle = document.getElementById('hero-title');
+      if (heroTitle) heroTitle.textContent = dict.hero_title;
+      const heroDesc = document.getElementById('hero-desc');
+      if (heroDesc) heroDesc.textContent = dict.hero_desc;
+      const heroBtnStart = document.getElementById('hero-btn-start');
+      if (heroBtnStart) heroBtnStart.textContent = dict.hero_btn_start;
+      const heroBtnDemo = document.getElementById('hero-btn-demo');
+      if (heroBtnDemo) heroBtnDemo.textContent = dict.hero_btn_demo;
+
+      // Update KPI Labels
+      const lblUploaded = document.getElementById('stat-label-uploaded');
+      if (lblUploaded) lblUploaded.textContent = dict.stat_uploaded;
+      const lblConverted = document.getElementById('stat-label-converted');
+      if (lblConverted) lblConverted.textContent = dict.stat_converted;
+      const lblSuccess = document.getElementById('stat-label-success');
+      if (lblSuccess) lblSuccess.textContent = dict.stat_success;
+      const lblFailed = document.getElementById('stat-label-failed');
+      if (lblFailed) lblFailed.textContent = dict.stat_failed;
+
+      // Update dropzone
+      const dzTitle = document.getElementById('dropzone-title');
+      if (dzTitle) dzTitle.textContent = dict.dropzone_title;
+      const dzDesc = document.getElementById('dropzone-desc');
+      if (dzDesc) dzDesc.textContent = dict.dropzone_desc;
+      const dzBtn = document.getElementById('dropzone-btn-text');
+      if (dzBtn) dzBtn.textContent = dict.dropzone_btn;
+
+      // Update Converter action buttons
+      const btnConv = document.getElementById('btn-convert-all-text');
+      if (btnConv) btnConv.textContent = dict.btn_convert_all;
+      const btnDown = document.getElementById('btn-download-all-text');
+      if (btnDown) btnDown.textContent = dict.btn_download_all;
+      const btnClr = document.getElementById('btn-clear-list-text');
+      if (btnClr) btnClr.textContent = dict.btn_clear;
+
+      // Re-render
+      renderQueueUI();
+      renderHistoryTable();
+      renderRecentDashboardTable();
+      renderAuthUI();
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function toggleLanguage() {
+      setLanguage(state.lang === 'kh' ? 'en' : 'kh');
+    }
 
     /**
      * ============================================================================
@@ -2251,7 +2557,13 @@ bot.launch();</code></pre>
         renderHistoryTable();
       }
 
-      if (titles[viewName]) {
+      const dict = i18n[state.lang || 'kh'] || i18n['kh'];
+      const titleKey = `title_${viewName}`;
+      const subKey = `sub_${viewName}`;
+      if (dict && dict[titleKey]) {
+        document.getElementById('page-title').textContent = dict[titleKey];
+        document.getElementById('page-subtitle').textContent = dict[subKey];
+      } else if (titles[viewName]) {
         document.getElementById('page-title').textContent = titles[viewName].title;
         document.getElementById('page-subtitle').textContent = titles[viewName].sub;
       }
@@ -4174,6 +4486,7 @@ bot.launch();</code></pre>
     window.addEventListener('DOMContentLoaded', () => {
       initTheme();
       initUserSession();
+      setLanguage(localStorage.getItem('app_lang') || 'kh');
       updateStatsUI();
       renderQueueUI();
       renderRecentDashboardTable();

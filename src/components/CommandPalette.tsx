@@ -22,6 +22,7 @@ import {
   Music,
   Send,
 } from "lucide-react";
+import { useTranslation } from "@/lib/i18n/LanguageContext";
 
 interface CommandItem {
   id: string;
@@ -53,6 +54,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   onOpenTelegramSimulator,
   darkMode,
 }) => {
+  const { t, language } = useTranslation();
   const [query, setQuery] = useState<string>("");
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
@@ -60,7 +62,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     // Navigation
     {
       id: "nav-dashboard",
-      title: "Go to Dashboard Overview",
+      title: `${language === "kh" ? "ទៅកាន់ " : "Go to "}${t("nav_dashboard")}`,
       category: "Navigation",
       icon: <LayoutDashboard className="w-4 h-4 text-brand-500" />,
       action: () => {
@@ -70,7 +72,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     },
     {
       id: "nav-converter",
-      title: "Go to File Converter Queue",
+      title: `${language === "kh" ? "ទៅកាន់ " : "Go to "}${t("nav_converter")}`,
       category: "Navigation",
       icon: <Repeat className="w-4 h-4 text-emerald-500" />,
       action: () => {
@@ -80,7 +82,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     },
     {
       id: "nav-inspector",
-      title: "Go to File & Hex Inspector",
+      title: `${language === "kh" ? "ទៅកាន់ " : "Go to "}${t("nav_inspector")}`,
       category: "Navigation",
       icon: <Binary className="w-4 h-4 text-sky-500" />,
       action: () => {
@@ -90,7 +92,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     },
     {
       id: "nav-history",
-      title: "Go to Conversion History Archive",
+      title: `${language === "kh" ? "ទៅកាន់ " : "Go to "}${t("nav_history")}`,
       category: "Navigation",
       icon: <History className="w-4 h-4 text-amber-500" />,
       action: () => {
@@ -100,7 +102,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     },
     {
       id: "nav-ai",
-      title: "Go to Gemini AI Sound Design Studio",
+      title: `${language === "kh" ? "ទៅកាន់ " : "Go to "}${t("nav_ai")}`,
       category: "Navigation",
       icon: <Brain className="w-4 h-4 text-brand-600" />,
       action: () => {
@@ -110,7 +112,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     },
     {
       id: "nav-settings",
-      title: "Go to Settings & API Key Manager",
+      title: `${language === "kh" ? "ទៅកាន់ " : "Go to "}${t("nav_settings")}`,
       category: "Navigation",
       icon: <Sliders className="w-4 h-4 text-indigo-500" />,
       action: () => {
@@ -120,7 +122,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     },
     {
       id: "nav-admin",
-      title: "Go to Admin Management Console",
+      title: `${language === "kh" ? "ទៅកាន់ " : "Go to "}${t("nav_admin")}`,
       category: "Navigation",
       icon: <ShieldCheck className="w-4 h-4 text-purple-600" />,
       action: () => {
@@ -130,7 +132,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     },
     {
       id: "nav-arch",
-      title: "Go to Architecture & Tech Specs",
+      title: `${language === "kh" ? "ទៅកាន់ " : "Go to "}${t("nav_architecture")}`,
       category: "Navigation",
       icon: <Cpu className="w-4 h-4 text-slate-500" />,
       action: () => {
@@ -142,7 +144,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     // Quick Actions
     {
       id: "act-load-sample",
-      title: "Load Sample PPI Pack (Demo Voice Archive)",
+      title: t("cmd_load_sample"),
       category: "Quick Actions",
       icon: <Sparkles className="w-4 h-4 text-brand-500" />,
       shortcut: "Alt+S",
@@ -153,7 +155,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     },
     {
       id: "act-load-cpi",
-      title: "Test Encrypted CPI Package (DRM Rejection)",
+      title: t("cmd_test_cpi"),
       category: "Quick Actions",
       icon: <ShieldAlert className="w-4 h-4 text-amber-500" />,
       action: () => {
@@ -163,7 +165,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     },
     {
       id: "act-convert-all",
-      title: "Convert All Pending Queue Files",
+      title: t("cmd_convert_all"),
       category: "Quick Actions",
       icon: <Repeat className="w-4 h-4 text-emerald-500" />,
       action: () => {
@@ -173,7 +175,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     },
     {
       id: "act-tg-simulator",
-      title: "Open Telegram Mini App Simulator",
+      title: t("cmd_tg_preview"),
       category: "Quick Actions",
       icon: <Send className="w-4 h-4 text-sky-500" />,
       action: () => {
@@ -185,7 +187,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     // System
     {
       id: "sys-theme",
-      title: darkMode ? "Switch to Light Mode" : "Switch to Night / Dark Mode",
+      title: darkMode ? t("theme_light") : t("theme_dark"),
       category: "System",
       icon: darkMode ? (
         <Sun className="w-4 h-4 text-amber-400" />
@@ -249,7 +251,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Type a command or search views (e.g. converter, audio, admin)..."
+            placeholder={t("cmd_search_placeholder")}
             className="w-full text-xs bg-transparent text-slate-900 dark:text-white placeholder:text-slate-400 outline-none"
           />
           <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500">

@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "@/lib/i18n/LanguageContext";
 
 interface VoicePreset {
   id: string;
@@ -124,6 +125,7 @@ export const YamahaVoicePlayer: React.FC<YamahaVoicePlayerProps> = ({
   packVoices = [],
   onPlayStateChange,
 }) => {
+  const { t, language } = useTranslation();
   const [activePreset, setActivePreset] = useState<VoicePreset>(DEFAULT_PRESETS[0]);
   const [volume, setVolume] = useState<number>(0.75);
   const [filterCutoff, setFilterCutoff] = useState<number>(DEFAULT_PRESETS[0].filterCutoff);
@@ -335,13 +337,13 @@ export const YamahaVoicePlayer: React.FC<YamahaVoicePlayerProps> = ({
             </div>
             <div>
               <h4 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                <span>Yamaha AWM2 Voice Audition Player</span>
+                <span>{t("player_title")}</span>
                 <Badge variant="outline" className="text-[10px] font-mono text-brand-600 border-brand-300">
                   WEB AUDIO
                 </Badge>
               </h4>
               <p className="text-xs text-slate-500">
-                Play simulated Yamaha voice textures & test tone frequencies directly in your browser.
+                {t("player_subtitle")}
               </p>
             </div>
           </div>
@@ -381,7 +383,7 @@ export const YamahaVoicePlayer: React.FC<YamahaVoicePlayerProps> = ({
               className="h-8 text-xs font-semibold gap-1.5 shadow-sm"
             >
               <Square className="w-3.5 h-3.5 fill-current" />
-              <span>Stop Demo</span>
+              <span>{t("player_btn_stop")}</span>
             </Button>
           ) : (
             <Button
@@ -390,7 +392,7 @@ export const YamahaVoicePlayer: React.FC<YamahaVoicePlayerProps> = ({
               className="h-8 text-xs font-semibold gap-1.5 bg-brand-600 hover:bg-brand-500 shadow-sm"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
-              <span>Audition Phrase</span>
+              <span>{t("player_btn_audition")}</span>
             </Button>
           )}
         </div>
@@ -399,7 +401,7 @@ export const YamahaVoicePlayer: React.FC<YamahaVoicePlayerProps> = ({
       {/* Preset Selector Grid */}
       <div className="space-y-2">
         <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-          AWM2 Voice Models
+          {t("player_voice_models")}
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
           {DEFAULT_PRESETS.map((preset) => {
@@ -465,7 +467,7 @@ export const YamahaVoicePlayer: React.FC<YamahaVoicePlayerProps> = ({
         <div className="flex items-center justify-between text-xs">
           <span className="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
             <Activity className="w-3.5 h-3.5 text-emerald-500" />
-            <span>Virtual Keyboard (Touch or Click to Play)</span>
+            <span>{t("player_virtual_keyboard")}</span>
           </span>
           {activeNote && (
             <Badge variant="secondary" className="font-mono text-[10px] text-emerald-600 bg-emerald-50">
@@ -546,7 +548,7 @@ export const YamahaVoicePlayer: React.FC<YamahaVoicePlayerProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-200 dark:border-slate-800">
         <div className="space-y-1">
           <div className="flex justify-between text-xs">
-            <span className="text-slate-600 dark:text-slate-400 font-medium">AWM2 Filter Cutoff</span>
+            <span className="text-slate-600 dark:text-slate-400 font-medium">{t("player_cutoff")}</span>
             <span className="font-mono text-slate-900 dark:text-white font-bold">{filterCutoff} Hz</span>
           </div>
           <input
@@ -562,7 +564,7 @@ export const YamahaVoicePlayer: React.FC<YamahaVoicePlayerProps> = ({
 
         <div className="space-y-1">
           <div className="flex justify-between text-xs">
-            <span className="text-slate-600 dark:text-slate-400 font-medium">Filter Resonance (Q)</span>
+            <span className="text-slate-600 dark:text-slate-400 font-medium">{t("player_resonance")}</span>
             <span className="font-mono text-slate-900 dark:text-white font-bold">{resonance.toFixed(1)}</span>
           </div>
           <input

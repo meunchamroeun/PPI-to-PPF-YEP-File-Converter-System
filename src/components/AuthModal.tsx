@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "@/lib/i18n/LanguageContext";
 import {
   LogIn,
   Send,
@@ -50,6 +51,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onLogin,
   onLogout,
 }) => {
+  const { t, language } = useTranslation();
   const [authTab, setAuthTab] = useState<"quick" | "oauth" | "email">("quick");
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
   const [emailInput, setEmailInput] = useState<string>("");
@@ -188,10 +190,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <LogIn className="w-5 h-5 text-brand-600" />
-            <span>Studio Account Authentication</span>
+            <span>{t("auth_modal_title")}</span>
           </DialogTitle>
           <DialogDescription>
-            Sign in to access your personal conversion history, manage API keys, and unlock Admin Console.
+            {t("auth_modal_desc")}
           </DialogDescription>
         </DialogHeader>
 
@@ -222,14 +224,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 </p>
                 <div className="mt-1 flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400">
                   <CheckCircle className="w-3 h-3" />
-                  <span>Session Active • History Auto-Syncing</span>
+                  <span>{language === "kh" ? "សម័យការងារសកម្ម • សមកាលកម្មស្វ័យប្រវត្តិ" : "Session Active • History Auto-Syncing"}</span>
                 </div>
               </div>
             </div>
 
             <div className="flex justify-end gap-2">
               <Button variant="outline" size="sm" onClick={onClose}>
-                Close
+                {language === "kh" ? "បិទ" : "Close"}
               </Button>
               <Button
                 variant="destructive"
@@ -242,7 +244,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 className="gap-1.5"
               >
                 <LogOut className="w-4 h-4" />
-                <span>Sign Out</span>
+                <span>{t("auth_sign_out")}</span>
               </Button>
             </div>
           </div>
@@ -258,7 +260,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     : "text-slate-600 dark:text-slate-400"
                 }`}
               >
-                1-Click Fast Login
+                {t("auth_tab_quick")}
               </button>
               <button
                 onClick={() => setAuthTab("oauth")}
@@ -268,7 +270,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     : "text-slate-600 dark:text-slate-400"
                 }`}
               >
-                OAuth &amp; Telegram
+                {t("auth_tab_oauth")}
               </button>
               <button
                 onClick={() => setAuthTab("email")}
@@ -278,7 +280,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     : "text-slate-600 dark:text-slate-400"
                 }`}
               >
-                Credentials
+                {t("auth_tab_email")}
               </button>
             </div>
 
