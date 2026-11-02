@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import { motion, AnimatePresence, useDragControls } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import {
@@ -15,7 +15,6 @@ import {
   Square,
   Copy,
   Check,
-  GripHorizontal,
   Layers,
   Cpu,
   Lock,
@@ -107,7 +106,6 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
   const buttonRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const dragControls = useDragControls();
 
   // Load custom API key from local storage
   useEffect(() => {
@@ -207,6 +205,7 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
         ref={buttonRef}
         drag
         dragMomentum={false}
+        dragElastic={0.08}
         onDragStart={() => {
           dragDistanceRef.current = 0;
         }}
@@ -216,7 +215,7 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.94 }}
         whileDrag={{ scale: 1.12, cursor: "grabbing" }}
-        className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-50 select-none cursor-grab"
+        className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50 select-none cursor-grab active:cursor-grabbing"
       >
         <button
           type="button"
@@ -225,8 +224,7 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
               setIsOpen((prev) => !prev);
             }
           }}
-          className="relative group flex items-center justify-center size-13 rounded-full bg-gradient-to-tr from-brand-600 via-indigo-600 to-purple-600 text-white shadow-xl shadow-brand-600/35 ring-2 ring-white/20 dark:ring-white/10 transition-shadow hover:shadow-2xl hover:shadow-brand-500/40"
-          title={language === "kh" ? "ជំនួយការ AI Chatbot (ចុចដើម្បីសន្ទនា ឬទាញផ្លាស់ទី)" : "Yamaha AI Chatbot (Click to chat, drag to move)"}
+          className="relative group flex items-center justify-center size-13 rounded-full bg-gradient-to-tr from-brand-600 via-indigo-600 to-purple-600 text-white shadow-xl shadow-brand-600/35 ring-2 ring-white/20 dark:ring-white/10 transition-shadow hover:shadow-2xl hover:shadow-brand-500/40 cursor-pointer"
           aria-label="Toggle AI Chatbot"
         >
           {/* Subtle Ambient Pulse Halo */}
@@ -235,15 +233,18 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
           {/* Online status indicator */}
           <span className="absolute top-0.5 right-0.5 size-3 rounded-full bg-emerald-400 ring-2 ring-background animate-pulse" />
 
-          {/* Center Bot Icon */}
+          {/* Center Bot / Close Icon */}
           <div className="relative z-10 flex items-center justify-center">
-            {isOpen ? <X className="size-6" /> : <Bot className="size-6" />}
+            {isOpen ? <X className="size-6 transition-transform" /> : <Bot className="size-6 transition-transform" />}
           </div>
 
-          {/* Floating Pill Label on Hover */}
-          <span className="absolute right-full mr-2.5 px-3 py-1 rounded-full bg-slate-900/90 dark:bg-card/90 backdrop-blur-md text-white text-[11px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-md border border-white/10 hidden sm:inline-block">
-            {language === "kh" ? "AI Chatbot (ទាញផ្លាស់ទីបាន)" : "AI Chatbot (Drag to move)"}
-          </span>
+          {/* Single Floating Pill Label on Hover (Only when closed, to avoid visual clutter) */}
+          {!isOpen && (
+            <span className="absolute right-full mr-3 px-3 py-1.5 rounded-full bg-slate-900/95 dark:bg-card/95 backdrop-blur-md text-white text-[11px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg border border-white/10 hidden sm:inline-flex items-center gap-1.5">
+              <Sparkles className="size-3 text-brand-400" />
+              {language === "kh" ? "ជំនួយការ AI Chatbot" : "Yamaha AI Assistant"}
+            </span>
+          )}
         </button>
       </motion.div>
 
@@ -254,22 +255,18 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
         {isOpen && (
           <motion.div
             ref={popupRef}
-            drag
-            dragListener={false}
-            dragControls={dragControls}
-            dragMomentum={false}
-            initial={{ opacity: 0, scale: 0.94, y: 15 }}
+            initial={{ opacity: 0, scale: 0.94, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.94, y: 15 }}
-            transition={{ type: "spring", stiffness: 340, damping: 28 }}
-            className="fixed bottom-[5.5rem] right-3 sm:bottom-[5.5rem] sm:right-6 lg:bottom-22 lg:right-6 inset-x-3 sm:inset-x-auto sm:w-[400px] md:w-[420px] h-[min(500px,calc(100dvh-7rem))] max-h-[calc(100dvh-7rem)] z-50 flex flex-col rounded-3xl bg-card/95 backdrop-blur-xl border border-border/80 shadow-2xl overflow-hidden ring-1 ring-border/50 specular-card"
+            exit={{ opacity: 0, scale: 0.94, y: 12 }}
+            transition={{ type: "spring", stiffness: 350, damping: 28 }}
+            className="fixed bottom-[5.25rem] right-4 sm:right-6 inset-x-3 sm:inset-x-auto sm:w-[400px] md:w-[420px] z-50 flex flex-col rounded-3xl bg-card/95 backdrop-blur-xl border border-border/80 shadow-2xl overflow-hidden ring-1 ring-border/50 specular-card"
+            style={{
+              height: "min(520px, calc(100dvh - 6.5rem))",
+              maxHeight: "calc(100dvh - 6.5rem)",
+            }}
           >
             {/* Chatbot Header */}
-            <div
-              onPointerDown={(e) => dragControls.start(e)}
-              className="px-4 py-3 border-b border-border/80 bg-background/90 backdrop-blur-md flex items-center justify-between gap-2 shrink-0 cursor-grab active:cursor-grabbing select-none"
-              title={language === "kh" ? "ចុចសង្កត់ត្រង់នេះដើម្បីទាញផ្លាស់ទីផ្ទាំង" : "Click and drag here to move chat window"}
-            >
+            <div className="px-4 py-3 border-b border-border/80 bg-background/90 backdrop-blur-md flex items-center justify-between gap-2 shrink-0 select-none">
               {/* Bot Persona Avatar & Status */}
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="relative size-8 rounded-full bg-gradient-to-tr from-brand-600 to-purple-600 text-white flex items-center justify-center shadow-xs shrink-0 ring-1 ring-white/20">
@@ -297,19 +294,7 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
               </div>
 
               {/* Window Controls */}
-              <div
-                className="flex items-center gap-1 shrink-0"
-                onPointerDown={(e) => e.stopPropagation()}
-              >
-                {/* Drag Handle */}
-                <div
-                  onPointerDown={(e) => dragControls.start(e)}
-                  className="p-1.5 rounded-full text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted transition cursor-grab active:cursor-grabbing"
-                  title="Drag to move"
-                >
-                  <GripHorizontal className="size-3.5" />
-                </div>
-
+              <div className="flex items-center gap-1 shrink-0">
                 {/* Reset / New Chat */}
                 {messages.length > 0 && (
                   <button
@@ -342,7 +327,7 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
                   type="button"
                   onClick={() => setIsOpen(false)}
                   className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition"
-                  title="Close"
+                  title={language === "kh" ? "បិទ" : "Close"}
                 >
                   <X className="size-3.5" />
                 </button>
