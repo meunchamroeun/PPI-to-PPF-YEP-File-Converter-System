@@ -328,7 +328,7 @@ export function createYamahaAgent({
     : "No pack currently loaded in memory. Ready for general Yamaha Expansion sound engineering advice.";
 
   return new ToolLoopAgent({
-    model: google("gemini-2.5-flash"),
+    model: google("gemini-3.5-flash"),
     instructions: `You are the Yamaha Expansion Voice & AWM2 Sound Engineering AI Agent.
 You specialize in Yamaha Expansion Pack architecture: PPI, PPF, CPI, and legacy YEP formats (Genos, Tyros 5, PSR-SX900/SX700, PSR-S975/S970, PSR-S950/S750).
 

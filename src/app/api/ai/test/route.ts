@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     // Initialize client and run a minimal ping
     const ai = new GoogleGenAI({ apiKey: keyToTest.trim() });
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-3.5-flash",
       contents: "Ping. Reply with exactly the single word: OK",
     });
 
@@ -31,8 +31,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       valid: true,
-      message: "Gemini API key is active and verified!",
-      model: "gemini-2.5-flash",
+      isDefault: !apiKey || !apiKey.trim(),
+      message: (!apiKey || !apiKey.trim())
+        ? "System Default Gemini AI key is active and verified!"
+        : "Custom Gemini API key is active and verified!",
+      model: "gemini-3.5-flash",
       reply,
     });
   } catch (error: any) {

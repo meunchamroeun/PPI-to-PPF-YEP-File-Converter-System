@@ -349,7 +349,11 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack }
                 className="gap-2 text-xs border-slate-300 dark:border-slate-700 h-8"
               >
                 <Key className="w-3.5 h-3.5 text-brand-500" />
-                <span>{apiKey ? t("ai_key_saved") : t("ai_key_settings")}</span>
+                <span>
+                  {apiKey
+                    ? (language === "kh" ? "សោរផ្ទាល់ខ្លួន" : "Custom Key")
+                    : (language === "kh" ? "AI លំនាំដើម (សកម្ម)" : "Default AI (Active)")}
+                </span>
               </Button>
 
               {messages.length > 0 && (
@@ -387,7 +391,9 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack }
               <div className="flex items-center justify-between">
                 <label className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                   <Key className="w-3.5 h-3.5 text-brand-600" />
-                  <span>Google Gemini API Key</span>
+                  <span>
+                    {language === "kh" ? "កំណត់សោរ Google Gemini API (ស្រេចចិត្ត)" : "Custom Google Gemini API Key (Optional)"}
+                  </span>
                 </label>
                 <a
                   href="https://aistudio.google.com/app/apikey"
@@ -402,7 +408,11 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack }
               <div className="flex gap-2">
                 <input
                   type="password"
-                  placeholder="AIzaSy..."
+                  placeholder={
+                    language === "kh"
+                      ? "ទុកទទេដើម្បីប្រើសោរលំនាំដើម (AQ.Ab8R...)"
+                      : "Leave blank to use System Default AI Key (AQ.Ab8R...)"
+                  }
                   value={apiKey}
                   onChange={(e) => handleSaveApiKey(e.target.value)}
                   className="flex-1 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-base sm:text-xs font-mono focus:outline-none focus:ring-2 focus:ring-brand-500"
@@ -412,7 +422,9 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ activePack }
                 </Button>
               </div>
               <p className="text-[10px] text-slate-500">
-                Your key is stored securely in your browser's local storage and used directly for requests.
+                {language === "kh"
+                  ? "ប្រព័ន្ធដំណើរការជាមួយសោរលំនាំដើមដោយស្វ័យប្រវត្តិ។ លោកអ្នកអាចបញ្ចូលសោរផ្ទាល់ខ្លួនប្រសិនបើចង់ប្រើ Quota ផ្ទាល់ខ្លួន។"
+                  : "System operates automatically with the Default AI Key. You may provide a personal Gemini API key to use your own quota."}
               </p>
             </div>
           </CardContent>

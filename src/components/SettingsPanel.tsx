@@ -112,26 +112,20 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   };
 
   const handleTestApiKey = async () => {
-    if (!apiKey.trim()) {
-      setKeyStatus("invalid");
-      setKeyMessage("Please enter an API key to test.");
-      return;
-    }
-
     setKeyStatus("testing");
-    setKeyMessage("Pinging Google AI Studio Gemini API...");
+    setKeyMessage(apiKey.trim() ? "Pinging Google AI Studio with custom key..." : "Testing System Default Gemini AI key...");
 
     try {
       const res = await fetch("/api/ai/test", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ apiKey: apiKey.trim() }),
+        body: JSON.stringify({ apiKey: apiKey.trim() || undefined }),
       });
 
       const data = await res.json();
       if (res.ok && data.valid) {
         setKeyStatus("valid");
-        setKeyMessage("Connection verified! Model gemini-2.5-flash responded successfully.");
+        setKeyMessage(data.message || "Connection verified! Model gemini-3.5-flash responded successfully.");
       } else {
         setKeyStatus("invalid");
         setKeyMessage(data.error || "Failed to authenticate with Google Gemini API.");
@@ -419,14 +413,25 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
-                  {t("set_gemini_input_label")}
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    {t("set_gemini_input_label")}
+                  </label>
+                  {!apiKey.trim() ? (
+                    <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                      {language === "kh" ? "សោរលំនាំដើមប្រព័ន្ធសកម្ម" : "System Default AI Key Active"}
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-400 border border-brand-200 dark:border-brand-800">
+                      {language === "kh" ? "សោរប្ដូរតាមបំណងផ្ទាល់ខ្លួន" : "Custom Key Active"}
+                    </span>
+                  )}
+                </div>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
                     <input
                       type={showKey ? "text" : "password"}
-                      placeholder="AIzaSy..."
+                      placeholder={language === "kh" ? "ទុកទទេដើម្បីប្រើសោរលំនាំដើមរបស់ប្រព័ន្ធ (AQ.Ab8R...)" : "Leave empty to use System Default AI Key (AQ.Ab8R...)"}
                       value={apiKey}
                       onChange={(e) => {
                         setApiKey(e.target.value);
@@ -447,9 +452,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
                   <Button
                     onClick={handleTestApiKey}
-                    disabled={keyStatus === "testing" || !apiKey.trim()}
+                    disabled={keyStatus === "testing"}
                     variant="outline"
                     className="gap-1.5 shrink-0"
+                    title={apiKey.trim() ? "Test Custom Key" : "Test System Default Key"}
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${keyStatus === "testing" ? "animate-spin" : ""}`} />
                     <span>{t("set_btn_test_conn")}</span>

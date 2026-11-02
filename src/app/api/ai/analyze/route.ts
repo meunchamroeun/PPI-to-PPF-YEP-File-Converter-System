@@ -58,7 +58,7 @@ ${finalPrompt}
 Remember: Format your output in clean Markdown with clear headings and bullet points. Do not use emojis in your response; use clean typography, clear technical terminology, and bullet points.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-3.5-flash",
       contents: fullPrompt,
       config: {
         temperature: 0.7,
@@ -72,7 +72,7 @@ Remember: Format your output in clean Markdown with clear headings and bullet po
     return NextResponse.json({
       success: true,
       analysis: analysisText,
-      model: "gemini-2.5-flash",
+      model: "gemini-3.5-flash",
     });
   } catch (error: any) {
     console.error("Gemini AI analysis error:", error);
