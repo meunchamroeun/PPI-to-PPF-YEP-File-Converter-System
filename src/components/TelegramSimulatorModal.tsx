@@ -39,35 +39,35 @@ export const TelegramSimulatorModal: React.FC<TelegramSimulatorModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
       <div
-        className="relative max-w-2xl w-full rounded-3xl border border-border shadow-2xl overflow-hidden animate-scale-in ring-1 ring-border/50 text-foreground"
+        className="relative max-w-2xl w-full rounded-2xl sm:rounded-3xl border border-border shadow-2xl overflow-hidden animate-scale-in ring-1 ring-border/50 text-foreground"
         style={{ backgroundColor: "var(--card)" }}
       >
         {/* Modal Top Bar */}
         <div
-          className="flex items-center justify-between px-6 py-4.5 border-b border-border"
+          className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4.5 border-b border-border"
           style={{ backgroundColor: "var(--card)" }}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <div className="w-10 h-10 rounded-2xl bg-sky-500/10 text-sky-500 flex items-center justify-center shrink-0 shadow-xs ring-1 ring-sky-500/20">
               <Send className="w-5 h-5" />
             </div>
-            <div>
-              <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-                <span>Telegram Bot & Mini App</span>
-                <Badge variant="secondary" className="text-[10px] font-mono text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/50 border border-sky-500/20">
+            <div className="min-w-0">
+              <h3 className="font-bold text-xs sm:text-sm text-foreground flex items-center gap-2 truncate">
+                <span className="truncate">Telegram Bot &amp; Mini App</span>
+                <Badge variant="secondary" className="text-[10px] font-mono text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/50 border border-sky-500/20 shrink-0">
                   ONLINE
                 </Badge>
               </h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-[11px] sm:text-xs text-muted-foreground truncate mt-0.5">
                 Official Telegram Bot connection for Yamaha ExpVoice Studio
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer"
+            className="p-1.5 sm:p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer shrink-0"
             title="Close"
           >
             <X className="w-5 h-5" />
@@ -76,7 +76,7 @@ export const TelegramSimulatorModal: React.FC<TelegramSimulatorModalProps> = ({
 
         {/* Modal Body */}
         <div
-          className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6"
+          className="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6"
           style={{ backgroundColor: "var(--card)" }}
         >
           {/* Left Column: Official Bot Profile Card */}

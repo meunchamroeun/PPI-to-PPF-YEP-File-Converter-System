@@ -215,7 +215,7 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.94 }}
         whileDrag={{ scale: 1.12, cursor: "grabbing" }}
-        className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50 select-none cursor-grab active:cursor-grabbing"
+        className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40 sm:z-50 select-none cursor-grab active:cursor-grabbing"
       >
         <button
           type="button"
@@ -275,7 +275,7 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
               style={{ backgroundColor: "var(--card)" }}
             >
               {/* Chatbot Header (Always at the very top, never cut off) */}
-              <div className="h-16 px-4.5 border-b border-border/80 bg-background/95 backdrop-blur-md flex items-center justify-between gap-3 shrink-0 select-none">
+              <div className="h-16 px-4.5 pt-[env(safe-area-inset-top,0px)] border-b border-border/80 bg-background/95 backdrop-blur-md flex items-center justify-between gap-3 shrink-0 select-none">
                 {/* Bot Persona Avatar & Status */}
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="relative size-9 rounded-full bg-gradient-to-tr from-brand-600 to-purple-600 text-white flex items-center justify-center shadow-xs shrink-0 ring-1 ring-white/20">
@@ -561,7 +561,7 @@ export const FloatingAIAssistant: React.FC<FloatingAIAssistantProps> = ({
             )}
 
             {/* Chatbot Input Footer */}
-            <div className="p-2.5 border-t border-border/80 bg-background/90 backdrop-blur-md shrink-0 space-y-1.5">
+            <div className="p-2.5 pb-[calc(env(safe-area-inset-bottom,0px)+0.65rem)] border-t border-border/80 bg-background/95 backdrop-blur-md shrink-0 space-y-1.5">
               {/* Active Pack Status Tag */}
               {activePack && (
                 <div className="flex items-center justify-between px-2 text-[10px] text-muted-foreground">

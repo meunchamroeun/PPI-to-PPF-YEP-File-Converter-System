@@ -881,7 +881,7 @@ export default function YamahaConverterApp() {
       {/* ===================================================================== */}
       {/* MAIN CONTENT AREA                                                     */}
       {/* ===================================================================== */}
-      <main className="relative flex-1 lg:h-screen overflow-y-auto p-4 md:p-8 space-y-6 pb-24 lg:pb-8">
+      <main className="relative flex-1 lg:h-screen overflow-y-auto p-3.5 sm:p-4 md:p-8 space-y-5 sm:space-y-6 pb-28 lg:pb-8">
         <SoundWaveHero />
         {/* Top Studio Command Bar (Somleng Clean Glassmorphism) */}
         <header className="sticky -top-4 md:-top-8 -mx-4 md:-mx-8 px-4 md:px-8 py-3.5 z-20 bg-background/80 backdrop-blur-md border-b border-border/60 flex items-center justify-between gap-3 sm:gap-4 transition-colors duration-200">
@@ -946,11 +946,11 @@ export default function YamahaConverterApp() {
               <Search className="w-4 h-4" />
             </button>
 
-            {/* AI Studio Assistant */}
+            {/* AI Studio Assistant (Desktop/Tablet) */}
             <button
               type="button"
               onClick={() => setActiveTab("ai")}
-              className={`h-9 px-3 sm:px-3.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition active:scale-[0.97] ${
+              className={`hidden sm:flex h-9 px-3 sm:px-3.5 rounded-full text-xs font-medium items-center gap-1.5 transition active:scale-[0.97] ${
                 activeTab === "ai"
                   ? "bg-brand-600 text-white shadow-xs"
                   : "bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border border-brand-200/70 dark:border-brand-800/80"
@@ -958,23 +958,21 @@ export default function YamahaConverterApp() {
               title="AI Studio Assistant"
             >
               <Brain className="w-3.5 h-3.5 text-brand-600 dark:text-brand-300" />
-              <span className="hidden sm:inline">{t("hdr_ai_assistant")}</span>
+              <span className="hidden md:inline">{t("hdr_ai_assistant")}</span>
             </button>
 
-            {/* Telegram Bot Connector / Simulator Pill */}
-            <button
-              type="button"
-              onClick={() => setTelegramSimulatorOpen(true)}
-              className={`h-9 px-3 sm:px-3.5 rounded-full text-xs font-medium border flex items-center gap-1.5 transition active:scale-[0.97] ${
-                isInTelegram
-                  ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300 border-sky-300"
-                  : "bg-sky-50/80 hover:bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:hover:bg-sky-900/50 dark:text-sky-300 border-sky-200/80 dark:border-sky-800/60"
-              }`}
-              title="Telegram Mini App Connection"
-            >
-              <Send className="w-3 h-3 text-[#229ED9]" />
-              <span className="hidden lg:inline">{isInTelegram ? t("hdr_telegram_live") : "@PPI_PPF_ConvertBot"}</span>
-            </button>
+            {/* Telegram Bot Connector / Simulator Pill (Desktop Only, Hide inside Telegram) */}
+            {!isInTelegram && (
+              <button
+                type="button"
+                onClick={() => setTelegramSimulatorOpen(true)}
+                className="hidden lg:flex h-9 px-3 sm:px-3.5 rounded-full text-xs font-medium border items-center gap-1.5 transition active:scale-[0.97] bg-sky-50/80 hover:bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:hover:bg-sky-900/50 dark:text-sky-300 border-sky-200/80 dark:border-sky-800/60"
+                title="Telegram Mini App Connection"
+              >
+                <Send className="w-3 h-3 text-[#229ED9]" />
+                <span className="truncate">@PPI_PPF_ConvertBot</span>
+              </button>
+            )}
 
             {/* Language Switcher (Compact KH/EN) */}
             <LanguageSwitcher compact />
@@ -1048,116 +1046,110 @@ export default function YamahaConverterApp() {
         {activeTab === "dashboard" && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             {/* Hero Welcome Banner */}
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-brand-950 text-white p-6 sm:p-8 shadow-xl border border-indigo-900/40">
-              <div className="relative z-10 max-w-5xl space-y-4">
-                <Badge className="bg-white/10 text-brand-300 hover:bg-white/15 border-none backdrop-blur">
+            <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-brand-950 text-white p-4.5 sm:p-6 md:p-8 shadow-xl border border-indigo-900/40">
+              <div className="relative z-10 max-w-5xl space-y-3 sm:space-y-4">
+                <Badge className="bg-white/10 text-brand-300 hover:bg-white/15 border-none backdrop-blur text-[10px] sm:text-xs">
                   {t("dash_hero_tag")}
                 </Badge>
-                <h3 className="text-[17px] sm:text-2xl md:text-3xl lg:text-[32px] font-extrabold tracking-tight whitespace-nowrap leading-normal">
+                <h3 className="text-base sm:text-2xl md:text-3xl font-extrabold tracking-tight truncate leading-tight">
                   {t("dash_hero_title")}
                 </h3>
-                <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
+                <p className="text-xs sm:text-sm text-slate-300 line-clamp-2 sm:line-clamp-none leading-relaxed">
                   {t("dash_hero_desc")}
                 </p>
-                <div className="flex flex-wrap items-center gap-3 pt-2">
+                <div className="flex flex-wrap items-center gap-2.5 pt-1">
                   <Button
                     onClick={() => setActiveTab("converter")}
-                    className="gap-2 bg-brand-600 hover:bg-brand-500 text-white font-medium rounded-full shadow-lg shadow-brand-600/30"
+                    size="sm"
+                    className="gap-2 bg-brand-600 hover:bg-brand-500 text-white font-medium rounded-full shadow-lg shadow-brand-600/30 text-xs sm:text-sm"
                   >
                     <UploadCloud className="w-4 h-4" />
-                    <span>{t("dash_btn_upload")}</span>
+                    <span className="truncate">{t("dash_btn_upload")}</span>
                   </Button>
                   <Button
                     variant="outline"
+                    size="sm"
                     onClick={() => {
                       setActiveTab("converter");
                       document.getElementById("file-upload-input")?.click();
                     }}
-                    className="gap-2 bg-white/10 hover:bg-white/15 border-white/20 text-white rounded-full"
+                    className="gap-2 bg-white/10 hover:bg-white/15 border-white/20 text-white rounded-full text-xs sm:text-sm"
                   >
                     <FolderSearch className="w-4 h-4" />
-                    <span>{t("dash_btn_browse")}</span>
+                    <span className="truncate">{t("dash_btn_browse")}</span>
                   </Button>
                 </div>
               </div>
             </div>
 
-            {/* 4 Metric KPI Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">
+            {/* 4 Metric KPI Cards (2x2 on Mobile / 4 on Desktop) */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+              <Card className="p-3 sm:p-4 rounded-2xl">
+                <div className="flex items-center justify-between pb-1">
+                  <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">
                     {t("stat_total_uploaded")}
-                  </CardTitle>
-                  <UploadCloud className="w-4 h-4 text-blue-500" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-extrabold">{stats.uploaded}</div>
-                  <p className="text-[11px] text-slate-500 mt-1">{t("stat_uploaded_sub")}</p>
-                </CardContent>
+                  </span>
+                  <UploadCloud className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-500 shrink-0" />
+                </div>
+                <div className="text-xl sm:text-2xl font-black mt-1">{stats.uploaded}</div>
+                <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate mt-0.5">{t("stat_uploaded_sub")}</p>
               </Card>
 
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              <Card className="p-3 sm:p-4 rounded-2xl">
+                <div className="flex items-center justify-between pb-1">
+                  <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">
                     {t("stat_total_converted")}
-                  </CardTitle>
-                  <RefreshCw className="w-4 h-4 text-brand-500" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-extrabold">{stats.converted}</div>
-                  <p className="text-[11px] text-brand-500 mt-1">{t("stat_converted_sub")}</p>
-                </CardContent>
+                  </span>
+                  <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-500 shrink-0" />
+                </div>
+                <div className="text-xl sm:text-2xl font-black mt-1">{stats.converted}</div>
+                <p className="text-[10px] sm:text-[11px] text-brand-500 truncate mt-0.5">{t("stat_converted_sub")}</p>
               </Card>
 
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              <Card className="p-3 sm:p-4 rounded-2xl">
+                <div className="flex items-center justify-between pb-1">
+                  <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">
                     {t("stat_successful")}
-                  </CardTitle>
-                  <FileCheck className="w-4 h-4 text-emerald-500" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">
-                    {stats.success}
-                  </div>
-                  <p className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-1">{t("stat_successful_sub")}</p>
-                </CardContent>
+                  </span>
+                  <FileCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 shrink-0" />
+                </div>
+                <div className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
+                  {stats.success}
+                </div>
+                <p className="text-[10px] sm:text-[11px] text-emerald-600 dark:text-emerald-400 truncate mt-0.5">{t("stat_successful_sub")}</p>
               </Card>
 
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              <Card className="p-3 sm:p-4 rounded-2xl">
+                <div className="flex items-center justify-between pb-1">
+                  <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">
                     {t("stat_failed")}
-                  </CardTitle>
-                  <AlertOctagon className="w-4 h-4 text-rose-500" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-extrabold text-rose-600 dark:text-rose-400">{stats.failed}</div>
-                  <p className="text-[11px] text-rose-600 dark:text-rose-400 mt-1">{t("stat_failed_sub")}</p>
-                </CardContent>
+                  </span>
+                  <AlertOctagon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rose-500 shrink-0" />
+                </div>
+                <div className="text-xl sm:text-2xl font-black text-rose-600 dark:text-rose-400 mt-1">{stats.failed}</div>
+                <p className="text-[10px] sm:text-[11px] text-rose-600 dark:text-rose-400 truncate mt-0.5">{t("stat_failed_sub")}</p>
               </Card>
             </div>
 
             {/* Gemini AI Sound Assistant Banner */}
-            <Card className="p-5 border-brand-200/60 dark:border-brand-900/60 bg-gradient-to-r from-brand-900/10 via-purple-900/10 to-indigo-900/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
+            <Card className="p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border-brand-200/60 dark:border-brand-900/60 bg-gradient-to-r from-brand-900/10 via-purple-900/10 to-indigo-900/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+              <div className="flex items-center gap-3 min-w-0">
                 <div className="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center shrink-0">
                   <Brain className="w-5 h-5" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <h4 className="font-bold text-sm text-slate-900 dark:text-white">AI Sound Design &amp; Architecture Assistant</h4>
-                    <Badge variant="default" className="text-[10px] bg-brand-600">Gemini 2.5 Flash</Badge>
+                    <h4 className="font-bold text-xs sm:text-sm text-foreground truncate">AI Sound Architecture</h4>
+                    <Badge variant="default" className="text-[9px] sm:text-[10px] bg-brand-600 shrink-0">Gemini 2.5</Badge>
                   </div>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Leverage Google Gemini AI to analyze AWM2 voice filters, envelope curves, and legacy down-conversion compatibility.
+                  <p className="text-[11px] sm:text-xs text-muted-foreground truncate mt-0.5">
+                    Analyze AWM2 voice filters, envelope curves, and legacy down-conversion.
                   </p>
                 </div>
               </div>
-              <Button size="sm" onClick={() => setActiveTab("ai")} className="gap-2 shrink-0">
+              <Button size="sm" onClick={() => setActiveTab("ai")} className="gap-2 shrink-0 h-8 sm:h-9 text-xs rounded-full">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>Launch AI Assistant</span>
+                <span className="truncate">Launch AI</span>
               </Button>
             </Card>
 
@@ -1266,7 +1258,7 @@ export default function YamahaConverterApp() {
               onDragOver={(e) => e.preventDefault()}
               onDrop={handleDrop}
               onClick={() => document.getElementById("file-upload-input")?.click()}
-              className="border-2 border-dashed border-border/80 hover:border-brand-500/50 rounded-3xl p-8 md:p-12 text-center bg-card/60 hover:bg-card/90 backdrop-blur-md transition-all cursor-pointer group shadow-xs hover:shadow-lg"
+              className="border-2 border-dashed border-border/80 hover:border-brand-500/50 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 text-center bg-card/60 hover:bg-card/90 backdrop-blur-md transition-all cursor-pointer group shadow-xs hover:shadow-lg"
             >
               <input
                 id="file-upload-input"
@@ -1277,18 +1269,18 @@ export default function YamahaConverterApp() {
                 className="hidden"
               />
 
-              <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <UploadCloud className="w-7 h-7" />
+              <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-2.5 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <UploadCloud className="w-6 h-6 sm:w-7 sm:h-7" />
               </div>
-              <h4 className="font-bold text-base text-slate-900 dark:text-white mb-1">
+              <h4 className="font-bold text-sm sm:text-base text-foreground truncate mb-1">
                 {t("queue_dropzone_title")}
               </h4>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto mb-4">
+              <p className="text-xs text-muted-foreground max-w-sm mx-auto truncate mb-3">
                 {t("queue_dropzone_desc")}
               </p>
-              <Button size="sm" variant="secondary" className="gap-2 pointer-events-none rounded-full">
-                <FolderSearch className="w-4 h-4" />
-                <span>{t("queue_dropzone_btn")}</span>
+              <Button size="sm" variant="secondary" className="gap-2 pointer-events-none rounded-full h-8 sm:h-9 text-xs">
+                <FolderSearch className="w-3.5 h-3.5" />
+                <span className="truncate">{t("queue_dropzone_btn")}</span>
               </Button>
             </div>
 
@@ -1333,225 +1325,241 @@ export default function YamahaConverterApp() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                     >
-                      <Card className="p-4 space-y-3">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                          <div className="flex items-center gap-3">
+                      <Card className="p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-border/80 bg-card/80 backdrop-blur-sm shadow-xs hover:shadow-md transition-all space-y-3">
+                        {/* Main Item Row (Single-line clean presentation) */}
+                        <div className="flex items-center justify-between gap-3">
+                          {/* File Icon & 1-Line Info */}
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
                             <div
-                              className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                                item.parsedData.isProtected
-                                  ? "bg-rose-100 text-rose-600 dark:bg-rose-950"
-                                  : "bg-brand-50 text-brand-600 dark:bg-brand-950"
+                              className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-2xs ${
+                                item.status === "SUCCESS"
+                                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20"
+                                  : item.parsedData.isProtected
+                                  ? "bg-rose-500/10 text-rose-600 dark:text-rose-400 ring-1 ring-rose-500/20"
+                                  : item.status === "CONVERTING"
+                                  ? "bg-brand-500/10 text-brand-600 dark:text-brand-400 ring-1 ring-brand-500/20"
+                                  : "bg-muted text-foreground ring-1 ring-border"
                               }`}
                             >
-                              {item.parsedData.isProtected ? (
+                              {item.status === "SUCCESS" ? (
+                                <FileCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                              ) : item.status === "CONVERTING" ? (
+                                <RefreshCw className="w-5 h-5 animate-spin" />
+                              ) : item.parsedData.isProtected ? (
                                 <Lock className="w-5 h-5" />
                               ) : (
                                 <FileMusic className="w-5 h-5" />
                               )}
                             </div>
-                            <div className="overflow-hidden">
-                              <div className="flex items-center gap-2">
-                                <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate max-w-xs">
-                                  {item.name}
+
+                            <div className="min-w-0 flex-1">
+                              {/* Line 1: Single-line File Name */}
+                              <div className="flex items-center gap-2 min-w-0">
+                                <h4 className="font-bold text-xs sm:text-sm text-foreground truncate">
+                                  {item.status === "SUCCESS" && item.output
+                                    ? item.output.filename
+                                    : item.name}
                                 </h4>
-                                <Badge variant="outline" className="text-[10px] font-mono">
-                                  {formatBytes(item.size)}
-                                </Badge>
                                 {item.parsedData.isProtected && (
-                                  <Badge variant="destructive" className="text-[10px]">
-                                    CPI Protected
+                                  <Badge variant="destructive" className="text-[9px] px-1.5 py-0 shrink-0">
+                                    CPI
                                   </Badge>
                                 )}
                               </div>
-                              <p className="text-xs text-slate-500 mt-0.5">
-                                Pack: <span className="font-medium text-slate-700 dark:text-slate-300">{item.parsedData.packName}</span> • Target:{" "}
-                                <span className="font-medium text-brand-600 dark:text-brand-400">{item.parsedData.targetHardware}</span>
+
+                              {/* Line 2: Single-line Metadata */}
+                              <p className="text-[11px] text-muted-foreground font-mono truncate mt-0.5">
+                                <span>{formatBytes(item.status === "SUCCESS" && item.output ? item.output.blob.size : item.size)}</span>
+                                <span className="mx-1.5 opacity-40">•</span>
+                                <span className="truncate">{item.parsedData.packName || "Yamaha Pack"}</span>
+                                {item.parsedData.voicesCount > 0 && (
+                                  <>
+                                    <span className="mx-1.5 opacity-40">•</span>
+                                    <span>{item.parsedData.voicesCount} {language === "kh" ? "សំឡេង" : "voices"}</span>
+                                  </>
+                                )}
                               </p>
                             </div>
                           </div>
 
-                          {/* Controls */}
-                          <div className="flex items-center gap-2 flex-wrap">
-                            {/* Format selector (Somleng Pill Design) */}
-                            <div className="flex rounded-full bg-slate-100 dark:bg-white/10 p-1 text-xs font-semibold ring-1 ring-border/50">
-                              <button
-                                onClick={() =>
-                                  setQueue((prev) =>
-                                    prev.map((q) =>
-                                      q.id === item.id
-                                        ? {
-                                            ...q,
-                                            targetFormat: "PPF",
-                                            status: "PENDING",
-                                            progress: 0,
-                                            stage: "Ready for conversion",
-                                            output: null,
-                                          }
-                                        : q
-                                    )
-                                  )
-                                }
-                                disabled={item.status === "CONVERTING"}
-                                className={`px-3 py-1 rounded-full transition text-xs font-medium ${
-                                  item.targetFormat === "PPF"
-                                    ? "bg-white dark:bg-[#1c1c1f] text-brand-600 dark:text-brand-300 shadow-xs"
-                                    : "text-slate-500 dark:text-slate-400 hover:text-foreground"
-                                }`}
-                              >
-                                PPF (Zip)
-                              </button>
-                              <button
-                                onClick={() =>
-                                  setQueue((prev) =>
-                                    prev.map((q) =>
-                                      q.id === item.id
-                                        ? {
-                                            ...q,
-                                            targetFormat: "YEP",
-                                            status: "PENDING",
-                                            progress: 0,
-                                            stage: "Ready for conversion",
-                                            output: null,
-                                          }
-                                        : q
-                                    )
-                                  )
-                                }
-                                disabled={item.status === "CONVERTING"}
-                                className={`px-3 py-1 rounded-full transition text-xs font-medium ${
-                                  item.targetFormat === "YEP"
-                                    ? "bg-white dark:bg-[#1c1c1f] text-brand-600 dark:text-brand-300 shadow-xs"
-                                    : "text-slate-500 dark:text-slate-400 hover:text-foreground"
-                                }`}
-                              >
-                                YEP (Binary)
-                              </button>
-                            </div>
-
-                            {/* Convert Button */}
+                          {/* Right Controls & Badges */}
+                          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                            {/* Pending State: Format Selector & Convert Button */}
                             {item.status === "PENDING" && (
-                              <Button size="sm" onClick={() => handleConvertItem(item.id)} className="gap-1.5 shadow-sm">
-                                <Play className="w-3.5 h-3.5" />
-                                <span>{t("btn_convert")}</span>
-                              </Button>
-                            )}
+                              <>
+                                <div className="flex rounded-full bg-muted p-0.5 text-xs font-semibold ring-1 ring-border/50">
+                                  <button
+                                    onClick={() =>
+                                      setQueue((prev) =>
+                                        prev.map((q) =>
+                                          q.id === item.id ? { ...q, targetFormat: "PPF" } : q
+                                        )
+                                      )
+                                    }
+                                    className={`px-2.5 py-1 rounded-full transition text-[11px] font-medium ${
+                                      item.targetFormat === "PPF"
+                                        ? "bg-background text-brand-600 dark:text-brand-300 shadow-2xs"
+                                        : "text-muted-foreground hover:text-foreground"
+                                    }`}
+                                  >
+                                    PPF
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      setQueue((prev) =>
+                                        prev.map((q) =>
+                                          q.id === item.id ? { ...q, targetFormat: "YEP" } : q
+                                        )
+                                      )
+                                    }
+                                    className={`px-2.5 py-1 rounded-full transition text-[11px] font-medium ${
+                                      item.targetFormat === "YEP"
+                                        ? "bg-background text-brand-600 dark:text-brand-300 shadow-2xs"
+                                        : "text-muted-foreground hover:text-foreground"
+                                    }`}
+                                  >
+                                    YEP
+                                  </button>
+                                </div>
 
-                            {/* Cancel Button */}
-                            {item.status === "CONVERTING" && (
-                              <Button size="sm" variant="destructive" onClick={() => handleCancelItem(item.id)} className="gap-1.5">
-                                <X className="w-3.5 h-3.5" />
-                                <span>{t("btn_cancel")}</span>
-                              </Button>
-                            )}
-
-                            {/* Success: Download & Re-convert */}
-                            {item.status === "SUCCESS" && item.output && (
-                              <div className="flex items-center gap-1.5">
-                                <a href={item.output.downloadUrl} download={item.output.filename}>
-                                  <Button size="sm" variant="emerald" className="gap-1.5 shadow-sm">
-                                    <Download className="w-3.5 h-3.5" />
-                                    <span>{t("btn_download")}</span>
-                                  </Button>
-                                </a>
                                 <Button
                                   size="sm"
-                                  variant="outline"
-                                  onClick={() =>
-                                    handleOpenTelegramSend(
-                                      item.output?.blob || null,
-                                      item.output?.filename || `${item.name}.ppf`
-                                    )
-                                  }
-                                  className="gap-1.5 text-xs text-sky-600 dark:text-sky-400 border-sky-500/30 hover:bg-sky-500/10 shadow-sm"
-                                  title={language === "kh" ? "ផ្ញើទៅ Telegram" : "Send to Telegram"}
-                                >
-                                  <Send className="w-3.5 h-3.5 text-sky-500" />
-                                  <span className="hidden sm:inline">Telegram</span>
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
                                   onClick={() => handleConvertItem(item.id)}
-                                  title="Re-convert package"
-                                  className="gap-1.5 text-xs"
+                                  className="h-8 px-3 rounded-full text-xs gap-1.5 shadow-xs"
                                 >
-                                  <RefreshCw className="w-3.5 h-3.5" />
-                                  <span className="hidden sm:inline">{t("btn_rerun")}</span>
+                                  <Play className="w-3 h-3" />
+                                  <span className="hidden sm:inline">{t("btn_convert")}</span>
                                 </Button>
+                              </>
+                            )}
+
+                            {/* Converting State: Cancel */}
+                            {item.status === "CONVERTING" && (
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => handleCancelItem(item.id)}
+                                className="h-8 px-2.5 rounded-full text-xs gap-1"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                                <span className="hidden sm:inline">{t("btn_cancel")}</span>
+                              </Button>
+                            )}
+
+                            {/* Success State: Clean Pill Badge + Action Buttons (Exact Image 1 Style) */}
+                            {item.status === "SUCCESS" && (
+                              <div className="flex items-center gap-1.5 sm:gap-2">
+                                <Badge
+                                  variant="outline"
+                                  className="px-3 py-1 rounded-full border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold bg-emerald-500/10 font-mono tracking-wide"
+                                >
+                                  {item.targetFormat}
+                                </Badge>
+
+                                {item.output && (
+                                  <>
+                                    <a href={item.output.downloadUrl} download={item.output.filename}>
+                                      <Button
+                                        size="sm"
+                                        variant="emerald"
+                                        className="h-8 px-2.5 sm:px-3 rounded-xl text-xs gap-1 shadow-2xs"
+                                        title={t("btn_download")}
+                                      >
+                                        <Download className="w-3.5 h-3.5" />
+                                        <span className="hidden md:inline">{t("btn_download")}</span>
+                                      </Button>
+                                    </a>
+
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() =>
+                                        handleOpenTelegramSend(
+                                          item.output?.blob || null,
+                                          item.output?.filename || `${item.name}.ppf`
+                                        )
+                                      }
+                                      className="h-8 px-2.5 sm:px-3 rounded-xl text-xs gap-1 text-sky-600 dark:text-sky-400 border-sky-500/30 hover:bg-sky-500/10"
+                                      title={language === "kh" ? "ផ្ញើទៅ Telegram" : "Send to Telegram"}
+                                    >
+                                      <Send className="w-3.5 h-3.5 text-sky-500" />
+                                      <span className="hidden md:inline">Telegram</span>
+                                    </Button>
+                                  </>
+                                )}
                               </div>
                             )}
 
-                            {/* Failed: Retry Button */}
+                            {/* Failed State: Retry */}
                             {item.status === "FAILED" && (
                               <Button
                                 size="sm"
                                 variant="destructive"
                                 onClick={() => handleConvertItem(item.id)}
-                                className="gap-1.5"
+                                className="h-8 px-2.5 rounded-full text-xs gap-1"
                               >
                                 <RefreshCw className="w-3.5 h-3.5" />
-                                <span>{t("btn_retry")}</span>
+                                <span className="hidden sm:inline">{t("btn_retry")}</span>
                               </Button>
                             )}
 
-                            {/* Cancelled: Restart Button */}
+                            {/* Cancelled State: Restart */}
                             {item.status === "CANCELLED" && (
                               <Button
                                 size="sm"
                                 variant="secondary"
                                 onClick={() => handleConvertItem(item.id)}
-                                className="gap-1.5"
+                                className="h-8 px-2.5 rounded-full text-xs gap-1"
                               >
                                 <Play className="w-3.5 h-3.5" />
-                                <span>{t("btn_convert")}</span>
+                                <span className="hidden sm:inline">{t("btn_convert")}</span>
                               </Button>
                             )}
 
-                            {/* Inspect */}
+                            {/* Inspect Icon Button */}
                             <Button
                               variant="ghost"
                               size="icon"
+                              className="h-8 w-8 rounded-xl text-muted-foreground hover:text-foreground"
                               onClick={() => {
                                 setInspectorFileId(item.id);
                                 setActiveTab("inspector");
                               }}
+                              title={t("nav_inspector")}
                             >
-                              <Binary className="w-4 h-4" />
+                              <Binary className="w-3.5 h-3.5" />
                             </Button>
 
-                            {/* Remove */}
+                            {/* Remove Icon Button */}
                             <Button
                               variant="ghost"
                               size="icon"
+                              className="h-8 w-8 rounded-xl text-muted-foreground hover:text-rose-500"
                               onClick={() => setQueue((prev) => prev.filter((q) => q.id !== item.id))}
+                              title={t("queue_btn_clear")}
                             >
-                              <X className="w-4 h-4 text-slate-400 hover:text-rose-500" />
+                              <X className="w-3.5 h-3.5" />
                             </Button>
                           </div>
                         </div>
 
-                        {/* Progress Bar & Stage Indicator */}
-                        <div className="space-y-1">
-                          <div className="flex justify-between text-xs text-slate-500">
-                            <span className="flex items-center gap-1.5">
-                              {item.status === "CONVERTING" && (
-                                <span className="w-2 h-2 rounded-full bg-brand-500 animate-ping" />
-                              )}
-                              {item.stage}
-                            </span>
-                            <span className="font-mono font-semibold tabular-nums">{item.progress}%</span>
+                        {/* Progress Bar & Stage Indicator (when converting) */}
+                        {item.status === "CONVERTING" && (
+                          <div className="space-y-1.5 pt-1 border-t border-border/50">
+                            <div className="flex justify-between text-xs text-muted-foreground">
+                              <span className="flex items-center gap-1.5 truncate">
+                                <span className="w-2 h-2 rounded-full bg-brand-500 animate-ping shrink-0" />
+                                <span className="truncate">{item.stage}</span>
+                              </span>
+                              <span className="font-mono font-semibold tabular-nums ml-2 shrink-0">{item.progress}%</span>
+                            </div>
+                            <Progress
+                              value={item.progress}
+                              indicatorColor="bg-brand-600"
+                              className="h-1.5 rounded-full"
+                            />
                           </div>
-                          <Progress
-                            value={item.progress}
-                            indicatorColor={
-                              item.status === "SUCCESS"
-                                ? "bg-emerald-500"
-                                : item.status === "FAILED"
-                                ? "bg-rose-500"
-                                : "bg-brand-600"
-                            }
-                          />
-                        </div>
+                        )}
                       </Card>
                     </motion.div>
                   ))}
@@ -1821,99 +1829,194 @@ export default function YamahaConverterApp() {
               </select>
             </div>
 
-            {/* History Table */}
-            <Card className="overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead>
-                    <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 font-semibold text-slate-500 uppercase text-[10px]">
-                      <th className="py-3 px-4">{t("hist_col_name")}</th>
-                      <th className="py-3 px-4">{t("hist_col_size")}</th>
-                      <th className="py-3 px-4">{t("hist_col_type")}</th>
-                      <th className="py-3 px-4">{t("hist_col_status")}</th>
-                      <th className="py-3 px-4">{t("hist_col_date")}</th>
-                      <th className="py-3 px-4 text-right">{t("hist_col_action")}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                    {history
-                      .filter((h) => {
-                        const matchesSearch = h.name.toLowerCase().includes(historySearch.toLowerCase());
-                        const matchesFilter = historyStatusFilter === "ALL" || h.status === historyStatusFilter;
-                        return matchesSearch && matchesFilter;
-                      })
-                      .map((h) => (
-                        <tr key={h.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
-                          <td className="py-3 px-4 font-medium flex items-center gap-2">
-                            <FileMusic className="w-4 h-4 text-slate-400" />
-                            <span>{h.name}</span>
-                          </td>
-                          <td className="py-3 px-4 font-mono text-[11px] text-slate-500">{formatBytes(h.size)}</td>
-                          <td className="py-3 px-4 font-mono font-semibold text-brand-600 dark:text-brand-400">
-                            {h.type}
-                          </td>
-                          <td className="py-3 px-4">
-                            <Badge
-                              variant={
-                                h.status === "SUCCESS"
-                                  ? "success"
-                                  : h.status === "FAILED"
-                                  ? "destructive"
-                                  : "warning"
-                              }
-                              className="text-[10px]"
-                            >
-                              {h.status}
-                            </Badge>
-                          </td>
-                          <td className="py-3 px-4 text-slate-500 text-[11px]">
-                            {h.date.toLocaleDateString()} {h.date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            {h.output ? (
-                              <div className="flex items-center justify-end gap-1">
-                                <a href={h.output.downloadUrl} download={h.output.filename}>
-                                  <Button size="sm" variant="ghost" className="h-7 px-2 text-brand-600">
-                                    <Download className="w-3.5 h-3.5 mr-1" />
-                                    <span>{t("btn_download")}</span>
+            {/* History Table & Mobile Cards */}
+            <div className="space-y-3">
+              {/* Desktop Table View */}
+              <Card className="hidden md:block overflow-hidden rounded-2xl">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="border-b border-border bg-muted/60 font-semibold text-muted-foreground uppercase text-[10px]">
+                        <th className="py-3 px-4">{t("hist_col_name")}</th>
+                        <th className="py-3 px-4">{t("hist_col_size")}</th>
+                        <th className="py-3 px-4">{t("hist_col_type")}</th>
+                        <th className="py-3 px-4">{t("hist_col_status")}</th>
+                        <th className="py-3 px-4">{t("hist_col_date")}</th>
+                        <th className="py-3 px-4 text-right">{t("hist_col_action")}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/60">
+                      {history
+                        .filter((h) => {
+                          const matchesSearch = h.name.toLowerCase().includes(historySearch.toLowerCase());
+                          const matchesFilter = historyStatusFilter === "ALL" || h.status === historyStatusFilter;
+                          return matchesSearch && matchesFilter;
+                        })
+                        .map((h) => (
+                          <tr key={h.id} className="hover:bg-muted/40 transition">
+                            <td className="py-3 px-4 font-medium flex items-center gap-2 max-w-xs truncate">
+                              <FileMusic className="w-4 h-4 text-muted-foreground shrink-0" />
+                              <span className="truncate">{h.name}</span>
+                            </td>
+                            <td className="py-3 px-4 font-mono text-[11px] text-muted-foreground">{formatBytes(h.size)}</td>
+                            <td className="py-3 px-4 font-mono font-semibold text-brand-600 dark:text-brand-400">
+                              {h.type}
+                            </td>
+                            <td className="py-3 px-4">
+                              <Badge
+                                variant={
+                                  h.status === "SUCCESS"
+                                    ? "success"
+                                    : h.status === "FAILED"
+                                    ? "destructive"
+                                    : "warning"
+                                }
+                                className="text-[10px] rounded-full"
+                              >
+                                {h.status}
+                              </Badge>
+                            </td>
+                            <td className="py-3 px-4 text-muted-foreground text-[11px]">
+                              {h.date.toLocaleDateString()} {h.date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                            </td>
+                            <td className="py-3 px-4 text-right">
+                              {h.output ? (
+                                <div className="flex items-center justify-end gap-1">
+                                  <a href={h.output.downloadUrl} download={h.output.filename}>
+                                    <Button size="sm" variant="ghost" className="h-7 px-2 text-brand-600 hover:text-brand-500">
+                                      <Download className="w-3.5 h-3.5 mr-1" />
+                                      <span>{t("btn_download")}</span>
+                                    </Button>
+                                  </a>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => handleOpenTelegramSend(null, h.output?.filename || h.name)}
+                                    className="h-7 px-2 text-sky-600 hover:text-sky-500 hover:bg-sky-500/10"
+                                    title={language === "kh" ? "ផ្ញើទៅ Telegram" : "Send to Telegram"}
+                                  >
+                                    <Send className="w-3.5 h-3.5" />
                                   </Button>
-                                </a>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => handleOpenTelegramSend(null, h.output?.filename || h.name)}
-                                  className="h-7 px-2 text-sky-600 hover:text-sky-500 hover:bg-sky-500/10"
-                                  title={language === "kh" ? "ផ្ញើទៅ Telegram" : "Send to Telegram"}
-                                >
-                                  <Send className="w-3.5 h-3.5" />
-                                </Button>
-                              </div>
-                            ) : (
-                              <span className="text-slate-400">—</span>
-                            )}
+                                </div>
+                              ) : (
+                                <span className="text-muted-foreground">—</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+
+                      {history.length === 0 && (
+                        <tr>
+                          <td colSpan={6} className="py-12 text-center text-muted-foreground">
+                            <p className="text-sm font-medium">
+                              {language === "kh" ? "មិនទាន់មានកំណត់ត្រាប្រវត្តិការបំលែងនៅឡើយទេ។" : "No conversion history records found."}
+                            </p>
+                            <div className="pt-3">
+                              <Button size="sm" onClick={() => setActiveTab("converter")} className="gap-2 shadow-sm rounded-full">
+                                <Play className="w-3.5 h-3.5" />
+                                <span>{t("queue_title")}</span>
+                              </Button>
+                            </div>
                           </td>
                         </tr>
-                      ))}
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
 
-                    {history.length === 0 && (
-                      <tr>
-                        <td colSpan={6} className="py-12 text-center text-slate-500">
-                          <p className="text-sm font-medium">
-                            {language === "kh" ? "មិនទាន់មានកំណត់ត្រាប្រវត្តិការបំលែងនៅឡើយទេ។" : "No conversion history records found."}
-                          </p>
-                          <div className="pt-3">
-                            <Button size="sm" onClick={() => setActiveTab("converter")} className="gap-2 shadow-sm">
-                              <Play className="w-3.5 h-3.5" />
-                              <span>{t("queue_title")}</span>
-                            </Button>
+              {/* Mobile Card List View (Clean Single-Line Presentation for Telegram Mini App) */}
+              <div className="block md:hidden space-y-2.5">
+                {history
+                  .filter((h) => {
+                    const matchesSearch = h.name.toLowerCase().includes(historySearch.toLowerCase());
+                    const matchesFilter = historyStatusFilter === "ALL" || h.status === historyStatusFilter;
+                    return matchesSearch && matchesFilter;
+                  })
+                  .map((h) => (
+                    <Card
+                      key={h.id}
+                      className="p-3.5 rounded-2xl border border-border/80 bg-card/80 backdrop-blur-sm shadow-xs space-y-2.5"
+                    >
+                      <div className="flex items-center justify-between gap-2.5">
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                          <div
+                            className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                              h.status === "SUCCESS"
+                                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20"
+                                : "bg-rose-500/10 text-rose-600 dark:text-rose-400 ring-1 ring-rose-500/20"
+                            }`}
+                          >
+                            {h.status === "SUCCESS" ? (
+                              <FileCheck className="w-5 h-5" />
+                            ) : (
+                              <AlertOctagon className="w-5 h-5" />
+                            )}
                           </div>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+                          <div className="min-w-0 flex-1">
+                            {/* Line 1: Filename */}
+                            <h4 className="font-bold text-xs text-foreground truncate">{h.name}</h4>
+                            {/* Line 2: Size • Type • Date */}
+                            <p className="text-[11px] text-muted-foreground font-mono truncate mt-0.5">
+                              <span>{formatBytes(h.size)}</span>
+                              <span className="mx-1 opacity-40">•</span>
+                              <span className="text-brand-600 dark:text-brand-400 font-semibold">{h.type}</span>
+                              <span className="mx-1 opacity-40">•</span>
+                              <span>{h.date.toLocaleDateString()}</span>
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1 shrink-0">
+                          <Badge
+                            variant={h.status === "SUCCESS" ? "outline" : "destructive"}
+                            className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
+                              h.status === "SUCCESS"
+                                ? "border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10"
+                                : ""
+                            }`}
+                          >
+                            {h.status}
+                          </Badge>
+                          {h.output && (
+                            <>
+                              <a href={h.output.downloadUrl} download={h.output.filename}>
+                                <Button size="icon" variant="ghost" className="h-7 w-7 rounded-lg text-brand-600">
+                                  <Download className="w-3.5 h-3.5" />
+                                </Button>
+                              </a>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => handleOpenTelegramSend(null, h.output?.filename || h.name)}
+                                className="h-7 w-7 rounded-lg text-sky-600 hover:text-sky-500"
+                                title="Send to Telegram"
+                              >
+                                <Send className="w-3.5 h-3.5" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+
+                {history.length === 0 && (
+                  <div className="p-8 text-center rounded-2xl border border-border/80 bg-card/60 backdrop-blur-sm space-y-2">
+                    <History className="w-10 h-10 mx-auto text-muted-foreground" />
+                    <p className="text-xs font-medium text-muted-foreground">
+                      {language === "kh" ? "មិនទាន់មានកំណត់ត្រាប្រវត្តិនៅឡើយទេ។" : "No conversion history records found."}
+                    </p>
+                    <div className="pt-1">
+                      <Button size="sm" onClick={() => setActiveTab("converter")} className="gap-2 rounded-full text-xs">
+                        <Play className="w-3.5 h-3.5" />
+                        <span>{t("queue_title")}</span>
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
-            </Card>
+            </div>
           </motion.div>
         )}
 
@@ -2062,7 +2165,7 @@ export default function YamahaConverterApp() {
       {/* ===================================================================== */}
       <nav
         aria-label="Mobile Navigation"
-        className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-card/95 backdrop-blur-md border-t border-border shadow-lg pb-[calc(env(safe-area-inset-bottom,0px)+0.35rem)] pt-1 px-1 text-foreground"
+        className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-card/95 backdrop-blur-md border-t border-border shadow-lg pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)] pt-1 px-1 text-foreground"
       >
         <div className="grid grid-cols-5 items-center">
           <button
@@ -2074,13 +2177,13 @@ export default function YamahaConverterApp() {
             className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-colors ${
               activeTab === "dashboard"
                 ? "text-brand-600 dark:text-brand-400 font-semibold"
-                : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <div className={`p-1 rounded-lg ${activeTab === "dashboard" ? "bg-brand-50 dark:bg-brand-950/60" : ""}`}>
+            <div className={`p-1 rounded-lg ${activeTab === "dashboard" ? "bg-brand-500/10" : ""}`}>
               <LayoutDashboard className="w-5 h-5" />
             </div>
-            <span className="text-[10px] leading-tight truncate max-w-full mt-0.5">
+            <span className="text-[10px] leading-tight truncate whitespace-nowrap max-w-full mt-0.5">
               {t("nav_dashboard")}
             </span>
           </button>
@@ -2094,10 +2197,10 @@ export default function YamahaConverterApp() {
             className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-colors relative ${
               activeTab === "converter"
                 ? "text-brand-600 dark:text-brand-400 font-semibold"
-                : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <div className={`p-1 rounded-lg relative ${activeTab === "converter" ? "bg-brand-50 dark:bg-brand-950/60" : ""}`}>
+            <div className={`p-1 rounded-lg relative ${activeTab === "converter" ? "bg-brand-500/10" : ""}`}>
               <Repeat className="w-5 h-5" />
               {queue.length > 0 && (
                 <span className="absolute -top-1 -right-1 bg-brand-600 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
@@ -2105,7 +2208,7 @@ export default function YamahaConverterApp() {
                 </span>
               )}
             </div>
-            <span className="text-[10px] leading-tight truncate max-w-full mt-0.5">
+            <span className="text-[10px] leading-tight truncate whitespace-nowrap max-w-full mt-0.5">
               {t("nav_converter")}
             </span>
           </button>
@@ -2119,13 +2222,13 @@ export default function YamahaConverterApp() {
             className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-colors ${
               activeTab === "inspector"
                 ? "text-brand-600 dark:text-brand-400 font-semibold"
-                : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <div className={`p-1 rounded-lg ${activeTab === "inspector" ? "bg-brand-50 dark:bg-brand-950/60" : ""}`}>
+            <div className={`p-1 rounded-lg ${activeTab === "inspector" ? "bg-brand-500/10" : ""}`}>
               <Binary className="w-5 h-5" />
             </div>
-            <span className="text-[10px] leading-tight truncate max-w-full mt-0.5">
+            <span className="text-[10px] leading-tight truncate whitespace-nowrap max-w-full mt-0.5">
               {t("nav_inspector")}
             </span>
           </button>
@@ -2139,13 +2242,13 @@ export default function YamahaConverterApp() {
             className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-colors ${
               activeTab === "history"
                 ? "text-brand-600 dark:text-brand-400 font-semibold"
-                : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <div className={`p-1 rounded-lg ${activeTab === "history" ? "bg-brand-50 dark:bg-brand-950/60" : ""}`}>
+            <div className={`p-1 rounded-lg ${activeTab === "history" ? "bg-brand-500/10" : ""}`}>
               <History className="w-5 h-5" />
             </div>
-            <span className="text-[10px] leading-tight truncate max-w-full mt-0.5">
+            <span className="text-[10px] leading-tight truncate whitespace-nowrap max-w-full mt-0.5">
               {t("nav_history")}
             </span>
           </button>
@@ -2159,13 +2262,13 @@ export default function YamahaConverterApp() {
             className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-colors ${
               activeTab === "ai"
                 ? "text-brand-600 dark:text-brand-400 font-semibold"
-                : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <div className={`p-1 rounded-lg ${activeTab === "ai" ? "bg-brand-50 dark:bg-brand-950/60" : ""}`}>
+            <div className={`p-1 rounded-lg ${activeTab === "ai" ? "bg-brand-500/10" : ""}`}>
               <Brain className="w-5 h-5 text-brand-500" />
             </div>
-            <span className="text-[10px] leading-tight truncate max-w-full mt-0.5">
+            <span className="text-[10px] leading-tight truncate whitespace-nowrap max-w-full mt-0.5">
               {t("nav_ai")}
             </span>
           </button>

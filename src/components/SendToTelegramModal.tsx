@@ -254,48 +254,48 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
       <div
-        className="relative w-full max-w-lg rounded-3xl border border-border shadow-2xl overflow-hidden animate-scale-in ring-1 ring-border/50 text-foreground"
+        className="relative w-full max-w-sm sm:max-w-lg rounded-2xl sm:rounded-3xl border border-border shadow-2xl overflow-hidden animate-scale-in ring-1 ring-border/50 text-foreground"
         style={{ backgroundColor: "var(--card)" }}
       >
         {/* Modal Top Bar */}
         <div
-          className="flex items-center justify-between px-6 py-4.5 border-b border-border"
+          className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-border"
           style={{ backgroundColor: "var(--card)" }}
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#229ED9]/10 text-[#229ED9] flex items-center justify-center shrink-0 shadow-xs ring-1 ring-[#229ED9]/20">
-              <Send className="w-5 h-5" />
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#229ED9]/10 text-[#229ED9] flex items-center justify-center shrink-0 shadow-xs ring-1 ring-[#229ED9]/20">
+              <Send className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-sm text-foreground">
+                <h3 className="font-bold text-xs sm:text-sm text-foreground truncate">
                   {language === "kh" ? "ផ្ញើឯកសារទៅកាន់ Telegram" : "Send File to Telegram"}
                 </h3>
-                <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full text-[#229ED9] bg-[#229ED9]/10 border border-[#229ED9]/20">
+                <span className="text-[9px] sm:text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full text-[#229ED9] bg-[#229ED9]/10 border border-[#229ED9]/20 shrink-0">
                   BOT API
                 </span>
               </div>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
+              <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate mt-0.5">
                 {language === "kh"
-                  ? "ផ្ញើឯកសារដែលបាន Convert ទៅកាន់ Chat ឬ Bot របស់អ្នកផ្ទាល់"
-                  : "Deliver converted file directly into your Telegram chat"}
+                  ? "ផ្ញើឯកសារដែលបាន Convert ទៅកាន់ Chat ឬ Bot"
+                  : "Deliver converted file directly into Telegram"}
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition"
+            className="p-1.5 sm:p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition shrink-0"
             title={language === "kh" ? "បិទ" : "Close"}
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 space-y-4">
+        <div className="p-4 sm:p-6 space-y-3.5 sm:space-y-4">
           {/* 50 MB Telegram limit warning */}
           {fileTooLarge && (
             <div className="p-3 rounded-xl text-xs flex items-start gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">
