@@ -78,7 +78,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
   // Telegram Integration State
   const [telegramChatId, setTelegramChatId] = useState<string>("");
+  const [telegramUsername, setTelegramUsername] = useState<string>("");
+  const [isLinkingTelegram, setIsLinkingTelegram] = useState<boolean>(false);
   const [isTelegramSaved, setIsTelegramSaved] = useState<boolean>(false);
+  const pollIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -98,29 +101,80 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
     if (savedSound !== null) setSoundFeedback(savedSound === "true");
 
     const savedTgId = localStorage.getItem("saved_tg_chat_id") || "";
+    const savedTgUser = localStorage.getItem("saved_tg_username") || "";
     if (savedTgId) {
       setTelegramChatId(savedTgId);
+      setTelegramUsername(savedTgUser);
     } else if (currentUser?.provider === "TELEGRAM") {
-      setTelegramChatId(currentUser.username || currentUser.id);
+      setTelegramChatId(currentUser.id.replace("usr_tg_", ""));
+      setTelegramUsername(currentUser.username ? `@${currentUser.username}` : "");
     }
+
+    return () => {
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    };
   }, [currentUser]);
 
-  const handleSaveTelegram = (idToSave?: string) => {
-    const val = (idToSave !== undefined ? idToSave : telegramChatId).trim();
-    if (val) {
-      localStorage.setItem("saved_tg_chat_id", val);
-      setTelegramChatId(val);
-      setIsTelegramSaved(true);
-      setTimeout(() => setIsTelegramSaved(false), 2500);
-    } else {
-      localStorage.removeItem("saved_tg_chat_id");
-      setTelegramChatId("");
+  const handleConnectTelegramBot = async () => {
+    setIsLinkingTelegram(true);
+    try {
+      const res = await fetch("/api/telegram/link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: currentUser?.id }),
+      });
+      const data = await res.json();
+      if (!data.url) throw new Error("Could not create link");
+
+      // Open Telegram deep link with token: /start link_<token>
+      window.open(data.url, "_blank", "noopener,noreferrer");
+
+      // Start polling for auto-connection
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+      const startTime = Date.now();
+      pollIntervalRef.current = setInterval(async () => {
+        // Poll for 5 minutes max
+        if (Date.now() - startTime > 5 * 60 * 1000) {
+          if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+          setIsLinkingTelegram(false);
+          return;
+        }
+
+        try {
+          const checkRes = await fetch(`/api/telegram/link?token=${data.token}`);
+          const checkData = await checkRes.json();
+          if (checkData.linked && checkData.chatId) {
+            if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+            pollIntervalRef.current = null;
+            setIsLinkingTelegram(false);
+
+            const displayUser = checkData.username ? `@${checkData.username}` : (checkData.firstName || checkData.chatId);
+            setTelegramChatId(String(checkData.chatId));
+            setTelegramUsername(displayUser);
+
+            localStorage.setItem("saved_tg_chat_id", String(checkData.chatId));
+            if (checkData.username) {
+              localStorage.setItem("saved_tg_username", `@${checkData.username}`);
+            }
+            setIsTelegramSaved(true);
+            setTimeout(() => setIsTelegramSaved(false), 3000);
+          }
+        } catch (e) {
+          console.warn("Poll link error:", e);
+        }
+      }, 2000);
+    } catch (err: any) {
+      setIsLinkingTelegram(false);
+      console.error("Connect telegram error:", err);
     }
   };
 
-  const handleConnectTelegramBot = () => {
-    const botUser = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || "PPI_PPF_ConvertBot";
-    window.open(`https://t.me/${botUser}?start=connect`, "_blank", "noopener,noreferrer");
+  const handleDisconnectTelegram = () => {
+    if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    localStorage.removeItem("saved_tg_chat_id");
+    localStorage.removeItem("saved_tg_username");
+    setTelegramChatId("");
+    setTelegramUsername("");
   };
 
   const handleSaveApiKey = () => {
@@ -325,53 +379,92 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             <div className="space-y-3">
               <p className="text-xs text-muted-foreground leading-relaxed">
                 {language === "kh"
-                  ? "ភ្ជាប់ជាមួយ Telegram Bot ដើម្បីទទួលឯកសារបម្លែង PPF/YEP និងការជូនដំណឹងដោយស្វ័យប្រវត្តិ។"
-                  : "Connect with our Telegram bot to receive converted PPF/YEP files and instant conversion alerts."}
+                  ? "ភ្ជាប់ជាមួយ Telegram Bot ដោយស្វ័យប្រវត្តិតាមរយៈការចុច Start (មិនបាច់ Copy ឬ Paste ID ឡើយ)។"
+                  : "Automatically connect with our Telegram bot by pressing Start (no copy-pasting required)."}
               </p>
 
-              <div className="flex flex-col gap-2">
-                <Button
-                  type="button"
-                  onClick={handleConnectTelegramBot}
-                  className="w-full h-10 rounded-xl bg-[#229ED9] hover:bg-[#1E8BC0] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition active:scale-[0.98] cursor-pointer"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>
-                    {language === "kh" ? "បើក Bot ក្នុង Telegram & ចុច Start" : "Open Bot & Start in Telegram"}
-                  </span>
-                  <ExternalLink className="w-3 h-3 opacity-70" />
-                </Button>
-
-                <div className="pt-2 space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <label className="text-[11px] font-semibold text-foreground">
-                      {language === "kh" ? "Telegram Chat ID របស់អ្នក:" : "Your Telegram Chat ID:"}
-                    </label>
-                    {telegramChatId && (
-                      <span className="text-[10px] text-muted-foreground font-mono">
-                        ID: {telegramChatId}
-                      </span>
-                    )}
+              {telegramChatId ? (
+                /* Connected State */
+                <div className="space-y-3">
+                  <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                        <Check className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-bold text-xs text-foreground truncate">
+                          {telegramUsername || `@${telegramChatId}`}
+                        </div>
+                        <div className="text-[10px] text-muted-foreground font-mono">
+                          ID: {telegramChatId}
+                        </div>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[10px] shrink-0 font-medium">
+                      {language === "kh" ? "ភ្ជាប់ជោគជ័យ" : "Active"}
+                    </Badge>
                   </div>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      placeholder={language === "kh" ? "ឧ. 123456789 (បានពី /id ក្នុង Bot)" : "e.g. 123456789 (from /id in bot)"}
-                      value={telegramChatId}
-                      onChange={(e) => setTelegramChatId(e.target.value)}
-                      className="flex-1 px-3 py-2 rounded-xl bg-background border border-border text-xs text-foreground placeholder:text-muted-foreground font-mono focus:outline-none focus:ring-2 focus:ring-[#229ED9]/20 focus:border-[#229ED9]"
-                    />
+
+                  <div className="flex items-center gap-2">
                     <Button
                       type="button"
+                      variant="outline"
                       size="sm"
-                      onClick={() => handleSaveTelegram()}
-                      className="px-4 rounded-xl text-xs font-semibold bg-foreground text-background hover:opacity-90"
+                      onClick={handleConnectTelegramBot}
+                      disabled={isLinkingTelegram}
+                      className="flex-1 text-xs gap-1.5 h-9 rounded-xl border-border hover:bg-muted"
                     >
-                      {isTelegramSaved ? (language === "kh" ? "បានរក្សាទុក" : "Saved!") : (language === "kh" ? "រក្សាទុក" : "Save")}
+                      <RefreshCw className={`w-3.5 h-3.5 ${isLinkingTelegram ? "animate-spin" : ""}`} />
+                      <span>
+                        {isLinkingTelegram
+                          ? (language === "kh" ? "កំពុងរង់ចាំ Start..." : "Waiting for Start...")
+                          : (language === "kh" ? "ភ្ជាប់ឡើងវិញ" : "Reconnect")}
+                      </span>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleDisconnectTelegram}
+                      className="text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 h-9 rounded-xl px-3"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 mr-1" />
+                      <span>{language === "kh" ? "ផ្តាច់" : "Disconnect"}</span>
                     </Button>
                   </div>
                 </div>
-              </div>
+              ) : (
+                /* Unconnected State: 1-Click Auto Connect Button */
+                <div className="space-y-2.5">
+                  <Button
+                    type="button"
+                    onClick={handleConnectTelegramBot}
+                    disabled={isLinkingTelegram}
+                    className="w-full h-11 rounded-2xl bg-[#229ED9] hover:bg-[#1E8BC0] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-[0.98] cursor-pointer"
+                  >
+                    {isLinkingTelegram ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>{language === "kh" ? "កំពុងរង់ចាំលោកអ្នកចុច Start ក្នុង Telegram..." : "Waiting for Start in Telegram..."}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        <span>{language === "kh" ? "បើក Bot ក្នុង Telegram & ចុច Start (ភ្ជាប់ស្វ័យប្រវត្តិ)" : "Open Bot & Start (Auto Connect)"}</span>
+                        <ExternalLink className="w-3 h-3 opacity-70" />
+                      </>
+                    )}
+                  </Button>
+
+                  {isLinkingTelegram && (
+                    <p className="text-[11px] text-center text-muted-foreground animate-pulse">
+                      {language === "kh"
+                        ? "សូមចុចប៊ូតុង Start ក្នុង Telegram នោះប្រព័ន្ធនឹងភ្ជាប់គណនីដោយស្វ័យប្រវត្តិតាមរយៈ Token ភ្លាមៗ!"
+                        : "Press Start in Telegram to automatically link your account!"}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </Card>
 

@@ -374,3 +374,150 @@ export async function clearAllJobRecords(userId?: string): Promise<number> {
     return count;
   }
 }
+
+/**
+ * ==============================================================================
+ * TELEGRAM DEEP LINKING FOR 100% AUTOMATIC CONNECTION (NO COPY-PASTE)
+ * ==============================================================================
+ */
+
+export interface TelegramLinkRecord {
+  token: string;
+  userId?: string;
+  chatId?: string;
+  username?: string;
+  firstName?: string;
+  linked: boolean;
+  createdAt: Date;
+  expiresAt: number;
+}
+
+const memoryTelegramLinks: Map<string, TelegramLinkRecord> = new Map();
+
+export async function createTelegramLinkToken(userId?: string): Promise<TelegramLinkRecord> {
+  const token = Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+  const record: TelegramLinkRecord = {
+    token,
+    userId,
+    linked: false,
+    createdAt: new Date(),
+    expiresAt: Date.now() + 15 * 60 * 1000, // 15 mins
+  };
+  memoryTelegramLinks.set(token, record);
+
+  if (pool) {
+    try {
+      await pool.query(
+        `CREATE TABLE IF NOT EXISTS telegram_links (
+          token VARCHAR(64) PRIMARY KEY,
+          user_id VARCHAR(64),
+          chat_id VARCHAR(64),
+          username VARCHAR(128),
+          first_name VARCHAR(128),
+          linked BOOLEAN DEFAULT FALSE,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          expires_at BIGINT
+        )`
+      );
+      await pool.query(
+        `INSERT INTO telegram_links (token, user_id, linked, expires_at) VALUES ($1, $2, FALSE, $3)
+         ON CONFLICT (token) DO NOTHING`,
+        [token, userId || null, record.expiresAt]
+      );
+    } catch (e) {
+      console.warn("PostgreSQL telegram_links error, using memory store:", e);
+    }
+  }
+
+  return record;
+}
+
+export async function resolveTelegramLinkToken(
+  token: string,
+  chatId: string,
+  username?: string,
+  firstName?: string
+): Promise<TelegramLinkRecord | null> {
+  const record = memoryTelegramLinks.get(token);
+  if (record) {
+    record.linked = true;
+    record.chatId = chatId;
+    record.username = username;
+    record.firstName = firstName;
+  }
+
+  if (pool) {
+    try {
+      await pool.query(
+        `CREATE TABLE IF NOT EXISTS telegram_links (
+          token VARCHAR(64) PRIMARY KEY,
+          user_id VARCHAR(64),
+          chat_id VARCHAR(64),
+          username VARCHAR(128),
+          first_name VARCHAR(128),
+          linked BOOLEAN DEFAULT FALSE,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          expires_at BIGINT
+        )`
+      );
+      const res = await pool.query(
+        `UPDATE telegram_links 
+         SET linked = TRUE, chat_id = $2, username = $3, first_name = $4
+         WHERE token = $1 RETURNING *`,
+        [token, chatId, username || null, firstName || null]
+      );
+      if (res.rows.length > 0) {
+        const row = res.rows[0];
+        const updated: TelegramLinkRecord = {
+          token: row.token,
+          userId: row.user_id,
+          chatId: row.chat_id,
+          username: row.username,
+          firstName: row.first_name,
+          linked: true,
+          createdAt: row.created_at,
+          expiresAt: Number(row.expires_at),
+        };
+        memoryTelegramLinks.set(token, updated);
+        return updated;
+      }
+    } catch (e) {
+      console.warn("PostgreSQL resolve telegram_links error:", e);
+    }
+  }
+
+  return record || null;
+}
+
+export async function getTelegramLinkStatus(token: string): Promise<TelegramLinkRecord | null> {
+  if (memoryTelegramLinks.has(token)) {
+    const r = memoryTelegramLinks.get(token)!;
+    if (r.linked) return r;
+  }
+
+  if (pool) {
+    try {
+      const res = await pool.query(
+        `SELECT * FROM telegram_links WHERE token = $1`,
+        [token]
+      );
+      if (res.rows.length > 0) {
+        const row = res.rows[0];
+        const rec: TelegramLinkRecord = {
+          token: row.token,
+          userId: row.user_id,
+          chatId: row.chat_id,
+          username: row.username,
+          firstName: row.first_name,
+          linked: !!row.linked,
+          createdAt: row.created_at,
+          expiresAt: Number(row.expires_at),
+        };
+        memoryTelegramLinks.set(token, rec);
+        return rec;
+      }
+    } catch {}
+  }
+
+  return memoryTelegramLinks.get(token) || null;
+}

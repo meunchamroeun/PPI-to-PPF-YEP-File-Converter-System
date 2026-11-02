@@ -39,8 +39,9 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
   const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || "PPI_PPF_ConvertBot";
 
   const [chatId, setChatId] = useState<string>("");
+  const [telegramUsername, setTelegramUsername] = useState<string>("");
   const [hasOpenedBot, setHasOpenedBot] = useState<boolean>(false);
-  const [showManualInput, setShowManualInput] = useState<boolean>(false);
+  const [isLinking, setIsLinking] = useState<boolean>(false);
   const [botToken, setBotToken] = useState<string>("");
   const [showTokenInput, setShowTokenInput] = useState<boolean>(false);
   const [isSending, setIsSending] = useState<boolean>(false);
@@ -48,6 +49,8 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
     type: "success" | "error" | "info";
     text: string;
   } | null>(null);
+
+  const modalPollRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const fileSizeLabel = fileBlob
     ? fileBlob.size >= 1024 * 1024
@@ -60,26 +63,89 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedChatId = localStorage.getItem("saved_tg_chat_id");
+      const savedTgUser = localStorage.getItem("saved_tg_username");
       if (defaultChatId) {
         setChatId(String(defaultChatId));
       } else if (savedChatId) {
         setChatId(savedChatId);
       }
+      if (savedTgUser) {
+        setTelegramUsername(savedTgUser);
+      }
     }
+
+    return () => {
+      if (modalPollRef.current) clearInterval(modalPollRef.current);
+    };
   }, [defaultChatId, isOpen]);
 
   if (!isOpen) return null;
 
-  const handleOpenBot = () => {
-    window.open(`https://t.me/${botUsername}?start=auto`, "_blank", "noopener,noreferrer");
-    setHasOpenedBot(true);
+  const handleOpenBot = async () => {
+    setIsLinking(true);
     setStatusMessage({
       type: "info",
       text:
         language === "kh"
-          ? "បានបើក Bot ក្នុង Telegram រួចរាល់! សូមចុច 'Start' ក្នុង Telegram រួចត្រឡប់មកចុចប៊ូតុង 'ផ្ញើទៅ Telegram' ខាងក្រោម។"
-          : "Bot opened in Telegram! Press 'Start' in Telegram, then come back and click 'Send to Telegram' below.",
+          ? "បានបើក Bot ក្នុង Telegram! សូមចុច 'Start' ក្នុង Telegram នោះប្រព័ន្ធនឹងភ្ជាប់ដោយស្វ័យប្រវត្តិ។"
+          : "Bot opened in Telegram! Press 'Start' in Telegram and your account will link automatically.",
     });
+
+    try {
+      const res = await fetch("/api/telegram/link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json();
+      const openUrl = data.url || `https://t.me/${botUsername}?start=auto`;
+      window.open(openUrl, "_blank", "noopener,noreferrer");
+      setHasOpenedBot(true);
+
+      if (data.token) {
+        if (modalPollRef.current) clearInterval(modalPollRef.current);
+        const startTime = Date.now();
+        modalPollRef.current = setInterval(async () => {
+          if (Date.now() - startTime > 5 * 60 * 1000) {
+            if (modalPollRef.current) clearInterval(modalPollRef.current);
+            setIsLinking(false);
+            return;
+          }
+          try {
+            const checkRes = await fetch(`/api/telegram/link?token=${data.token}`);
+            const checkData = await checkRes.json();
+            if (checkData.linked && checkData.chatId) {
+              if (modalPollRef.current) clearInterval(modalPollRef.current);
+              modalPollRef.current = null;
+              setIsLinking(false);
+
+              setChatId(String(checkData.chatId));
+              const displayUser = checkData.username ? `@${checkData.username}` : (checkData.firstName || checkData.chatId);
+              setTelegramUsername(displayUser);
+
+              localStorage.setItem("saved_tg_chat_id", String(checkData.chatId));
+              if (checkData.username) {
+                localStorage.setItem("saved_tg_username", `@${checkData.username}`);
+              }
+
+              setStatusMessage({
+                type: "success",
+                text:
+                  language === "kh"
+                    ? `ភ្ជាប់ជោគជ័យជាមួយ @${checkData.username || checkData.chatId}! សូមចុច 'ផ្ញើទៅកាន់ Telegram' ឥឡូវនេះ។`
+                    : `Connected to @${checkData.username || checkData.chatId}! Click 'Send to Telegram' below.`,
+              });
+            }
+          } catch (e) {
+            console.warn("Poll link error:", e);
+          }
+        }, 2000);
+      }
+    } catch (e) {
+      setIsLinking(false);
+      window.open(`https://t.me/${botUsername}?start=auto`, "_blank", "noopener,noreferrer");
+      setHasOpenedBot(true);
+    }
   };
 
   const handleDirectDownload = () => {
@@ -96,19 +162,8 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
 
   const handleSend = async () => {
     if (!chatId.trim()) {
-      if (!hasOpenedBot) {
-        // Automatically open the bot as requested by user
-        handleOpenBot();
-        return;
-      }
-      setShowManualInput(true);
-      setStatusMessage({
-        type: "error",
-        text:
-          language === "kh"
-            ? "សូមបញ្ចូល Telegram Chat ID (ដែល Bot បានផ្ញើជូន) ឬកំណត់ក្នុងការកំណត់ Settings។"
-            : "Please enter your Telegram Chat ID (shown in bot response) or configure it in Settings.",
-      });
+      // Automatically open the bot and wait for Start
+      handleOpenBot();
       return;
     }
 
@@ -315,57 +370,42 @@ export const SendToTelegramModal: React.FC<SendToTelegramModalProps> = ({
 
             {chatId ? (
               <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1 border-t border-border/50">
-                <span className="font-mono">
-                  {language === "kh" ? `Chat ID: ${chatId}` : `Target Chat ID: ${chatId}`}
+                <span className="font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+                  {language === "kh" ? `ភ្ជាប់ជាមួយ: ${telegramUsername || chatId}` : `Connected to: ${telegramUsername || chatId}`}
                 </span>
-                <button
-                  type="button"
-                  onClick={() => setShowManualInput(!showManualInput)}
-                  className="text-[10px] text-[#229ED9] hover:underline cursor-pointer"
-                >
-                  {showManualInput
-                    ? (language === "kh" ? "លាក់" : "Hide")
-                    : (language === "kh" ? "ប្តូរ Chat ID" : "Change")}
-                </button>
+                <span className="text-[10px] text-muted-foreground font-mono">
+                  ID: {chatId}
+                </span>
               </div>
             ) : (
               <div className="space-y-2 pt-1 border-t border-border/50">
                 <p className="text-[11px] text-muted-foreground leading-relaxed">
                   {language === "kh"
-                    ? "ចុចប៊ូតុងខាងក្រោមដើម្បីបើក Bot និងចុច Start រួចត្រឡប់មកចុច Send ម្ដងទៀត។"
-                    : "Tap below to launch the bot and press Start, then click Send again."}
+                    ? "ចុចប៊ូតុងខាងក្រោមដើម្បីបើក Bot និងចុច Start (ភ្ជាប់ដោយស្វ័យប្រវត្តិ មិនបាច់ Copy/Paste)។"
+                    : "Tap below to launch bot and press Start (auto-links without copy-pasting)."}
                 </p>
 
                 <Button
                   type="button"
                   onClick={handleOpenBot}
+                  disabled={isLinking}
                   className="w-full h-9.5 rounded-xl bg-[#229ED9] hover:bg-[#1E8BC0] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition active:scale-[0.98] cursor-pointer"
                 >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>
-                    {language === "kh" ? "បើក Telegram Bot & ចុច Start" : "Open Bot & Start in Telegram"}
-                  </span>
-                  <ExternalLink className="w-3 h-3 opacity-70" />
+                  {isLinking ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>{language === "kh" ? "កំពុងរង់ចាំលោកអ្នកចុច Start..." : "Waiting for Start in Telegram..."}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5" />
+                      <span>
+                        {language === "kh" ? "បើក Bot ក្នុង Telegram & ចុច Start" : "Open Bot & Start in Telegram"}
+                      </span>
+                      <ExternalLink className="w-3 h-3 opacity-70" />
+                    </>
+                  )}
                 </Button>
-              </div>
-            )}
-
-            {/* Optional Manual Input (Only shown if toggled or needed) */}
-            {showManualInput && (
-              <div className="pt-2 space-y-1.5 border-t border-border/60">
-                <label className="text-[11px] font-semibold text-foreground flex items-center justify-between">
-                  <span>{language === "kh" ? "Telegram Chat ID:" : "Telegram Chat ID:"}</span>
-                  <span className="text-[10px] text-muted-foreground font-normal">
-                    {language === "kh" ? "ចម្លងពី /id ក្នុង Bot" : "From /id in bot"}
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. 123456789"
-                  value={chatId}
-                  onChange={(e) => setChatId(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-background border border-border text-xs font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#229ED9]/20 focus:border-[#229ED9] transition"
-                />
               </div>
             )}
           </div>

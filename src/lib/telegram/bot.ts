@@ -1,4 +1,5 @@
 import { Telegraf } from "telegraf";
+import { resolveTelegramLinkToken } from "@/lib/db/pg";
 
 /**
  * ==============================================================================
@@ -21,8 +22,39 @@ export function createTelegramBot(token?: string) {
   const bot = new Telegraf(botToken);
   const miniAppUrl = process.env.NEXT_PUBLIC_APP_URL || "https://yamaha-ppi-to-ppf-converter.vercel.app";
 
-  bot.start((ctx) => {
-    const chatId = ctx.chat.id;
+  bot.start(async (ctx) => {
+    const chatId = String(ctx.chat.id);
+    const username = ctx.from?.username || "";
+    const firstName = ctx.from?.first_name || "";
+
+    // Check for deep link token: /start link_<token>
+    const payload = (ctx.payload || "").trim() || (ctx.message && "text" in ctx.message ? ctx.message.text.split(" ")[1] : "") || "";
+    if (payload.startsWith("link_")) {
+      const token = payload.slice(5).trim();
+      const linked = await resolveTelegramLinkToken(token, chatId, username, firstName);
+      if (linked) {
+        return ctx.reply(
+          `*ការភ្ជាប់បានជោគជ័យ! / Connected Successfully!*\n\n` +
+          `គណនី Telegram របស់អ្នក (\`@${username || firstName || chatId}\`) ត្រូវបានភ្ជាប់ជាមួយ *Yamaha ExpVoice Studio* រួចរាល់ដោយស្វ័យប្រវត្តិ។\n\n` +
+          `លោកអ្នកអាចត្រឡប់ទៅកាន់ Website វិញបាន — ប្រព័ន្ធបានភ្ជាប់រួចជាស្រេចដោយមិនបាច់ Copy ឬ Paste អ្វីឡើយ!\n\n` +
+          `ឯកសារបម្លែង PPF/YEP និងការជូនដំណឹងនឹងត្រូវផ្ញើមកកាន់ទីនេះ។`,
+          {
+            parse_mode: "Markdown",
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: "Launch Studio Mini App",
+                    web_app: { url: miniAppUrl },
+                  },
+                ],
+              ],
+            },
+          }
+        );
+      }
+    }
+
     ctx.reply(
       `*សូមស្វាគមន៍មកកាន់ Yamaha ExpVoice Studio Bot!*\n\nYour Chat ID: \`${chatId}\` (ចុចដើម្បីចម្លង / tap to copy)\n\nConvert compiled Yamaha installation packages (\`.ppi\`) into editable project archives (\`.ppf\`) or legacy instrument formats (\`.yep\`).\n\nTap below to launch the Mini App:`,
       {
