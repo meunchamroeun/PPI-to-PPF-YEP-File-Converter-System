@@ -1253,6 +1253,22 @@ export default function YamahaConverterApp() {
               </div>
             </div>
 
+            {/* Expansion Manager compatibility warning */}
+            <div
+              role="alert"
+              className="flex items-start gap-3 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-3.5 sm:p-4 text-left"
+            >
+              <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+              <div className="min-w-0 space-y-1">
+                <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+                  {t("queue_yem_warning_title")}
+                </p>
+                <p className="text-xs leading-relaxed text-amber-900/80 dark:text-amber-200/80">
+                  {t("queue_yem_warning_desc")}
+                </p>
+              </div>
+            </div>
+
             {/* Drag & Drop Upload Zone (Somleng Clean Glassmorphic Style) */}
             <div
               onDragOver={(e) => e.preventDefault()}

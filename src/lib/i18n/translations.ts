@@ -197,6 +197,14 @@ export const translations: TranslationDictionary = {
     kh: "អូស & ទម្លាក់ឯកសារសំឡេង Yamaha .PPI នៅទីនេះ",
     en: "Drag & drop your Yamaha .PPI expansion files here",
   },
+  queue_yem_warning_title: {
+    kh: "ឯកសារ PPF ដែលបំលែងបាន មិនអាចបើកក្នុង Yamaha Expansion Manager បានទេ",
+    en: "Converted PPF files will not open in Yamaha Expansion Manager",
+  },
+  queue_yem_warning_desc: {
+    kh: "Yamaha អនុញ្ញាតឱ្យបំលែងតែពី PPF ទៅ PPI ប៉ុណ្ណោះ ហើយសំឡេងក្នុង PPI ត្រូវបាន encrypt សម្រាប់ keyboard។ ឯកសារលទ្ធផលនេះសម្រាប់មើល និងពិនិត្យខ្លឹមសារ (ឈ្មោះ voice, ទិន្នន័យ) តែប៉ុណ្ណោះ។ ដើម្បីកែក្នុង Expansion Manager សូមស្នើសុំឯកសារ .ppf ដើមពីអ្នកបង្កើតកញ្ចប់។",
+    en: "Yamaha only supports PPF → PPI, and the samples inside a PPI are encrypted for the instrument. This output is for viewing and inspecting pack contents (voice names, data) only. To edit a pack in Expansion Manager, ask the pack creator for the original .ppf.",
+  },
   queue_dropzone_desc: {
     kh: "ទទួលយកឯកសារកញ្ចប់សំឡេងដំឡើង Yamaha (.ppi) និងឯកសារការពារ (.cpi)។ អាចផ្ទុកឯកសារច្រើនក្នុងពេលតែមួយ។",
     en: "Accepts Yamaha Pack Project Installation files (.ppi) and Protected Packs (.cpi). Multiple file upload enabled.",
